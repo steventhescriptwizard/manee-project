@@ -26,8 +26,11 @@ export default {
             colors: {
                 brandCream: '#FDFBF7',
                 brandRed: '#791F1F',
-                brandBlue: '#0A2463', // Keep existing deep blue for primary actions
-                brandLightBlue: '#BFD4F9', // Add the light blue from About page
+                brandBlue: '#0A2463',
+                brandLightBlue: '#BFD4F9',
+                brandLight: '#F3F4F6',
+                backgroundLight: '#FCFCFC',
+                backgroundDark: '#111721',
                 textMain: '#1A1A1A'
             }
         }

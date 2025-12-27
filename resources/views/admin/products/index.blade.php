@@ -65,7 +65,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 font-semibold text-slate-900 dark:text-white">
-                            {{ number_format($product->price, 0, ',', '.') }}
+                            Rp {{ number_format($product->price, 0, ',', '.') }}
                         </td>
                         <td class="px-6 py-4">
                             @if($product->track_inventory)
@@ -81,7 +81,10 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.products.edit', $product) }}" class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                <a href="{{ route('admin.products.show', $product) }}" class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Details">
+                                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                </a>
+                                <a href="{{ route('admin.products.edit', $product) }}" class="p-1.5 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Product">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                 </a>
                                 <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure?');" class="inline-block">

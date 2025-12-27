@@ -115,6 +115,26 @@ class ProductVariantController extends Controller
 
         $variant->update($data);
 
+        // Update stock if tracking
+        if ($variant->track_inventory && isset($request->current_stock)) {
+            $defaultWarehouse = Warehouse::first();
+            if ($defaultWarehouse) {
+                $stock = $variant->stocks()->where('warehouse_id', $defaultWarehouse->id)->first();
+                if ($stock) {
+                    $stock->update([
+                        'current_stock' => $request->current_stock,
+                    ]);
+                } else {
+                    $variant->stocks()->create([
+                        'product_id' => $product->id,
+                        'warehouse_id' => $defaultWarehouse->id,
+                        'current_stock' => $request->current_stock,
+                        'stock_in' => $request->current_stock,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('admin.products.variants.index', $product)
             ->with('success', 'Variant updated successfully.');
     }

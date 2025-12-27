@@ -16,7 +16,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16">
         <!-- Image Gallery -->
-        <div class="lg:col-span-7" x-data="{ activeImage: '{{ $product->image_main ? asset('storage/' . $product->image_main) : 'https://via.placeholder.com/600x800' }}' }">
+        <div class="lg:col-span-7" x-data="{ activeImage: '{{ $product->image_main ? Storage::url($product->image_main) : 'https://via.placeholder.com/600x800' }}' }">
             <div class="flex flex-col gap-6">
                 <!-- Main Image -->
                 <div class="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
@@ -31,19 +31,22 @@
                 </div>
 
                 <!-- Thumbnails at Bottom -->
-                <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x mt-4">
+                    <!-- Main Image Thumbnail -->
                     @if($product->image_main)
-                    <button @click="activeImage = '{{ asset('storage/' . $product->image_main) }}'" 
-                            class="relative aspect-square w-24 min-w-[96px] overflow-hidden rounded-xl border-2 transition-all snap-start"
-                            :class="activeImage === '{{ asset('storage/' . $product->image_main) }}' ? 'border-brandBlue shadow-md ring-2 ring-brandBlue/10' : 'border-gray-100 hover:border-gray-300'">
-                        <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('storage/' . $product->image_main) }}');"></div>
+                    <button @click="activeImage = '{{ Storage::url($product->image_main) }}'" 
+                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm"
+                            :class="activeImage === '{{ Storage::url($product->image_main) }}' ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
+                        <img src="{{ Storage::url($product->image_main) }}" class="h-full w-full object-cover">
                     </button>
                     @endif
+
+                    <!-- Gallery Images -->
                     @foreach($product->images as $image)
-                    <button @click="activeImage = '{{ asset('storage/' . $image->image_path) }}'" 
-                            class="relative aspect-square w-24 min-w-[96px] overflow-hidden rounded-xl border-2 transition-all snap-start"
-                            :class="activeImage === '{{ asset('storage/' . $image->image_path) }}' ? 'border-brandBlue shadow-md ring-2 ring-brandBlue/10' : 'border-gray-100 hover:border-gray-300'">
-                        <div class="h-full w-full bg-cover bg-center" style="background-image: url('{{ asset('storage/' . $image->image_path) }}');"></div>
+                    <button @click="activeImage = '{{ Storage::url($image->image_path) }}'" 
+                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm"
+                            :class="activeImage === '{{ Storage::url($image->image_path) }}' ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
+                        <img src="{{ Storage::url($image->image_path) }}" class="h-full w-full object-cover">
                     </button>
                     @endforeach
                 </div>

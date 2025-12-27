@@ -63,7 +63,7 @@
                             {{ $variant->sku }}
                         </td>
                         <td class="px-6 py-4 font-semibold text-slate-900 dark:text-white">
-                            ${{ number_format($variant->price, 2) }}
+                            Rp {{ number_format($variant->price, 0, ',', '.') }}
                         </td>
                         <td class="px-6 py-4">
                             @if($variant->track_inventory)

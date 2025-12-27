@@ -68,7 +68,7 @@
     <!-- Categories -->
     <section class="py-20 bg-brandCream">
         <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
                 @php
                     $catImages = [
                         asset('images/knitwear.png'),
@@ -77,11 +77,13 @@
                     ];
                 @endphp
                 @foreach($categories as $index => $cat)
-                <a href="#" class="group relative h-[250px] overflow-hidden rounded-lg block">
-                    <img src="{{ $cat->image_path ?? ($catImages[$index] ?? asset('images/knitwear.png')) }}" alt="{{ $cat->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80"></div>
-                    <div class="absolute bottom-10 left-0 w-full text-center">
-                        <span class="text-white text-2xl font-sans font-light border-b border-white/50 pb-1">{{ $cat->name }}</span>
+                <a href="{{ route('categories.show', $cat->slug) }}" class="group relative block">
+                    <div class="relative h-[250px] md:h-[380px] overflow-hidden rounded-3xl shadow-2xl transition-all duration-300 group-hover:shadow-brandBlue/20 group-hover:-translate-y-2">
+                        <img src="{{ $cat->image_path ?? ($catImages[$index] ?? asset('images/knitwear.png')) }}" alt="{{ $cat->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors"></div>
+                        <div class="absolute inset-0 flex items-end justify-center pb-8">
+                            <span class="text-white text-xl md:text-2xl font-serif italic font-bold tracking-wider drop-shadow-lg border-b-2 border-white/70 pb-1">{{ $cat->name }}</span>
+                        </div>
                     </div>
                 </a>
                 @endforeach
@@ -90,47 +92,67 @@
     </section>
 
     <!-- Product Slider Section -->
-    <section class="py-16 bg-[#FDFBF7]">
+    <section class="py-16 bg-[#FDFBF7]" x-data="{ activeTab: 'best_sellers' }">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-10">
-                <h2 class="text-3xl md:text-4xl font-sans font-medium text-textMain">Shop Categories</h2>
-                <div class="flex gap-8 mt-6 md:mt-0">
-                    <button class="text-textMain font-sans text-lg border-b border-current pb-1">Best Sellers</button>
-                    <button class="text-gray-500 font-sans text-lg hover:text-textMain border-b border-transparent hover:border-current pb-1 transition-all">New Arrivals</button>
-                    <button class="text-gray-500 font-sans text-lg hover:text-textMain border-b border-transparent hover:border-current pb-1 transition-all">Sale</button>
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-10">
+                <h2 class="text-3xl md:text-4xl font-sans font-medium text-textMain text-center md:text-left">Shop Categories</h2>
+                <div class="flex flex-wrap justify-center gap-4 md:gap-8 mt-6 md:mt-0">
+                    <button @click="activeTab = 'best_sellers'" 
+                            class="font-sans text-lg border-b pb-1 transition-all"
+                            :class="activeTab === 'best_sellers' ? 'text-textMain border-current' : 'text-gray-500 border-transparent hover:text-textMain hover:border-current'">
+                        Best Sellers
+                    </button>
+                    <button @click="activeTab = 'new_arrivals'" 
+                            class="font-sans text-lg border-b pb-1 transition-all"
+                            :class="activeTab === 'new_arrivals' ? 'text-textMain border-current' : 'text-gray-500 border-transparent hover:text-textMain hover:border-current'">
+                        New Arrivals
+                    </button>
+                    <button @click="activeTab = 'sale'" 
+                            class="font-sans text-lg border-b pb-1 transition-all"
+                            :class="activeTab === 'sale' ? 'text-textMain border-current' : 'text-gray-500 border-transparent hover:text-textMain hover:border-current'">
+                        Sale
+                    </button>
                 </div>
             </div>
             
-            <div class="relative group" x-data>
-                <div class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="product-slider">
-                    @foreach($products as $prod)
-                    <a href="{{ route('products.show', $prod->id) }}" class="min-w-[160px] md:min-w-[200px] bg-white rounded-lg overflow-hidden border border-gray-100 group/card block">
-                        <div class="relative aspect-[3/4] overflow-hidden bg-gray-100 border-2 border-[#791F1F]/20 rounded-lg group-hover/card:border-[#791F1F]/40 transition-colors">
-                            <img src="{{ $prod->image_main ? asset('storage/' . $prod->image_main) : 'https://via.placeholder.com/300x400' }}" alt="{{ $prod->product_name }}" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500" />
-                            <div class="absolute top-3 right-3 flex flex-col gap-2">
-                                <button class="text-gray-800 hover:text-brandRed transition-colors bg-white/80 p-1.5 rounded-full shadow-sm">
-                                    <span class="material-icons-outlined text-[20px]">bookmark_border</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="p-3 md:p-4">
-                            <h3 class="font-sans font-medium text-textMain mb-1 line-clamp-1">{{ $prod->product_name }}</h3>
-                            <p class="font-sans text-sm text-gray-500 font-bold text-brandRed">Rp {{ number_format($prod->price, 0, ',', '.') }}</p>
-                        </div>
-                    </a>
-                    @endforeach
+            <div class="relative group">
+                <!-- Best Sellers -->
+                <div x-show="activeTab === 'best_sellers'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-best_sellers">
+                    @forelse($bestSellers as $prod)
+                        @include('web.partials.product-card', ['prod' => $prod])
+                    @empty
+                        <div class="w-full text-center py-10 text-gray-400 font-sans italic">No best sellers available yet.</div>
+                    @endforelse
+                </div>
+
+                <!-- New Arrivals -->
+                <div x-show="activeTab === 'new_arrivals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-new_arrivals">
+                    @forelse($newArrivals as $prod)
+                        @include('web.partials.product-card', ['prod' => $prod])
+                    @empty
+                        <div class="w-full text-center py-10 text-gray-400 font-sans italic">No new arrivals available yet.</div>
+                    @endforelse
+                </div>
+
+                <!-- Sale -->
+                <div x-show="activeTab === 'sale'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-sale">
+                    @forelse($saleProducts as $prod)
+                        @include('web.partials.product-card', ['prod' => $prod])
+                    @empty
+                        <div class="w-full text-center py-10 text-gray-400 font-sans italic">No products on sale available yet.</div>
+                    @endforelse
                 </div>
                 
                 <!-- Scroll Buttons -->
                 <button 
                     class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full p-3 hidden md:block hover:bg-gray-50 transition-colors z-10"
-                    @click="document.getElementById('product-slider').scrollBy({left: -220, behavior: 'smooth'})"
+                    @click="document.getElementById('slider-' + activeTab).scrollBy({left: -220, behavior: 'smooth'})"
                 >
                     <span class="material-icons-outlined text-gray-800">chevron_left</span>
                 </button>
                 <button 
                     class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white shadow-lg rounded-full p-3 hidden md:block hover:bg-gray-50 transition-colors z-10"
-                    @click="document.getElementById('product-slider').scrollBy({left: 220, behavior: 'smooth'})"
+                    @click="document.getElementById('slider-' + activeTab).scrollBy({left: 220, behavior: 'smooth'})"
                 >
                     <span class="material-icons-outlined text-gray-800">chevron_right</span>
                 </button>

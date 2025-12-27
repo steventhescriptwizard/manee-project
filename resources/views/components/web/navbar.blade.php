@@ -42,18 +42,21 @@
             
             <!-- Desktop Nav -->
             <nav class="hidden lg:flex items-center gap-8 ml-8">
-                <a href="#" class="text-sm font-medium transition-colors hover:text-blue-600"
+                <a href="{{ route('home') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
                    :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >Shop</a>
-                <a href="#" class="text-sm font-medium transition-colors hover:text-blue-600"
-                   :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >New Arrivals</a>
-                <a href="#" class="text-sm font-medium transition-colors"
-                   :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-red-600 hover:text-red-700': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >Sale</a>
+                >Home</a>
                 <a href="{{ route('about') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
                    :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >About Maneé</a>
+                <a href="{{ route('categories.show', 'knitwear') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                   :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                >Knitwear</a>
+                <a href="{{ route('categories.show', 'tops') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                   :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                >Tops</a>
+                <a href="{{ route('categories.show', 'bottoms') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                   :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                >Bottoms</a>
             </nav>
         </div>
 
@@ -106,10 +109,11 @@
          x-transition:leave-end="opacity-0 -translate-y-2"
          @click.away="mobileMenuOpen = false"
          class="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-lg py-4 px-6 flex flex-col gap-4 text-textMain z-50">
-           <a href="#" class="text-sm font-medium hover:text-blue-600">Shop</a>
-           <a href="#" class="text-sm font-medium hover:text-blue-600">New Arrivals</a>
-           <a href="#" class="text-sm font-medium text-red-600 hover:text-red-700">Sale</a>
-           <a href="#" class="text-sm font-medium hover:text-blue-600">About Maneé</a>
+           <a href="{{ route('home') }}" class="text-sm font-medium hover:text-blue-600">Home</a>
+           <a href="{{ route('about') }}" class="text-sm font-medium hover:text-blue-600">About Maneé</a>
+           <a href="{{ route('categories.show', 'knitwear') }}" class="text-sm font-medium hover:text-blue-600">Knitwear</a>
+           <a href="{{ route('categories.show', 'tops') }}" class="text-sm font-medium hover:text-blue-600">Tops</a>
+           <a href="{{ route('categories.show', 'bottoms') }}" class="text-sm font-medium hover:text-blue-600">Bottoms</a>
            <hr class="border-gray-100">
            <a href="{{ route('login') }}" class="text-sm font-medium hover:text-blue-600">Login</a>
     </div>

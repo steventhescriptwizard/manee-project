@@ -38,11 +38,15 @@
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Pricing & Inventory</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price</label>
+                    <div x-data="{ price: {{ old('price', 0) }}, exchangeRate: 15500 }">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price (IDR)</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                            <input type="number" step="0.01" name="price" value="{{ old('price', 0) }}" class="w-full pl-7 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">Rp</span>
+                            <input type="number" name="price" x-model="price" class="w-full pl-8 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600" placeholder="e.g. 150000">
+                        </div>
+                        <div class="mt-2 p-2 bg-slate-50 dark:bg-gray-800/50 rounded-lg border border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                            <span class="text-[10px] uppercase font-bold text-slate-400">USD Equivalent</span>
+                            <span class="text-sm font-mono font-bold text-blue-600">$<span x-text="(price / exchangeRate).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span></span>
                         </div>
                         @error('price') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -78,26 +82,104 @@
         <div class="flex flex-col gap-6">
             <!-- Media -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Media</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Primary Image</h3>
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase">Featured</span>
+                </div>
                 
                 <div class="border-2 border-dashed border-slate-300 dark:border-gray-700 rounded-lg p-6 text-center hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors">
                     <div class="flex flex-col items-center">
-                        <span class="material-symbols-outlined text-slate-400 text-3xl mb-2">cloud_upload</span>
+                        <span class="material-symbols-outlined text-slate-400 text-3xl mb-2">image</span>
                         <label for="image_main" class="cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-500">
-                            Upload Image
-                            <input type="file" id="image_main" name="image_main" class="hidden" accept="image/*" onchange="previewImage(this)">
+                            Upload Primary Image
+                            <input type="file" id="image_main" name="image_main" class="hidden" accept="image/*" onchange="previewImage(this, 'preview')">
                         </label>
-                        <p class="text-xs text-slate-500 mt-1">PNG, JPG up to 2MB</p>
                     </div>
-                    <img id="preview" class="mt-4 max-h-40 rounded-lg mx-auto hidden object-cover">
+                    <img id="preview" class="mt-4 max-h-48 rounded-lg mx-auto hidden object-cover shadow-sm">
                 </div>
                 @error('image_main') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <!-- Gallery -->
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4"
+                 x-data="{ 
+                    queuedFiles: [],
+                    dataTransfer: new DataTransfer(),
+                    addFiles(input) {
+                        Array.from(input.files).forEach(file => {
+                            if (!this.queuedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                                this.queuedFiles.push({
+                                    id: Date.now() + Math.random(),
+                                    file: file,
+                                    preview: URL.createObjectURL(file)
+                                });
+                                this.dataTransfer.items.add(file);
+                            }
+                        });
+                        input.files = this.dataTransfer.files;
+                    },
+                    removeFile(index, inputId) {
+                        const fileToRemove = this.queuedFiles[index].file;
+                        this.queuedFiles.splice(index, 1);
+                        
+                        const newDataTransfer = new DataTransfer();
+                        Array.from(this.dataTransfer.files).forEach(file => {
+                            if (file !== fileToRemove) newDataTransfer.items.add(file);
+                        });
+                        this.dataTransfer = newDataTransfer;
+                        document.getElementById(inputId).files = this.dataTransfer.files;
+                    }
+                 }">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Product Gallery</h3>
+                
+                <div class="border-2 border-dashed border-slate-300 dark:border-gray-700 rounded-lg p-6 text-center hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors relative">
+                    <div class="flex flex-col items-center">
+                        <span class="material-symbols-outlined text-slate-400 text-3xl mb-2">collections</span>
+                        <label for="product_gallery" class="cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-500">
+                            Upload Gallery Images
+                            <input type="file" id="product_gallery" name="product_gallery[]" class="hidden" accept="image/*" multiple @change="addFiles($el)">
+                        </label>
+                        <p class="text-xs text-slate-500 mt-1">Select multiple images (Additive)</p>
+                    </div>
+                </div>
+                
+                <div id="gallery-preview" class="grid grid-cols-3 gap-3 mt-4">
+                    <template x-for="(queued, index) in queuedFiles" :key="queued.id">
+                        <div class="relative group aspect-square rounded-lg overflow-hidden border border-blue-200 dark:border-blue-900 ring-2 ring-blue-500/10">
+                            <img :src="queued.preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button type="button" @click="removeFile(index, 'product_gallery')" class="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-lg">
+                                    <span class="material-symbols-outlined text-[18px] block">close</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                @error('product_gallery.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <!-- Organization -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Organization</h3>
                 
+                <div class="space-y-4 border-b border-slate-100 dark:border-gray-800 pb-4 mb-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Product Labels</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        <label class="inline-flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" name="is_new_arrival" value="1" {{ old('is_new_arrival') ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-blue-600 transition-colors">New Arrival</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" name="is_best_seller" value="1" {{ old('is_best_seller') ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-blue-600 transition-colors">Best Seller</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" name="on_sale" value="1" {{ old('on_sale') ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-blue-600 transition-colors">On Sale</span>
+                        </label>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Categories</label>
                     <div class="max-h-60 overflow-y-auto space-y-2 border border-slate-200 dark:border-gray-800 rounded-lg p-3">
@@ -131,15 +213,18 @@
 </div>
 
 <script>
-function previewImage(input) {
+function previewImage(input, previewId) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('preview').src = e.target.result;
-            document.getElementById('preview').classList.remove('hidden');
+            var preview = document.getElementById(previewId);
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
         }
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+
 </script>
 @endsection

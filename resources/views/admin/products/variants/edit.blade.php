@@ -42,9 +42,16 @@
                     <input type="text" name="sku" value="{{ old('sku', $variant->sku) }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
                     @error('sku') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price Override ($)</label>
-                    <input type="number" step="0.01" name="price" value="{{ old('price', $variant->price) }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600" required>
+                <div x-data="{ price: {{ old('price', $variant->price) }}, exchangeRate: 15500 }">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price Override (IDR)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-[10px]">Rp</span>
+                        <input type="number" name="price" x-model="price" class="w-full pl-8 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600" required>
+                    </div>
+                    <div class="mt-1.5 p-1.5 bg-slate-50 dark:bg-gray-800/50 rounded-lg border border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                        <span class="text-[8px] uppercase font-bold text-slate-400">USD Equiv.</span>
+                        <span class="text-xs font-mono font-bold text-blue-600">$<span x-text="(price / exchangeRate).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span></span>
+                    </div>
                     @error('price') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>

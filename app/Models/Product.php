@@ -19,6 +19,9 @@ class Product extends Model
         'track_inventory',
         'weight',
         'unit_of_measure',
+        'is_new_arrival',
+        'is_best_seller',
+        'on_sale',
     ];
 
     public function categories()

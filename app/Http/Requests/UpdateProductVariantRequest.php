@@ -18,9 +18,10 @@ class UpdateProductVariantRequest extends FormRequest
             'variant_name' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:100',
             'size' => 'nullable|string|max:100',
-            'sku' => ['required', 'string', 'max:100', Rule::unique('product_variants')->ignore($this->variant)],
+            'sku' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($this->variant)],
             'price' => 'required|numeric|min:0',
             'track_inventory' => 'boolean',
+            'current_stock' => 'nullable|integer|min:0',
             'weight' => 'nullable|numeric|min:0',
         ];
     }

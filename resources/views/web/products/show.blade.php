@@ -79,7 +79,12 @@
             <div x-data="{ 
                 selectedColor: '{{ $colors->first() }}', 
                 selectedSize: '{{ $sizes->first() }}',
-                variants: {{ $product->variants->map(fn($v) => ['color' => $v->color, 'size' => $v->size])->toJson() }},
+                variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'color' => $v->color, 'size' => $v->size])->toJson() }},
+                quantity: 1,
+                isAdding: false,
+                get currentVariant() {
+                    return this.variants.find(v => v.color === this.selectedColor && v.size === this.selectedSize);
+                },
                 get availableSizes() {
                     return this.variants
                         .filter(v => v.color === this.selectedColor)
@@ -92,6 +97,34 @@
                     this.selectedColor = color;
                     if (!this.isSizeAvailable(this.selectedSize)) {
                         this.selectedSize = this.availableSizes[0] || null;
+                    }
+                },
+                async addToCart() {
+                    this.isAdding = true;
+                    try {
+                        const response = await fetch('{{ route("cart.add") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                product_id: '{{ $product->id }}',
+                                variant_id: this.currentVariant ? this.currentVariant.id : null,
+                                quantity: this.quantity
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            showToast(data.message);
+                            // Update navbar count if needed
+                            window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: data.cart_count } }));
+                        }
+                    } catch (error) {
+                        console.error('Error adding to cart:', error);
+                    } finally {
+                        this.isAdding = false;
                     }
                 }
             }">
@@ -144,39 +177,117 @@
                 </div>
                 @endif
 
-                <div class="flex gap-4 pb-8 border-b border-gray-100">
-                    <button class="flex-1 h-14 rounded-lg bg-brandBlue font-sans text-white font-bold tracking-wide transition-transform active:scale-[0.98] hover:bg-brandBlue/90 flex items-center justify-center gap-2 uppercase text-sm">
-                        Add to Cart
+                <div class="flex gap-4 pb-8 border-b border-gray-100" 
+                     x-data="{ isWishlisted: {{ in_array($product->id, session()->get('wishlist', [])) ? 'true' : 'false' }} }">
+                    <button @click="addToCart" 
+                            :disabled="isAdding"
+                            class="flex-1 h-14 rounded-lg bg-brandBlue font-sans text-white font-bold tracking-wide transition-transform active:scale-[0.98] hover:bg-brandBlue/90 flex items-center justify-center gap-2 uppercase text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span x-show="!isAdding" class="flex items-center gap-2">
+                             Add to Cart
+                        </span>
+                        <span x-show="isAdding" class="flex items-center gap-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Adding...
+                        </span>
                     </button>
-                    <button class="h-14 w-14 rounded-lg border border-gray-200 flex items-center justify-center text-textMain hover:bg-gray-50 transition-colors">
-                        <span class="material-symbols-outlined">favorite</span>
+                    <button 
+                        @click="
+                            fetch('{{ route('wishlist.toggle') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ product_id: {{ $product->id }} })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if(data.success) {
+                                    isWishlisted = data.action === 'added';
+                                    window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { count: data.count, action: data.action } }));
+                                    showToast(data.message);
+                                }
+                            })
+                        "
+                        class="h-14 w-14 rounded-lg border border-gray-200 flex items-center justify-center transition-all hover:bg-gray-50 active:scale-95"
+                        :class="isWishlisted ? 'text-brandRed border-brandRed/20 bg-brandRed/5' : 'text-gray-400'"
+                    >
+                        <span class="material-symbols-outlined transition-all"
+                              :class="{ 'fill-1 font-bold': isWishlisted }">
+                            favorite
+                        </span>
                     </button>
                 </div>
             </div>
 
+            <!-- Toast Notification Container -->
+            <div id="toast-container" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+            <script>
+            function showToast(message) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'bg-textMain text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl transform translate-y-10 opacity-0 transition-all duration-300 flex items-center gap-2 pointer-events-auto';
+                toast.innerHTML = `<span class="material-symbols-outlined text-green-400">check_circle</span> ${message}`;
+                
+                container.appendChild(toast);
+                
+                // Trigger animation
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-10', 'opacity-0');
+                }, 10);
+                
+                // Remove after delay
+                setTimeout(() => {
+                    toast.classList.add('translate-y-10', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+            </script>
+
             <!-- Accordions -->
-            <div class="mt-6">
-                <div x-data="{ open: false }" class="border-b border-gray-100">
-                    <button @click="open = !open" class="flex w-full items-center justify-between py-4 text-sm font-medium text-textMain">
-                        <span>Details & Care</span>
-                        <span class="material-symbols-outlined transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
+            <div class="mt-8 space-y-px bg-white border-t border-gray-100">
+                <!-- Description Accordion -->
+                <div x-data="{ open: true }" class="border-b border-gray-100">
+                    <button @click="open = !open" class="flex w-full items-center justify-between py-4 text-sm font-bold text-textMain uppercase tracking-widest">
+                        <span>Description</span>
+                        <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" class="pb-4 text-sm text-gray-600">
-                        <ul class="list-disc pl-4 space-y-1">
-                            <li>100% Premium Linen</li>
-                            <li>Machine wash cold, gentle cycle</li>
-                            <li>Do not bleach</li>
-                            <li>Hang to dry</li>
-                        </ul>
+                    <div x-show="open" x-collapse x-cloak class="pb-6 text-sm text-gray-500 font-light leading-relaxed italic">
+                        {{ $product->description }}
                     </div>
                 </div>
+
+                <!-- Details & Care Accordion -->
                 <div x-data="{ open: false }" class="border-b border-gray-100">
-                    <button @click="open = !open" class="flex w-full items-center justify-between py-4 text-sm font-medium text-textMain">
-                        <span>Shipping & Returns</span>
-                        <span class="material-symbols-outlined transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
+                    <button @click="open = !open" class="flex w-full items-center justify-between py-4 text-sm font-bold text-textMain uppercase tracking-widest">
+                        <span>Details & Care</span>
+                        <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" class="pb-4 text-sm text-gray-600">
-                        <p>Free shipping on all domestic orders over Rp 500.000. Returns accepted within 14 days of delivery.</p>
+                    <div x-show="open" x-collapse x-cloak class="pb-6 text-sm text-gray-500 font-light leading-relaxed">
+                        @if($product->details_and_care)
+                            {!! nl2br(e($product->details_and_care)) !!}
+                        @else
+                            <ul class="list-disc pl-4 space-y-1">
+                                <li>100% Premium Fabric</li>
+                                <li>Handle with care for longevity</li>
+                                <li>See label for detailed instructions</li>
+                            </ul>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Shipping & Returns Accordion -->
+                <div x-data="{ open: false }" class="border-b border-gray-100">
+                    <button @click="open = !open" class="flex w-full items-center justify-between py-4 text-sm font-bold text-textMain uppercase tracking-widest">
+                        <span>Shipping & Returns</span>
+                        <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div x-show="open" x-collapse x-cloak class="pb-6 text-sm text-gray-500 font-light leading-relaxed">
+                        <p>Free shipping on all domestic orders over Rp 500.000. Returns accepted within 14 days of delivery. Terms and conditions apply.</p>
                     </div>
                 </div>
             </div>

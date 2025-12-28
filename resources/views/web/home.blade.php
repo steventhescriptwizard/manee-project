@@ -9,9 +9,9 @@
              x-data="{ 
                 activeSlide: 0, 
                 slides: [
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCbsxAlEW3MhJQg1YK49Nau0qc_Nn0EOHwwnyuDNJeNpWbulFCuGIGT-XPkaHJueFIpL70tMgiEJtseI3IOqa6rrUUdw7cpQtFI0RzfWzWPApM6IQWWgEZ7h6z8eFxmCoh_kmmJMLhFWUDc4h8BXML1zj__No8A0FQGp0o1Wf9DV-uEAUTsaoDrLQLuEdRE5lm5635Hl0Iz_gOTPr2kcVEmSXAY6sCkj7qH3D1pmfP8hCVOdRVcH-H1bY8zkfos0wM_KtxsH60lAEs',
                     '{{ asset('images/hero.png') }}',
-                    '{{ asset('images/hero-1.png') }}'
+                    '{{ asset('images/hero-1.png') }}',
+                    'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop'
                 ],
                 next() { this.activeSlide = (this.activeSlide + 1) % this.slides.length },
                 prev() { this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length },
@@ -119,7 +119,7 @@
                 <!-- Best Sellers -->
                 <div x-show="activeTab === 'best_sellers'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-best_sellers">
                     @forelse($bestSellers as $prod)
-                        @include('web.partials.product-card', ['prod' => $prod])
+                        @include('web.partials.product-card', ['product' => $prod])
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No best sellers available yet.</div>
                     @endforelse
@@ -128,7 +128,7 @@
                 <!-- New Arrivals -->
                 <div x-show="activeTab === 'new_arrivals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-new_arrivals">
                     @forelse($newArrivals as $prod)
-                        @include('web.partials.product-card', ['prod' => $prod])
+                        @include('web.partials.product-card', ['product' => $prod])
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No new arrivals available yet.</div>
                     @endforelse
@@ -137,7 +137,7 @@
                 <!-- Sale -->
                 <div x-show="activeTab === 'sale'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-sale">
                     @forelse($saleProducts as $prod)
-                        @include('web.partials.product-card', ['prod' => $prod])
+                        @include('web.partials.product-card', ['product' => $prod])
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No products on sale available yet.</div>
                     @endforelse

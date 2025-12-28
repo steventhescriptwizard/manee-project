@@ -56,8 +56,8 @@
     <div class="max-w-7xl mx-auto px-6 pb-24 w-full">
         @if($products->count() > 0)
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-                @foreach($products as $prod)
-                    @include('web.partials.product-card', ['prod' => $prod])
+                @foreach($products as $product)
+                    @include('web.partials.product-card', ['product' => $product])
                 @endforeach
             </div>
 

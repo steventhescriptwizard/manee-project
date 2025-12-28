@@ -31,6 +31,12 @@
                     <textarea name="description" rows="4" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">{{ old('description') }}</textarea>
                     @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Details & Care</label>
+                    <textarea name="details_and_care" rows="4" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600" placeholder="e.g., 100% Cotton, Machine wash cold...">{{ old('details_and_care') }}</textarea>
+                    @error('details_and_care') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
             </div>
 
             <!-- Pricing & Inventory -->

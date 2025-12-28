@@ -48,13 +48,16 @@
                 <a href="{{ route('about') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
                    :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >About Maneé</a>
-                <a href="{{ route('categories.show', 'knitwear') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                <a href="{{ route('shop') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                   :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                >Shop</a>
+                <a href="{{ route('shop', ['category' => 'knitwear']) }}" class="text-sm font-medium transition-colors hover:text-blue-600"
                    :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >Knitwear</a>
-                <a href="{{ route('categories.show', 'tops') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                <a href="{{ route('shop', ['category' => 'tops']) }}" class="text-sm font-medium transition-colors hover:text-blue-600"
                    :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >Tops</a>
-                <a href="{{ route('categories.show', 'bottoms') }}" class="text-sm font-medium transition-colors hover:text-blue-600"
+                <a href="{{ route('shop', ['category' => 'bottoms']) }}" class="text-sm font-medium transition-colors hover:text-blue-600"
                    :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >Bottoms</a>
             </nav>
@@ -62,19 +65,21 @@
 
         <div class="flex items-center gap-4 md:gap-6">
             <!-- Search Bar -->
-            <div class="hidden md:flex items-center rounded-full px-4 py-1.5 transition-all"
-                 :class="{ 'bg-white/20 border border-white/30': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'bg-gray-100': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+            <form action="{{ route('shop') }}" method="GET" class="hidden md:flex items-center rounded-full px-4 py-1.5 transition-all"
+                  :class="{ 'bg-white/20 border border-white/30': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'bg-gray-100': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
             >
                 <span class="material-symbols-outlined text-[20px]"
                       :class="{ 'text-white/80': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-gray-500': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >search</span>
                 <input 
                     type="text" 
+                    name="search"
+                    value="{{ request('search') }}"
                     placeholder="Find products..." 
                     class="bg-transparent border-none outline-none text-sm w-32 ml-2 focus:ring-0 p-0 placeholder-current"
                     :class="{ 'text-white placeholder-white/70': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain placeholder-gray-400': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 />
-            </div>
+            </form>
 
             <button class="hidden md:block">
                 <span class="material-symbols-outlined text-[24px] cursor-pointer"
@@ -88,13 +93,32 @@
                 >Login</span>
             </a>
 
-            <a href="{{ route('cart') }}" class="relative flex items-center justify-center hover:opacity-80">
+            <a href="{{ route('wishlist') }}" 
+               x-data="{ count: {{ count(session()->get('wishlist', [])) }} }"
+               @wishlist-updated.window="count = $event.detail.count"
+               class="relative flex items-center justify-center hover:opacity-80">
+                <span class="material-symbols-outlined text-[24px] cursor-pointer"
+                      :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                >favorite</span>
+                <span x-show="count > 0"
+                      x-text="count"
+                      class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold"
+                      :class="{ 'bg-white text-black': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'bg-brandRed text-white': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                ></span>
+            </a>
+
+            <a href="{{ route('cart') }}" 
+               x-data="{ count: {{ count(session()->get('cart', [])) }} }"
+               @cart-updated.window="count = $event.detail.count"
+               class="relative flex items-center justify-center hover:opacity-80">
                 <span class="material-symbols-outlined text-[24px] cursor-pointer"
                       :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >shopping_bag</span>
-                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold"
+                <span x-show="count > 0"
+                      x-text="count"
+                      class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold"
                       :class="{ 'bg-white text-black': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'bg-blue-600 text-white': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >2</span>
+                ></span>
             </a>
         </div>
     </div>
@@ -109,12 +133,13 @@
          x-transition:leave-end="opacity-0 -translate-y-2"
          @click.away="mobileMenuOpen = false"
          class="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-lg py-4 px-6 flex flex-col gap-4 text-textMain z-50">
-           <a href="{{ route('home') }}" class="text-sm font-medium hover:text-blue-600">Home</a>
-           <a href="{{ route('about') }}" class="text-sm font-medium hover:text-blue-600">About Maneé</a>
-           <a href="{{ route('categories.show', 'knitwear') }}" class="text-sm font-medium hover:text-blue-600">Knitwear</a>
-           <a href="{{ route('categories.show', 'tops') }}" class="text-sm font-medium hover:text-blue-600">Tops</a>
-           <a href="{{ route('categories.show', 'bottoms') }}" class="text-sm font-medium hover:text-blue-600">Bottoms</a>
-           <hr class="border-gray-100">
-           <a href="{{ route('login') }}" class="text-sm font-medium hover:text-blue-600">Login</a>
+            <a href="{{ route('home') }}" class="text-sm font-medium hover:text-blue-600">Home</a>
+            <a href="{{ route('about') }}" class="text-sm font-medium hover:text-blue-600">About Maneé</a>
+            <a href="{{ route('shop') }}" class="text-sm font-medium hover:text-blue-600">Shop</a>
+            <a href="{{ route('shop', ['category' => 'knitwear']) }}" class="text-sm font-medium hover:text-blue-600">Knitwear</a>
+            <a href="{{ route('shop', ['category' => 'tops']) }}" class="text-sm font-medium hover:text-blue-600">Tops</a>
+            <a href="{{ route('shop', ['category' => 'bottoms']) }}" class="text-sm font-medium hover:text-blue-600">Bottoms</a>
+            <hr class="border-gray-100">
+            <a href="{{ route('login') }}" class="text-sm font-medium hover:text-blue-600">Login</a>
     </div>
 </header>

@@ -20,7 +20,9 @@ class StoreProductRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'image_main' => 'nullable|image|max:2048', // 2MB Max
             'product_gallery' => 'nullable|array',
-            'product_gallery.*' => 'image|max:2048',            'description' => 'nullable|string',
+            'product_gallery.*' => 'image|max:2048',
+            'description' => 'nullable|string',
+            'details_and_care' => 'nullable|string',
             'categories' => 'array',
             'categories.*' => 'exists:categories,id',
             'track_inventory' => 'boolean',

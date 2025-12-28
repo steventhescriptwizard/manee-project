@@ -7,10 +7,17 @@
     <!-- Page Heading -->
     <div class="mb-8 md:mb-12">
         <h2 class="font-serif text-4xl md:text-5xl font-bold text-textMain mb-2">Shopping Cart</h2>
-        <p class="text-gray-500 text-base font-light">You have 2 items in your cart.</p>
+        <p class="text-gray-500 text-base font-light" id="cart-item-count">
+            @if(count($cart) > 0)
+                You have {{ count($cart) }} {{ Str::plural('item', count($cart)) }} in your cart.
+            @else
+                Your cart is currently empty.
+            @endif
+        </p>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start">
+    @if(count($cart) > 0)
+    <div class="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start" id="cart-content">
         <!-- Cart Items -->
         <div class="w-full lg:flex-1">
             <div class="hidden md:grid grid-cols-12 gap-4 border-b border-gray-200 pb-3 mb-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -20,61 +27,51 @@
                 <div class="col-span-2 text-right">Total</div>
             </div>
 
-            <!-- Item 1 -->
-            <div class="group relative flex flex-col md:grid md:grid-cols-12 gap-4 py-6 border-b border-gray-100 items-center">
+            @foreach($cart as $key => $item)
+            <!-- Item -->
+            <div class="group relative flex flex-col md:grid md:grid-cols-12 gap-4 py-6 border-b border-gray-100 items-center cart-item" data-id="{{ $key }}">
                 <div class="col-span-6 flex gap-4 w-full">
                     <div class="relative w-24 h-32 md:w-28 md:h-36 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                        <img alt="Product" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9WD5L-06GMlWbzMFwmawuRP5VcqNUcV7orB9WKOwSJZ9ZRPle98xt47NB3jt5nmpIVK-DH5m7a9Q4XozkBKdTQ-PGWkwLuAeLFgVwJEl6wIJ90Aky8yIoSuGbieQAUMVFc9tsdSzByC_DOIfpG3zTxZ8hdD5nfE2t08Ht3rkBajYIIVhUEumCGGd81FOg1KD4JTG9GLT9-_-91TwyxrrzRFHbugywEi3__xjE6xzpbTKUyEI7Hi03kuB4tzlo_OtykzfOVvjsZ_E"/>
+                        <img alt="{{ $item['name'] }}" class="w-full h-full object-cover" src="{{ $item['image'] ? Storage::url($item['image']) : 'https://via.placeholder.com/200x300' }}"/>
                     </div>
                     <div class="flex flex-col justify-center">
-                        <h3 class="font-serif text-xl font-semibold text-textMain mb-1">Maneé Classic Linen Shirt</h3>
-                        <p class="text-xs text-gray-500 mb-1">Color: Natural White</p>
-                        <p class="text-xs text-gray-500">Size: M</p>
-                        <div class="md:hidden mt-2 text-sm font-bold text-textMain">Rp 299.000</div>
+                        <h3 class="font-serif text-xl font-semibold text-textMain mb-1">{{ $item['name'] }}</h3>
+                        @if($item['color']) <p class="text-xs text-gray-500 mb-1">Color: {{ $item['color'] }}</p> @endif
+                        @if($item['size']) <p class="text-xs text-gray-500">Size: {{ $item['size'] }}</p> @endif
+                        <div class="md:hidden mt-2 text-sm font-bold text-textMain">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
                     </div>
                 </div>
-                <div class="hidden md:block col-span-2 text-center text-gray-600">Rp 299.000</div>
+                <div class="hidden md:block col-span-2 text-center text-gray-600">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
                 <div class="col-span-12 md:col-span-2 flex justify-start md:justify-center mt-2 md:mt-0">
                     <div class="flex items-center border border-gray-200 rounded-lg h-9 bg-white">
-                        <button class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain"><span class="material-symbols-outlined text-[16px]">remove</span></button>
-                        <input class="w-10 h-full text-center border-none text-sm font-medium p-0" readonly type="text" value="1"/>
-                        <button class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain"><span class="material-symbols-outlined text-[16px]">add</span></button>
+                        <button onclick="updateQuantity('{{ $key }}', -1)" class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain">
+                            <span class="material-symbols-outlined text-[16px]">remove</span>
+                        </button>
+                        <input class="w-10 h-full text-center border-none text-sm font-medium p-0 quantity-input" readonly type="text" value="{{ $item['quantity'] }}"/>
+                        <button onclick="updateQuantity('{{ $key }}', 1)" class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                        </button>
                     </div>
                 </div>
-                <div class="hidden md:block col-span-2 text-right font-bold text-textMain">Rp 299.000</div>
-                <button class="absolute top-6 right-0 text-gray-300 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+                <div class="hidden md:block col-span-2 text-right font-bold text-textMain item-total">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
+                <button onclick="removeItem('{{ $key }}')" class="absolute top-6 right-0 text-gray-300 hover:text-red-500 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
             </div>
+            @endforeach
 
-            <!-- Item 2 -->
-            <div class="group relative flex flex-col md:grid md:grid-cols-12 gap-4 py-6 border-b border-gray-100 items-center">
-                <div class="col-span-6 flex gap-4 w-full">
-                    <div class="relative w-24 h-32 md:w-28 md:h-36 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                        <img alt="Product" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBdqwjIjQuWcCEX2ULDtBXsCeWbrBUmgkpHwz4vx3rSchzDR05gWN-QjMSdd1FeSE2s7mRFDemBCBeWcQMzTKUn0m-qff4s0dgMJD4KoJCmLaLGPWBiXLHrujIoao8B4E2sI0R8HAtjZSVdwIsm7sQDYGNWZeaOxBYafeLfiyVq2f2RzZWNBvJeM04hO6sazY1EB2zjSIEX3jQUYaQDnnBsMwfbDcChJWwSxy2vJFaXzQU-rDn8wegiN_MCfRDjR1AJfk509uWzrY"/>
-                    </div>
-                    <div class="flex flex-col justify-center">
-                        <h3 class="font-serif text-xl font-semibold text-textMain mb-1">Silk Midi Skirt</h3>
-                        <p class="text-xs text-gray-500 mb-1">Color: Champagne</p>
-                        <p class="text-xs text-gray-500">Size: S</p>
-                        <div class="md:hidden mt-2 text-sm font-bold text-textMain">Rp 349.000</div>
-                    </div>
-                </div>
-                <div class="hidden md:block col-span-2 text-center text-gray-600">Rp 349.000</div>
-                <div class="col-span-12 md:col-span-2 flex justify-start md:justify-center mt-2 md:mt-0">
-                    <div class="flex items-center border border-gray-200 rounded-lg h-9 bg-white">
-                        <button class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain"><span class="material-symbols-outlined text-[16px]">remove</span></button>
-                        <input class="w-10 h-full text-center border-none text-sm font-medium p-0" readonly type="text" value="1"/>
-                        <button class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain"><span class="material-symbols-outlined text-[16px]">add</span></button>
-                    </div>
-                </div>
-                <div class="hidden md:block col-span-2 text-right font-bold text-textMain">Rp 349.000</div>
-                <button class="absolute top-6 right-0 text-gray-300 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-[20px]">delete</span></button>
-            </div>
-
-            <div class="mt-8">
+            <div class="mt-8 flex justify-between items-center">
                 <a class="inline-flex items-center gap-2 text-sm font-medium text-textMain hover:text-brandBlue transition-colors group" href="{{ route('home') }}">
                     <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
                     Continue Shopping
                 </a>
+                <form action="{{ route('cart.clear') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="text-xs text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 uppercase tracking-widest font-bold">
+                        <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+                        Clear Cart
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -85,7 +82,7 @@
                 <div class="space-y-4 mb-6 border-b border-gray-200 pb-6">
                     <div class="flex justify-between items-center text-gray-500">
                         <span class="text-sm">Subtotal</span>
-                        <span class="font-medium text-textMain">Rp 648.000</span>
+                        <span class="font-medium text-textMain" id="cart-subtotal">Rp {{ number_format($total, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center text-gray-500">
                         <span class="text-sm">Shipping</span>
@@ -102,7 +99,7 @@
                 <div class="flex justify-between items-center mb-8">
                     <span class="font-serif text-xl font-bold text-textMain">Total</span>
                     <div class="flex flex-col items-end">
-                        <span class="font-serif text-2xl font-bold text-textMain">Rp 648.000</span>
+                        <span class="font-serif text-2xl font-bold text-textMain" id="cart-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         <span class="text-[10px] text-gray-400">Including VAT</span>
                     </div>
                 </div>
@@ -127,5 +124,67 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="text-center py-24 bg-[#f8f9fc] rounded-3xl border border-dashed border-gray-200">
+        <div class="inline-flex items-center justify-center h-24 w-24 bg-white rounded-full shadow-sm mb-6">
+            <span class="material-symbols-outlined text-4xl text-gray-300">shopping_bag</span>
+        </div>
+        <h3 class="text-2xl font-serif font-bold text-textMain mb-2">Your cart is empty</h3>
+        <p class="text-gray-500 mb-10 max-w-md mx-auto font-light">Looks like you haven't added anything to your cart yet. Explore our latest collection and find something you love.</p>
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 bg-brandBlue hover:bg-brandBlue/90 text-white px-8 py-4 rounded-lg font-bold text-sm tracking-widest uppercase transition-all shadow-md">
+            Start Shopping
+            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </a>
+    </div>
+    @endif
+</main>
+
+<script>
+async function updateQuantity(key, delta) {
+    const itemRow = document.querySelector(`.cart-item[data-id="${key}"]`);
+    const input = itemRow.querySelector('.quantity-input');
+    let newQty = parseInt(input.value) + delta;
+    
+    if (newQty < 1) return;
+
+    try {
+        const response = await fetch('{{ route("cart.update") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ id: key, quantity: newQty })
+        });
+
+        if (response.ok) {
+            location.reload(); // Simple reload for now, can be optimized later
+        }
+    } catch (error) {
+        console.error('Error updating quantity:', error);
+    }
+}
+
+async function removeItem(key) {
+    if (!confirm('Remove this item from cart?')) return;
+
+    try {
+        const response = await fetch('{{ route("cart.remove") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ id: key })
+        });
+
+        if (response.ok) {
+            location.reload();
+        }
+    } catch (error) {
+        console.error('Error removing item:', error);
+    }
+}
+</script>
 </main>
 @endsection

@@ -11,9 +11,20 @@ Route::get('/about', function () {
     return view('web.about');
 })->name('about');
 
-Route::get('/cart', function () {
-    return view('web.cart');
-})->name('cart');
+use App\Http\Controllers\Web\CartController;
+use App\Http\Controllers\Web\ShopController;
+use App\Http\Controllers\Web\WishlistController;
+
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wishlist.remove');
+
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 Route::get('/checkout', function () {
     return view('web.checkout');

@@ -15,6 +15,7 @@ class Product extends Model
         'barcode',
         'price',
         'description',
+        'details_and_care',
         'image_main',
         'track_inventory',
         'weight',

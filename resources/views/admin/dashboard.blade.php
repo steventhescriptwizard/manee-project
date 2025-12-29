@@ -8,21 +8,21 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @include('components.admin.stats-card', [
             'title' => 'Total Revenue',
-            'value' => '$12,450',
+            'value' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
             'icon' => 'payments',
-            'trend' => 12,
-            'trendLabel' => 'vs last week',
+            'trend' => round($revenueTrend, 1),
+            'trendLabel' => 'vs last month',
             'iconColorClass' => 'text-blue-600',
             'iconBgClass' => 'bg-blue-50 dark:bg-blue-900/30',
-            'trendPositive' => true
+            'trendPositive' => $revenueTrend >= 0
         ])
 
         @include('components.admin.stats-card', [
-            'title' => 'New Orders',
-            'value' => '45',
+            'title' => 'New Orders Today',
+            'value' => $newOrdersCount,
             'icon' => 'shopping_cart',
-            'trend' => 5,
-            'trendLabel' => 'vs last week',
+            'trend' => 0,
+            'trendLabel' => 'today',
             'iconColorClass' => 'text-purple-600',
             'iconBgClass' => 'bg-purple-100 dark:bg-purple-900/30',
             'trendPositive' => true
@@ -30,10 +30,10 @@
 
         @include('components.admin.stats-card', [
             'title' => 'Pending Shipments',
-            'value' => '12',
+            'value' => $pendingShipments,
             'icon' => 'local_shipping',
-            'trend' => 2,
-            'trendLabel' => 'vs last week',
+            'trend' => 0,
+            'trendLabel' => 'active',
             'iconColorClass' => 'text-orange-600',
             'iconBgClass' => 'bg-orange-100 dark:bg-orange-900/30',
             'trendPositive' => false
@@ -41,24 +41,23 @@
 
         @include('components.admin.stats-card', [
             'title' => 'Low Stock Items',
-            'value' => '5',
+            'value' => $lowStockItems,
             'icon' => 'warning',
             'trend' => 0,
-            'trendLabel' => 'vs last week',
+            'trendLabel' => 'critical',
             'iconColorClass' => 'text-red-600',
             'iconBgClass' => 'bg-red-100 dark:bg-red-900/30',
             'trendPositive' => false
         ])
     </section>
 
-    <!-- Placeholder for Charts & Tables -->
     <!-- Charts & Best Sellers -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        @include('components.admin.revenue-chart')
-        @include('components.admin.top-products')
+        @include('components.admin.revenue-chart', ['revenueData' => $revenueData])
+        @include('components.admin.top-products', ['topProducts' => $topProducts])
     </div>
 
     <!-- Recent Orders -->
-    @include('components.admin.recent-orders')
+    @include('components.admin.recent-orders', ['recentOrders' => $recentOrders])
 </div>
 @endsection

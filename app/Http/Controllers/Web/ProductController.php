@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function show($id)
     {
-        $product = Product::with(['categories', 'images', 'variants', 'variants.stocks'])->findOrFail($id);
+        $product = Product::with(['categories', 'images', 'variants', 'variants.stocks', 'reviews.user', 'reviews.images'])->findOrFail($id);
         
         // Extract unique colors and sizes from variants
         $colors = $product->variants->pluck('color')->filter()->unique();

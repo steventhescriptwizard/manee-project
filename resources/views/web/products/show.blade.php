@@ -14,12 +14,12 @@
         <span class="font-medium text-textMain">{{ $product->product_name }}</span>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
         <!-- Image Gallery -->
-        <div class="lg:col-span-7" x-data="{ activeImage: '{{ $product->image_main ? Storage::url($product->image_main) : 'https://via.placeholder.com/600x800' }}' }">
+        <div class="lg:col-span-6" x-data="{ activeImage: '{{ $product->image_main ? Storage::url($product->image_main) : 'https://via.placeholder.com/600x800' }}' }">
             <div class="flex flex-col gap-6">
                 <!-- Main Image -->
-                <div class="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
+                <div class="relative aspect-[4/5] w-full max-w-xl mx-auto overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
                     <div class="h-full w-full bg-cover bg-center transition-all duration-700" :style="'background-image: url(' + activeImage + ');'"></div>
                     <button class="absolute bottom-6 right-6 rounded-full bg-white/90 backdrop-blur-md p-3 text-gray-900 shadow-lg hover:bg-white transition-all transform hover:scale-110">
                         <span class="material-symbols-outlined text-2xl">zoom_in</span>
@@ -54,7 +54,7 @@
         </div>
 
         <!-- Product Info -->
-        <div class="lg:col-span-5 flex flex-col pt-2 lg:pt-0">
+        <div class="lg:col-span-6 flex flex-col pt-2 lg:pt-0">
             <div class="border-b border-gray-100 pb-8">
                 <h1 class="font-serif text-4xl lg:text-5xl font-bold leading-tight text-textMain uppercase tracking-tighter">{{ $product->product_name }}</h1>
                 <div class="mt-4 flex flex-col gap-2">
@@ -155,25 +155,34 @@
                             <span class="material-symbols-outlined text-sm">straighten</span> Size Guide
                         </button>
                     </div>
-                    <div class="grid grid-cols-4 gap-4">
-                        @foreach($sizes as $size)
-                        <button @click="isSizeAvailable('{{ $size }}') ? selectedSize = '{{ $size }}' : null"
-                                class="flex h-14 items-center justify-center rounded-xl border-2 text-sm font-bold transition-all relative"
-                                :class="{
-                                    'border-brandBlue bg-brandBlue/5 text-textMain shadow-inner': selectedSize === '{{ $size }}',
-                                    'border-gray-100 text-gray-400 hover:border-gray-300': selectedSize !== '{{ $size }}' && isSizeAvailable('{{ $size }}'),
-                                    'border-gray-50 text-gray-200 cursor-not-allowed opacity-40': !isSizeAvailable('{{ $size }}')
-                                }"
-                                :disabled="!isSizeAvailable('{{ $size }}')">
-                            {{ $size }}
-                            <template x-if="!isSizeAvailable('{{ $size }}')">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-full h-[1px] bg-gray-300 rotate-45"></div>
-                                </div>
-                            </template>
-                        </button>
-                        @endforeach
-                    </div>
+                    
+                    @if($sizes->count() === 1 && strtolower($sizes->first()) === 'all size')
+                        <div class="flex">
+                            <div class="flex h-14 min-w-[120px] px-6 items-center justify-center rounded-xl border-2 border-brandBlue bg-brandBlue/5 text-textMain shadow-inner text-sm font-bold">
+                                {{ $sizes->first() }}
+                            </div>
+                        </div>
+                    @else
+                        <div class="grid grid-cols-4 gap-4">
+                            @foreach($sizes as $size)
+                            <button @click="isSizeAvailable('{{ $size }}') ? selectedSize = '{{ $size }}' : null"
+                                    class="flex h-14 items-center justify-center rounded-xl border-2 text-sm font-bold transition-all relative"
+                                    :class="{
+                                        'border-brandBlue bg-brandBlue/5 text-textMain shadow-inner': selectedSize === '{{ $size }}',
+                                        'border-gray-100 text-gray-400 hover:border-gray-300': selectedSize !== '{{ $size }}' && isSizeAvailable('{{ $size }}'),
+                                        'border-gray-50 text-gray-200 cursor-not-allowed opacity-40': !isSizeAvailable('{{ $size }}')
+                                    }"
+                                    :disabled="!isSizeAvailable('{{ $size }}')">
+                                {{ $size }}
+                                <template x-if="!isSizeAvailable('{{ $size }}')">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-full h-[1px] bg-gray-300 rotate-45"></div>
+                                    </div>
+                                </template>
+                            </button>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
                 @endif
 
@@ -213,11 +222,11 @@
                             })
                         "
                         class="h-14 w-14 rounded-lg border border-gray-200 flex items-center justify-center transition-all hover:bg-gray-50 active:scale-95"
-                        :class="isWishlisted ? 'text-brandRed border-brandRed/20 bg-brandRed/5' : 'text-gray-400'"
+                        :class="isWishlisted ? 'text-brandBlue border-brandBlue/20 bg-brandBlue/5' : 'text-gray-400'"
                     >
                         <span class="material-symbols-outlined transition-all"
                               :class="{ 'fill-1 font-bold': isWishlisted }">
-                            favorite
+                            bookmark
                         </span>
                     </button>
                 </div>
@@ -301,74 +310,116 @@
                 <h2 class="font-serif text-2xl lg:text-3xl font-bold text-textMain mb-6">Customer Reviews</h2>
                 <div class="mb-10 flex items-center gap-4">
                     <div class="flex items-center gap-2">
-                        <span class="text-5xl font-serif font-bold text-textMain">4.8</span>
+                        <span class="text-5xl font-serif font-bold text-textMain">{{ number_format($product->average_rating, 1) }}</span>
                         <div class="flex flex-col">
                             <div class="flex text-amber-400 text-sm">
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current opacity-50">star_half</span>
+                                @for($i = 1; $i <= 5; $i++)
+                                    <span class="material-symbols-outlined text-[20px] {{ $i <= $product->average_rating ? 'fill-1' : '' }}">star</span>
+                                @endfor
                             </div>
-                            <span class="text-xs text-gray-500 mt-1">Based on 128 reviews</span>
+                            <span class="text-xs text-gray-500 mt-1 italic font-medium">Based on {{ $product->review_count }} reviews</span>
                         </div>
                     </div>
                 </div>
-                <div class="rounded-lg border border-gray-100 bg-gray-50 p-6">
-                    <h3 class="font-serif text-lg font-bold text-textMain mb-4">Write a Review</h3>
-                    <form class="space-y-4">
+                <div class="rounded-2xl border border-gray-100 bg-gray-50 p-8 shadow-sm">
+                    <h3 class="font-serif text-xl font-bold text-textMain mb-6">Write a Review</h3>
+                    @auth
+                    <form action="{{ route('reviews.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1">Rating</label>
-                            <div class="flex gap-1 text-gray-300">
-                                @for($i = 0; $i < 5; $i++)
-                                <button class="hover:text-amber-400" type="button"><span class="material-symbols-outlined fill-current">star</span></button>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Rating</label>
+                            <div class="flex gap-1" x-data="{ rating: 5 }">
+                                <input type="hidden" name="rating" :value="rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                <button type="button" @click="rating = {{ $i }}" class="text-gray-300 hover:text-amber-400" :class="rating >= {{ $i }} ? 'text-amber-400' : ''">
+                                    <span class="material-symbols-outlined text-2xl fill-1" x-show="rating >= {{ $i }}">star</span>
+                                    <span class="material-symbols-outlined text-2xl" x-show="rating < {{ $i }}">star</span>
+                                </button>
                                 @endfor
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1" for="name">Name</label>
-                            <input class="w-full rounded border-gray-200 bg-white px-3 py-2 text-sm focus:border-brandBlue focus:ring-brandBlue" id="name" placeholder="Your name" type="text"/>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Title</label>
+                            <input class="w-full rounded-xl border-gray-200 bg-white px-4 py-2.5 text-sm focus:border-brandBlue focus:ring-brandBlue font-medium" name="title" placeholder="Summary of your review" type="text"/>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1" for="review">Review</label>
-                            <textarea class="w-full rounded border-gray-200 bg-white px-3 py-2 text-sm focus:border-brandBlue focus:ring-brandBlue" id="review" placeholder="How was the product?" rows="3"></textarea>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Review</label>
+                            <textarea class="w-full rounded-xl border-gray-200 bg-white px-4 py-2.5 text-sm focus:border-brandBlue focus:ring-brandBlue font-medium" name="content" required placeholder="Tell us about the quality, fit, etc." rows="3"></textarea>
                         </div>
-                        <button class="w-full rounded bg-brandBlue px-4 py-2.5 text-sm font-bold text-white hover:bg-brandBlue/90 transition-colors uppercase" type="button">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Photos</label>
+                            <input type="file" name="images[]" multiple class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-white file:text-gray-700 hover:file:bg-gray-100 shadow-sm">
+                        </div>
+                        <button class="w-full rounded-xl bg-brandBlue py-3 text-sm font-bold text-white hover:bg-black transition-all uppercase tracking-widest shadow-lg shadow-brandBlue/20" type="submit">
                             Submit Review
                         </button>
                     </form>
+                    @else
+                    <div class="text-center py-4">
+                        <p class="text-sm text-gray-500 mb-4 italic font-light">Please log in to write a review.</p>
+                        <a href="{{ route('login') }}" class="inline-block bg-brandBlue text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-black transition-all">Login Now</a>
+                    </div>
+                    @endauth
                 </div>
             </div>
             <div class="lg:col-span-8 pt-2 lg:pt-14">
-                <div class="space-y-8">
-                    @foreach(['Sarah Jenkins', 'Michelle A.', 'Dian Larasati'] as $reviewer)
-                    <div class="border-b border-gray-100 pb-8">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm">
-                                    {{ substr($reviewer, 0, 1) }}{{ strpos($reviewer, ' ') !== false ? substr($reviewer, strpos($reviewer, ' ') + 1, 1) : 'A' }}
+                <div class="space-y-10">
+                    @forelse($product->reviews->take(3) as $review)
+                    <div class="border-b border-gray-100 pb-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="h-12 w-12 rounded-full bg-brandCream border border-gray-100 flex items-center justify-center text-brandBlue font-bold text-lg shadow-sm">
+                                    {{ str($review->user->name)->substr(0, 1)->upper() }}
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-textMain">{{ $reviewer }}</h4>
-                                    <div class="flex items-center gap-2 text-xs text-gray-500">
-                                        <span>2 days ago</span>
-                                        <span>•</span>
-                                        <span>Ordered Size M</span>
+                                    <div class="flex items-center gap-3">
+                                        <h4 class="text-base font-bold text-textMain">{{ $review->user->name }}</h4>
+                                        @if($review->is_verified)
+                                        <span class="text-[9px] font-bold uppercase tracking-widest text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">Verified</span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs text-gray-500 mt-1 italic">
+                                        <span>{{ $review->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex text-amber-400">
-                                @for($i = 0; $i < 5; $i++)
-                                <span class="material-symbols-outlined text-[16px] fill-current">star</span>
+                                @for($i = 1; $i <= 5; $i++)
+                                <span class="material-symbols-outlined text-[18px] {{ $i <= $review->rating ? 'fill-1' : '' }}">star</span>
                                 @endfor
                             </div>
                         </div>
-                        <p class="text-sm leading-relaxed text-gray-600 mt-3">
-                            Absolutely love this shirt! The linen quality is fantastic, very soft and breathable. It fits perfectly, slightly oversized as described. The sage green color is exactly like the photos. Highly recommend for anyone looking for a versatile summer piece.
+                        <p class="text-sm leading-relaxed text-gray-600 font-light italic">
+                            "{{ $review->content }}"
                         </p>
+                        @if($review->images->count() > 0)
+                        <div class="flex gap-3 mt-4">
+                            @foreach($review->images as $img)
+                            <div class="h-20 w-20 rounded-xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
+                                <img src="{{ Storage::url($img->image_path) }}" class="w-full h-full object-cover">
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="py-16 text-center bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                        <p class="text-gray-500 font-serif italic text-lg opacity-60">No reviews yet for this piece. Be the first to share your thoughts.</p>
+                    </div>
+                    @endforelse
                 </div>
+                @if($product->review_count > 3)
+                <div class="mt-12 text-center">
+                    <a href="{{ route('reviews.index', ['filter' => 'all', 'sort' => 'newest']) }}" class="inline-flex items-center gap-3 text-sm font-bold text-textMain hover:text-brandBlue transition-all uppercase tracking-widest group">
+                        <span>View all {{ $product->review_count }} reviews</span>
+                        <span class="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                    </a>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
                 <div class="mt-10 text-center">
                     <button class="inline-flex items-center gap-2 text-sm font-medium text-textMain hover:text-brandBlue transition-colors">
                         <span>View all 128 reviews</span>

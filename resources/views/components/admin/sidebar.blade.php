@@ -1,4 +1,20 @@
-<aside class="w-64 bg-white dark:bg-gray-900 border-r border-slate-200 dark:border-gray-800 flex flex-col flex-shrink-0 z-20 transition-all duration-300 hidden md:flex h-full">
+<!-- Mobile Sidebar Overlay -->
+<div 
+    x-show="sidebarOpen" 
+    x-transition:enter="transition-opacity ease-linear duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-linear duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden"
+    @click="sidebarOpen = false"
+></div>
+
+<aside 
+    :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 border-r border-slate-200 dark:border-gray-800 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:flex h-full"
+>
     <!-- Brand -->
     <div class="p-6 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -11,19 +27,29 @@
                 <p class="text-slate-500 dark:text-slate-400 text-xs font-normal mt-1">Store Manager</p>
             </div>
         </div>
+        
+        <!-- Close Button (Mobile Only) -->
+        <button 
+            @click="sidebarOpen = false"
+            class="md:hidden text-slate-500 hover:text-slate-900 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-800"
+        >
+            <span class="material-symbols-outlined">close</span>
+        </button>
     </div>
 
     <!-- Nav Items -->
     <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
         @php
             $navItems = [
-                ['icon' => 'dashboard', 'label' => 'Dashboard', 'route' => '#', 'active' => true],
-                ['icon' => 'shopping_bag', 'label' => 'Orders', 'route' => '#', 'active' => false],
+                ['icon' => 'dashboard', 'label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+                ['icon' => 'shopping_bag', 'label' => 'Orders', 'route' => route('admin.orders.index'), 'active' => request()->routeIs('admin.orders.*')],
                 ['icon' => 'checkroom', 'label' => 'Products', 'route' => route('admin.products.index'), 'active' => request()->routeIs('admin.products.*')],
                 ['icon' => 'category', 'label' => 'Categories', 'route' => route('admin.categories.index'), 'active' => request()->routeIs('admin.categories.*')],
                 ['icon' => 'warehouse', 'label' => 'Warehouses', 'route' => route('admin.warehouses.index'), 'active' => request()->routeIs('admin.warehouses.*')],
                 ['icon' => 'percent', 'label' => 'Discounts', 'route' => route('admin.discounts.index'), 'active' => request()->routeIs('admin.discounts.*')],
-                ['icon' => 'group', 'label' => 'Customers', 'route' => '#', 'active' => false],
+                ['icon' => 'rate_review', 'label' => 'Reviews', 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
+                ['icon' => 'group', 'label' => 'Pelanggan', 'route' => route('admin.customers.index'), 'active' => request()->routeIs('admin.customers.*')],
+                ['icon' => 'admin_panel_settings', 'label' => 'Manajemen User', 'route' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
                 ['icon' => 'inventory_2', 'label' => 'Inventory', 'route' => route('admin.inventory.index'), 'active' => request()->routeIs('admin.inventory.*')],
                 ['icon' => 'campaign', 'label' => 'Marketing', 'route' => '#', 'active' => false],
                 ['icon' => 'settings', 'label' => 'Settings', 'route' => '#', 'active' => false],
@@ -56,18 +82,4 @@
             </a>
         @endforeach
     </nav>
-
-    <!-- Pro Plan Card -->
-    <div class="p-4 border-t border-slate-200 dark:border-gray-800">
-        <div class="bg-blue-50/50 rounded-lg p-4 flex flex-col gap-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-blue-600 uppercase">Pro Plan</span>
-                <span class="material-symbols-outlined text-blue-600 text-sm">verified</span>
-            </div>
-            <div class="w-full bg-slate-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-blue-600 w-3/4 h-full rounded-full"></div>
-            </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400">850/1000 orders this month</p>
-        </div>
-    </div>
 </aside>

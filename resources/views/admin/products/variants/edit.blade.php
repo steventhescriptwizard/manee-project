@@ -25,7 +25,14 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Size</label>
-                    <input type="text" name="size" value="{{ old('size', $variant->size) }}" placeholder="e.g. S, M, L, XL" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
+                    <input type="text" name="size" id="size_input" value="{{ old('size', $variant->size) }}" placeholder="e.g. S, M, L, XL" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        @foreach(['S', 'M', 'L', 'XL', 'All Size'] as $quickSize)
+                        <button type="button" onclick="document.getElementById('size_input').value = '{{ $quickSize }}'" class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-gray-800 text-slate-600 dark:text-slate-400 rounded hover:bg-blue-600 hover:text-white transition-colors">
+                            {{ $quickSize }}
+                        </button>
+                        @endforeach
+                    </div>
                     @error('size') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>

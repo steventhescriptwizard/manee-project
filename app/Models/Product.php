@@ -45,8 +45,18 @@ class Product extends Model
         return $this->hasMany(Stock::class);
     }
 
-    public function discounts()
+    public function reviews()
     {
-        return $this->belongsToMany(Discount::class, 'discount_products');
+        return $this->hasMany(Review::class)->where('is_published', true);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?: 0;
+    }
+
+    public function getReviewCountAttribute()
+    {
+        return $this->reviews()->count();
     }
 }

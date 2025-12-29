@@ -26,19 +26,26 @@ Route::post('/cart/update', [CartController::class, 'update'])->name('cart.updat
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
-Route::get('/checkout', function () {
-    return view('web.checkout');
-})->name('checkout');
+use App\Http\Controllers\Web\CheckoutController;
 
-Route::get('/order/success', function () {
-    return view('web.order-success');
-})->name('order.success');
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/order/success', function () {
+        if (!session('order_number')) return redirect()->route('home');
+        return view('web.order-success');
+    })->name('order.success');
+});
 
 use App\Http\Controllers\Web\ProductController;
 
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
 
 Route::get('/category/{slug}', [App\Http\Controllers\Web\CategoryController::class, 'show'])->name('categories.show');
+
+use App\Http\Controllers\Web\ReviewController;
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
@@ -52,10 +59,27 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+use App\Http\Controllers\Web\Customer\DashboardController as CustomerDashboardController;
+
+use App\Http\Controllers\Web\Customer\AddressController as CustomerAddressController;
+
+Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
+    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/orders', [CustomerDashboardController::class, 'orders'])->name('orders');
+    Route::get('/orders/{id}', [CustomerDashboardController::class, 'showOrder'])->name('orders.show');
+    
+    // Address CRUD
+    Route::get('/address', [CustomerAddressController::class, 'index'])->name('address');
+    Route::post('/address', [CustomerAddressController::class, 'store'])->name('address.store');
+    Route::put('/address/{address}', [CustomerAddressController::class, 'update'])->name('address.update');
+    Route::delete('/address/{address}', [CustomerAddressController::class, 'destroy'])->name('address.destroy');
+    Route::patch('/address/{address}/set-primary', [CustomerAddressController::class, 'setPrimary'])->name('address.set-primary');
+    
+    Route::get('/payment', [CustomerDashboardController::class, 'payments'])->name('payment');
+});
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
     Route::delete('products/{product}/images/{image}', [App\Http\Controllers\Admin\ProductController::class, 'destroyImage'])->name('products.images.destroy');
@@ -63,6 +87,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('warehouses', App\Http\Controllers\Admin\WarehouseController::class);
     Route::resource('discounts', App\Http\Controllers\Admin\DiscountController::class);
+    Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'update', 'destroy']);
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    Route::resource('customers', App\Http\Controllers\Admin\CustomerController::class);
+    Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
     Route::get('/inventory', [App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
+    Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
 });
 

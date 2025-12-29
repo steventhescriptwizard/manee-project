@@ -3,47 +3,54 @@
 @section('title', 'Order Confirmed - Maneé')
 
 @section('content')
-<main class="flex-grow container mx-auto px-6 py-12 lg:py-20 mt-20">
-    <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 shadow-sm border border-gray-50 rounded-sm text-center">
-        <div class="w-16 h-16 bg-brandLightBlue/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span class="material-symbols-outlined text-3xl text-textMain">check</span>
+<main class="flex-grow container mx-auto px-6 py-12 lg:py-20 mt-20 animate-fade-in">
+    <div class="max-w-4xl mx-auto bg-white p-8 md:p-16 shadow-2xl border border-gray-100 rounded-[3rem] text-center relative overflow-hidden">
+        {{-- Decorative element --}}
+        <div class="absolute -top-20 -right-20 size-64 bg-brandBlue/5 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-20 -left-20 size-64 bg-brandBlue/5 rounded-full blur-3xl"></div>
+
+        <div class="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-green-500 shadow-lg shadow-green-100 relative z-10">
+            <span class="material-symbols-outlined text-4xl">check_circle</span>
         </div>
         
-        <h1 class="text-4xl md:text-5xl font-serif italic font-medium text-textMain mb-4 leading-tight">
-            Order Placed Successfully!
+        <h1 class="text-4xl md:text-5xl font-serif italic font-bold text-[#111318] mb-6 leading-tight relative z-10">
+            Terima Kasih Atas<br>Pesanan Anda!
         </h1>
-        <p class="text-gray-500 font-light text-lg max-w-lg mx-auto mb-12">
-            Thank you for shopping at Maneé. A confirmation email with your order details has been sent to your inbox.
+        <p class="text-gray-400 font-light text-lg max-w-lg mx-auto mb-12 italic relative z-10">
+            Pesanan Anda telah kami terima dan sedang diproses. Kami telah mengirimkan detail konfirmasi ke email Anda.
         </p>
 
-        <div class="bg-brandCream p-8 rounded-lg mb-12 flex flex-col md:flex-row justify-between items-center gap-8 border-l-4 border-brandBlue/20">
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-12 text-left w-full">
-                <div>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Order Number</p>
-                    <p class="font-medium text-lg text-textMain">#MN-8823</p>
+        <div class="bg-gray-50 p-10 rounded-[2.5rem] mb-12 relative z-10 border border-gray-100 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
+                <div class="border-b md:border-b-0 md:border-r border-gray-200 pb-6 md:pb-0 md:pr-6">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-3 font-bold">Nomor Pesanan</p>
+                    <p class="font-bold text-2xl text-[#111318] italic font-serif">#{{ session('order_number') }}</p>
+                </div>
+                <div class="border-b md:border-b-0 md:border-r border-gray-200 pb-6 md:pb-0 md:pr-6">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-3 font-bold">Tanggal</p>
+                    <p class="font-bold text-xl text-[#111318] italic font-serif">{{ now()->format('d M Y') }}</p>
                 </div>
                 <div>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Date</p>
-                    <p class="font-medium text-lg text-textMain">{{ now()->format('d M Y') }}</p>
-                </div>
-                <div>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Total Amout</p>
-                    <p class="font-medium text-lg text-brandRed">Rp 899.000</p>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-3 font-bold">Estimasi Tiba</p>
+                    <p class="font-bold text-xl text-brandBlue italic font-serif">{{ now()->addDays(3)->format('d M Y') }}</p>
                 </div>
             </div>
-            <button class="text-xs border-b-2 border-textMain font-bold uppercase tracking-widest hover:text-gray-500 transition-colors whitespace-nowrap">
-                Print Invoice
-            </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <a href="{{ route('home') }}" class="block w-full bg-textMain text-white py-4 px-6 text-xs font-bold tracking-widest uppercase hover:bg-gray-800 transition-colors rounded-lg shadow-md">
-                Back to Home
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto relative z-10">
+            <a href="{{ route('home') }}" class="block w-full bg-[#111318] text-white py-5 px-8 text-xs font-bold tracking-[0.2em] uppercase hover:bg-brandBlue transition-all rounded-2xl shadow-2xl shadow-black/10 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                Lanjut Belanja
             </a>
-            <button class="block w-full border-2 border-textMain text-textMain py-4 px-6 text-xs font-bold tracking-widest uppercase hover:bg-gray-50 transition-colors rounded-lg">
-                Track My Order
-            </button>
+            <a href="{{ route('customer.orders') }}" class="block w-full border-2 border-gray-100 text-[#111318] py-5 px-8 text-xs font-bold tracking-[0.2em] uppercase hover:border-brandBlue/30 hover:bg-gray-50 transition-all rounded-2xl flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">local_shipping</span>
+                Lacak Pesanan
+            </a>
         </div>
+        
+        <p class="mt-12 text-[10px] text-gray-400 uppercase tracking-[0.2em] font-bold italic">
+            Butuh bantuan? <a href="#" class="text-brandBlue hover:underline">Hubungi Customer Service Kami</a>
+        </p>
     </div>
 </main>
 @endsection

@@ -1,6 +1,11 @@
 <footer class="bg-brandCream border-t border-gray-200 pt-16 pb-10">
-    <div class="container mx-auto px-6 lg:px-10">
-        <div class="flex flex-col lg:flex-row justify-between gap-12 mb-12">
+    <div class="container mx-auto px-6 lg:px-10 relative overflow-hidden">
+        <!-- Logo Background Watermark -->
+        <div class="absolute right-12 bottom-14 opacity-[0.90] pointer-events-none select-none lg:block hidden z-0">
+            <img src="{{ asset('images/Manee M Footer.svg') }}" alt="Manee Logo" class="w-[500px] h-auto">
+        </div>
+
+        <div class="flex flex-col lg:flex-row justify-between gap-12 mb-12 relative z-10">
             <div class="lg:w-2/3 flex flex-col gap-10">
                 <div>
                     <h4 class="font-sans font-medium text-textMain mb-3 text-lg">Visit Our Store</h4>
@@ -42,13 +47,16 @@
                 </div>
             </div>
             <div class="lg:w-1/3 flex lg:justify-end items-start">
-                <a href="#" class="flex items-center gap-2 border border-gray-300 rounded px-5 py-2.5 hover:bg-gray-50 transition-colors text-textMain bg-white shadow-sm">
+                <a href="https://www.google.com/maps/search/?api=1&query=Butterly+Bites+Kotabaru+Yogyakarta" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="flex items-center gap-2 border border-gray-300 rounded px-5 py-2.5 hover:bg-gray-50 transition-colors text-textMain bg-white shadow-sm">
                     <span class="material-symbols-outlined text-red-700 text-xl">location_on</span>
                     <span class="font-sans text-sm font-medium">Open in Google Maps</span>
                 </a>
             </div>
         </div>
-        <div class="border-t border-gray-200 pt-8 font-serif italic text-lg text-gray-400 text-center lg:text-left">
+        <div class="border-t border-gray-200 pt-8 font-serif italic text-lg text-gray-400 text-center lg:text-center z-10">
             Copyright 2026 Maneé
         </div>
     </div>

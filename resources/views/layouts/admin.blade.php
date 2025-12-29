@@ -18,7 +18,13 @@
     </style>
 </head>
 <body class="bg-gray-50 text-slate-900 dark:bg-gray-900 dark:text-white antialiased">
-    <div class="flex h-screen w-full font-sans overflow-hidden">
+    <div 
+        x-data="{ 
+            sidebarOpen: false, 
+            userDropdownOpen: false 
+        }" 
+        class="flex h-screen w-full font-sans overflow-hidden"
+    >
         <!-- Sidebar -->
         @include('components.admin.sidebar')
 

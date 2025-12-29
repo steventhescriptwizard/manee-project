@@ -6,6 +6,7 @@
     x-data="{ 
         isScrolled: false, 
         mobileMenuOpen: false,
+        userDropdownOpen: false,
         init() {
             window.addEventListener('scroll', () => {
                 this.isScrolled = window.scrollY > 50;
@@ -87,11 +88,57 @@
                 >search</span>
             </button>
             
-            <a href="{{ route('login') }}" class="hidden md:block hover:opacity-80">
-                <span class="text-sm font-medium transition-colors"
-                      :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >Login</span>
-            </a>
+            @auth
+                <div class="relative hidden md:block">
+                    <button 
+                        @click="userDropdownOpen = !userDropdownOpen"
+                        @click.away="userDropdownOpen = false"
+                        class="hover:opacity-80 group flex items-center gap-2"
+                    >
+                        <span class="text-[11px] font-bold uppercase tracking-[0.2em] transition-colors"
+                              :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                        >{{ auth()->user()->name }}</span>
+                        <span class="material-symbols-outlined text-[24px] cursor-pointer"
+                              :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                        >account_circle</span>
+                    </button>
+
+                    <!-- User Dropdown Menu -->
+                    <div 
+                        x-show="userDropdownOpen"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-48 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50 text-textMain"
+                    >
+                        <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('customer.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-widest hover:bg-gray-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            Dashboard
+                        </a>
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-widest hover:bg-gray-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">person</span>
+                            Profile
+                        </a>
+                        <div class="h-px bg-gray-100 my-1"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex w-full items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-widest text-brandRed hover:bg-red-50 transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">logout</span>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <a href="{{ route('login') }}" class="hidden md:block hover:opacity-80">
+                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] transition-colors"
+                          :class="{ 'text-white hover:text-gray-200': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
+                    >Login</span>
+                </a>
+            @endauth
 
             <a href="{{ route('wishlist') }}" 
                x-data="{ count: {{ count(session()->get('wishlist', [])) }} }"
@@ -99,7 +146,7 @@
                class="relative flex items-center justify-center hover:opacity-80">
                 <span class="material-symbols-outlined text-[24px] cursor-pointer"
                       :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >favorite</span>
+                >bookmark</span>
                 <span x-show="count > 0"
                       x-text="count"
                       class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold"
@@ -140,6 +187,14 @@
             <a href="{{ route('shop', ['category' => 'tops']) }}" class="text-sm font-medium hover:text-blue-600">Tops</a>
             <a href="{{ route('shop', ['category' => 'bottoms']) }}" class="text-sm font-medium hover:text-blue-600">Bottoms</a>
             <hr class="border-gray-100">
-            <a href="{{ route('login') }}" class="text-sm font-medium hover:text-blue-600">Login</a>
+            @auth
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('customer.dashboard') }}" class="text-sm font-bold uppercase tracking-widest text-brandBlue italic">DASHBOARD: {{ auth()->user()->name }}</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="text-sm font-bold uppercase tracking-widest text-brandRed italic">LOGOUT</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="text-sm font-bold uppercase tracking-widest text-brandBlue italic">LOGIN / REGISTER</a>
+            @endauth
     </div>
 </header>

@@ -65,7 +65,7 @@
         <!-- Promo/Empty Card Pattern from Reference -->
         <div class="hidden lg:flex flex-col justify-center items-center gap-4 bg-[#F8F9FB] rounded-3xl aspect-[3/4] p-8 text-center border border-dashed border-gray-200 transition-colors">
             <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm border border-gray-50 text-gray-300">
-                <span class="material-symbols-outlined text-[32px]">favorite</span>
+                <span class="material-symbols-outlined text-[32px]">bookmark</span>
             </div>
             <h3 class="text-2xl font-serif font-bold text-textMain tracking-tight">Keep Shopping</h3>
             <p class="text-gray-500 text-sm font-light italic">Discover more styles to add to your collection.</p>
@@ -78,7 +78,7 @@
     <!-- Empty State -->
     <div x-show="wishlist === 0" x-cloak class="flex flex-col items-center justify-center py-24 bg-[#F8F9FB] rounded-3xl border border-dashed border-gray-200">
         <div class="inline-flex items-center justify-center h-20 w-20 bg-white rounded-full shadow-sm mb-6 border border-gray-50">
-            <span class="material-symbols-outlined text-3xl text-gray-300">favorite</span>
+            <span class="material-symbols-outlined text-3xl text-gray-300">bookmark</span>
         </div>
         <h3 class="text-2xl font-serif font-bold text-textMain mb-2 tracking-tight">Your wishlist is empty</h3>
         <p class="text-gray-500 mb-8 max-w-sm mx-auto font-light text-center">Start saving your favorite items now to see them here later.</p>

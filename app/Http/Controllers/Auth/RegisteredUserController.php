@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+use App\Models\Customer;
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -39,12 +41,19 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'customer', // Ensure role is set to customer
+        ]);
+
+        // Create associated customer profile
+        Customer::create([
+            'user_id' => $user->id,
+            'tier' => 'regular',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('customer.dashboard', absolute: false));
     }
 }

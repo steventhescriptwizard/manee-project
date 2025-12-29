@@ -92,7 +92,26 @@
     </section>
 
     <!-- Product Slider Section -->
-    <section class="py-16 bg-[#FDFBF7]" x-data="{ activeTab: 'best_sellers' }">
+    <section class="py-16 bg-[#FDFBF7]" 
+             x-data="{ 
+                activeTab: 'best_sellers',
+                isPaused: false,
+                scroll() {
+                    if (!this.isPaused) {
+                        const slider = document.getElementById('slider-' + this.activeTab);
+                        if (slider) {
+                            slider.scrollLeft += 0.6; // Kecepatan scroll halus
+                            if (slider.scrollLeft >= slider.scrollWidth - slider.offsetWidth - 1) {
+                                slider.scrollLeft = 0;
+                            }
+                        }
+                    }
+                    requestAnimationFrame(() => this.scroll());
+                },
+                init() {
+                    this.scroll();
+                }
+             }">
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-10">
                 <h2 class="text-3xl md:text-4xl font-sans font-medium text-textMain text-center md:text-left">Shop Categories</h2>
@@ -115,47 +134,40 @@
                 </div>
             </div>
             
-            <div class="relative group">
+            <div class="relative group" @mouseenter="isPaused = true" @mouseleave="isPaused = false">
                 <!-- Best Sellers -->
-                <div x-show="activeTab === 'best_sellers'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-best_sellers">
-                    @forelse($bestSellers as $prod)
-                        @include('web.partials.product-card', ['product' => $prod])
+                <div x-show="activeTab === 'best_sellers'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8" id="slider-best_sellers">
+                    @forelse($bestSellers as $product)
+                        @include('web.partials.product-card', ['product' => $product])
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No best sellers available yet.</div>
                     @endforelse
                 </div>
 
                 <!-- New Arrivals -->
-                <div x-show="activeTab === 'new_arrivals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-new_arrivals">
-                    @forelse($newArrivals as $prod)
-                        @include('web.partials.product-card', ['product' => $prod])
+                <div x-show="activeTab === 'new_arrivals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8" id="slider-new_arrivals">
+                    @forelse($newArrivals as $product)
+                        @include('web.partials.product-card', ['product' => $product])
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No new arrivals available yet.</div>
                     @endforelse
                 </div>
 
                 <!-- Sale -->
-                <div x-show="activeTab === 'sale'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 scroll-smooth" id="slider-sale">
-                    @forelse($saleProducts as $prod)
-                        @include('web.partials.product-card', ['product' => $prod])
+                <div x-show="activeTab === 'sale'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8" id="slider-sale">
+                    @forelse($saleProducts as $product)
+                        @include('web.partials.product-card', ['product' => $product])
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No products on sale available yet.</div>
                     @endforelse
                 </div>
-                
-                <!-- Scroll Buttons -->
-                <button 
-                    class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full p-3 hidden md:block hover:bg-gray-50 transition-colors z-10"
-                    @click="document.getElementById('slider-' + activeTab).scrollBy({left: -220, behavior: 'smooth'})"
-                >
-                    <span class="material-icons-outlined text-gray-800">chevron_left</span>
-                </button>
-                <button 
-                    class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white shadow-lg rounded-full p-3 hidden md:block hover:bg-gray-50 transition-colors z-10"
-                    @click="document.getElementById('slider-' + activeTab).scrollBy({left: 220, behavior: 'smooth'})"
-                >
-                    <span class="material-icons-outlined text-gray-800">chevron_right</span>
-                </button>
+            </div>
+
+            <!-- Shop CTA -->
+            <div class="mt-12 text-center">
+                <a href="{{ route('shop') }}" class="inline-block border border-textMain px-10 py-4 text-sm tracking-widest uppercase hover:bg-textMain hover:text-white transition-all duration-300 font-sans font-medium rounded shadow-sm">
+                    Show All Products
+                </a>
             </div>
         </div>
     </section>

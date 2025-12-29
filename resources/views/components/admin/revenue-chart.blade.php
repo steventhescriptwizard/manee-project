@@ -11,8 +11,10 @@
     </div>
 
     <div class="flex items-baseline gap-2 mb-6">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">$45,230</h2>
-        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">+8.5%</span>
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Rp {{ number_format($revenueData->sum('total'), 0, ',', '.') }}</h2>
+        <span class="px-2 py-0.5 rounded-full {{ $revenueTrend >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }} text-xs font-semibold">
+            {{ $revenueTrend >= 0 ? '+' : '' }}{{ round($revenueTrend, 1) }}%
+        </span>
     </div>
 
     <div id="revenueChart" class="w-full h-[300px]"></div>
@@ -22,10 +24,12 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        var revenueData = @json($revenueData);
+        
         var options = {
             series: [{
                 name: 'Revenue',
-                data: [30, 50, 45, 42, 60, 35, 48, 52, 25, 20, 70, 45, 80]
+                data: revenueData.map(item => item.total)
             }],
             chart: {
                 type: 'area',
@@ -62,7 +66,10 @@
                 }
             },
             xaxis: {
-                categories: ['Week 1', '1.2', '1.4', '1.6', 'Week 2', '2.2', '2.4', '2.6', 'Week 3', '3.2', '3.4', '3.6', 'Week 4'],
+                categories: revenueData.map(item => {
+                    let d = new Date(item.date);
+                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                }),
                 labels: {
                     style: {
                         colors: '#94a3b8',
@@ -79,7 +86,10 @@
                         fontSize: '12px'
                     },
                     formatter: function (value) {
-                        return "$" + value + "k";
+                        if (value >= 1000000) {
+                            return "Rp " + (value / 1000000).toFixed(1) + "M";
+                        }
+                        return "Rp " + (value / 1000).toFixed(0) + "k";
                     }
                 }
             },
@@ -92,7 +102,7 @@
                 theme: 'light',
                 y: {
                     formatter: function (val) {
-                        return "$" + val + "k"
+                        return "Rp " + new Intl.NumberFormat('id-ID').format(val);
                     }
                 }
             }

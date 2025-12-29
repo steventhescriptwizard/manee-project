@@ -8,12 +8,6 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Product Reviews</h1>
     </div>
 
-    @if(session('success'))
-    <div class="bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-xl flex items-center gap-3">
-        <span class="material-symbols-outlined">check_circle</span>
-        <p class="text-sm font-medium">{{ session('success') }}</p>
-    </div>
-    @endif
 
     <div class="bg-white dark:bg-gray-900 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -100,10 +94,10 @@
                                     </button>
                                 </form>
 
-                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this review?')">
+                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                                    <button type="submit" class="delete-btn p-2 text-slate-400 hover:text-red-500 transition-colors">
                                         <span class="material-symbols-outlined">delete_outline</span>
                                     </button>
                                 </form>

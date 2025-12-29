@@ -11,11 +11,45 @@ class OrderController extends Controller
     /**
      * Display a listing of orders.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['user', 'items'])
-            ->latest()
-            ->paginate(10);
+        $query = Order::with(['user', 'items']);
+
+        // Search by Order ID or Customer Name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by Status
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by Payment Status
+        if ($request->filled('payment_status') && $request->payment_status !== 'all') {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        // Filter by Date Range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Filter by Payment Method
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', 'like', "%{$request->payment_method}%");
+        }
+
+        $orders = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.orders.index', compact('orders'));
     }

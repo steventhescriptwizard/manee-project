@@ -46,6 +46,7 @@ class Order extends Model
         'shipping_method',
         'payment_method',
         'payment_status',
+        'snap_token',
         'notes',
     ];
 

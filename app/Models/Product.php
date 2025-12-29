@@ -50,6 +50,35 @@ class Product extends Model
         return $this->hasMany(Review::class)->where('is_published', true);
     }
 
+    public function taxes()
+    {
+        return $this->belongsToMany(Tax::class, 'product_tax');
+    }
+
+    /**
+     * Calculate tax amount for the product
+     */
+    public function getTaxAmount()
+    {
+        $taxAmount = 0;
+        foreach ($this->taxes as $tax) {
+            if ($tax->is_active) {
+                // Assuming simple percentage tax for now
+                // rate is stored as percentage (e.g. 11 for 11%)
+                $taxAmount += $this->price * ($tax->rate / 100);
+            }
+        }
+        return $taxAmount;
+    }
+
+    /**
+     * Get price including tax
+     */
+    public function getPriceWithTax()
+    {
+        return $this->price + $this->getTaxAmount();
+    }
+
     public function getAverageRatingAttribute()
     {
         return $this->reviews()->avg('rating') ?: 0;

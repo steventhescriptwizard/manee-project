@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="confirm-save grid grid-cols-1 lg:grid-cols-3 gap-6">
         @csrf
         @method('PUT')
         
@@ -65,7 +65,19 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Applicable Taxes</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        @foreach($taxes as $tax)
+                            <label class="inline-flex items-center gap-2 cursor-pointer border border-slate-200 dark:border-gray-800 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors">
+                                <input type="checkbox" name="taxes[]" value="{{ $tax->id }}" {{ $product->taxes->contains($tax->id) ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $tax->name }} ({{ $tax->rate }}%)</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">SKU</label>
                         <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
@@ -154,8 +166,8 @@
                         <img src="{{ Storage::url($image->image_path) }}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <button type="button" 
-                                    onclick="if(confirm('Delete this image?')) { document.getElementById('delete-image-{{ $image->id }}').submit(); }" 
-                                    class="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-lg">
+                                    data-form-id="delete-image-{{ $image->id }}"
+                                    class="delete-image-btn p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-lg">
                                 <span class="material-symbols-outlined text-[18px] block">delete</span>
                             </button>
                         </div>
@@ -269,6 +281,27 @@ function previewImage(input, previewId) {
     }
 }
 
-
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.closest('.delete-image-btn')) {
+        e.preventDefault();
+        const btn = e.target.closest('.delete-image-btn');
+        const formId = btn.dataset.formId;
+        const form = document.getElementById(formId);
+        
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+});
 </script>
 @endsection

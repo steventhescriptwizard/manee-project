@@ -27,8 +27,8 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Type</label>
                     <select name="discount_type" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
-                        <option value="percentage" {{ old('discount_type', $discount->discount_type) == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
-                        <option value="fixed" {{ old('discount_type', $discount->discount_type) == 'fixed' ? 'selected' : '' }}>Fixed Amount ($)</option>
+                        <option value="PERCENT" {{ old('discount_type', $discount->discount_type) == 'PERCENT' ? 'selected' : '' }}>Percentage (%)</option>
+                        <option value="FIXED" {{ old('discount_type', $discount->discount_type) == 'FIXED' ? 'selected' : '' }}>Fixed Amount ($)</option>
                     </select>
                 </div>
                 <div>
@@ -61,6 +61,93 @@
                     <input type="number" step="0.01" name="max_discount" value="{{ old('max_discount', $discount->max_discount) }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
                 </div>
             </div>
+
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Categories Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Applicable Categories (Optional)</label>
+                    <div class="border border-slate-300 dark:border-gray-700 rounded-lg p-4 max-h-60 overflow-y-auto bg-white dark:bg-gray-800 space-y-2">
+                        @foreach($categories as $category)
+                            <label class="flex items-center space-x-3 p-2 hover:bg-slate-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors">
+                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" 
+                                    {{ in_array($category->id, old('categories', $discount->categories->pluck('id')->toArray())) ? 'checked' : '' }}
+                                    class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                <span class="text-slate-700 dark:text-slate-200">{{ $category->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Products Search & Select -->
+                <div x-data="productSelector({{ json_encode($products) }}, {{ json_encode($discount->products) }})">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Applicable Products (Optional)</label>
+                    
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="material-symbols-outlined text-slate-400">search</span>
+                        </span>
+                        <input type="text" 
+                               x-model="search" 
+                               placeholder="Search products..." 
+                               class="w-full pl-10 pr-4 py-2 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
+                        
+                        <!-- Dropdown Results -->
+                        <div x-show="search.length > 0 && filteredProducts.length > 0" 
+                             @click.away="search = ''"
+                             class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            <template x-for="product in filteredProducts" :key="product.id">
+                                <div @click="selectProduct(product)" 
+                                     class="px-4 py-2 hover:bg-slate-50 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between group">
+                                    <span x-text="product.product_name" class="text-slate-700 dark:text-slate-200"></span>
+                                    <span class="material-symbols-outlined text-blue-600 opacity-0 group-hover:opacity-100 text-sm">add_circle</span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Selected Products List -->
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <template x-for="product in selectedProducts" :key="product.id">
+                            <div class="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm border border-blue-100 dark:border-blue-800">
+                                <span x-text="product.product_name"></span>
+                                <button type="button" @click="removeProduct(product.id)" class="hover:text-blue-900 dark:hover:text-blue-100 flex items-center">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </button>
+                                <input type="hidden" name="products[]" :value="product.id">
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function productSelector(allProducts, existingProducts = []) {
+                    return {
+                        search: '',
+                        products: allProducts,
+                        selectedProducts: existingProducts, 
+                        
+                        get filteredProducts() {
+                            if (this.search === '') return [];
+                            return this.products.filter(product => {
+                                // Filter by name and exclude already selected
+                                return product.product_name.toLowerCase().includes(this.search.toLowerCase()) && 
+                                       !this.selectedProducts.find(p => p.id === product.id);
+                            });
+                        },
+
+                        selectProduct(product) {
+                            this.selectedProducts.push(product);
+                            this.search = '';
+                        },
+
+                        removeProduct(id) {
+                            this.selectedProducts = this.selectedProducts.filter(p => p.id !== id);
+                        }
+                    }
+                }
+            </script>
 
             <div class="pt-4 border-t border-slate-200 dark:border-gray-800">
                 <div class="flex items-center gap-2">

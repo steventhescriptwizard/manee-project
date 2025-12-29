@@ -18,11 +18,6 @@
 
     <h1 class="mb-10 font-serif text-3xl font-bold text-textMain lg:text-4xl">Checkout</h1>
 
-    @if(session('error'))
-        <div class="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm italic font-medium">
-            {{ session('error') }}
-        </div>
-    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16">
         <div class="lg:col-span-7 space-y-10">
@@ -112,27 +107,14 @@
                     </div>
                     
                     <div class="rounded-2xl bg-gray-50 p-6 space-y-4 border border-gray-100">
-                        <div x-show="paymentMethod === 'Credit Card'" class="space-y-4">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nomor Kartu</label>
-                                <input class="w-full rounded-xl border-gray-100 bg-white px-4 py-3 text-sm focus:border-brandBlue focus:ring-brandBlue transition-all italic font-serif" placeholder="0000 0000 0000 0000" type="text"/>
-                            </div>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Masa Berlaku</label>
-                                    <input class="w-full rounded-xl border-gray-100 bg-white px-4 py-3 text-sm focus:border-brandBlue focus:ring-brandBlue transition-all italic font-serif" placeholder="MM/YY" type="text"/>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">CVV</label>
-                                    <input class="w-full rounded-xl border-gray-100 bg-white px-4 py-3 text-sm focus:border-brandBlue focus:ring-brandBlue transition-all italic font-serif" placeholder="123" type="text"/>
-                                </div>
-                            </div>
+                        <div x-show="paymentMethod === 'Credit Card'" class="text-sm italic text-gray-500 font-light">
+                            <p>Pembayaran kartu kredit Anda akan diproses secara aman melalui Midtrans.</p>
                         </div>
                         <div x-show="paymentMethod === 'Bank Transfer'" class="text-sm italic text-gray-500 font-light">
-                            <p>Anda akan menerima detail rekening Bank Transfer setelah melakukan pemesanan.</p>
+                            <p>Anda dapat memilih berbagai bank (VA) melalui popup pembayaran Midtrans.</p>
                         </div>
                         <div x-show="paymentMethod === 'E-Wallet'" class="text-sm italic text-gray-500 font-light">
-                            <p>Pembayaran akan dilanjutkan melalui aplikasi e-wallet pilihan Anda.</p>
+                            <p>Tersedia metode pembayaran QRIS, GoPay, dan lainnya melalui Midtrans.</p>
                         </div>
                     </div>
                 </section>
@@ -177,19 +159,44 @@
                         <span class="font-light">Subtotal</span>
                         <span class="font-bold">Rp {{ number_format($total, 0, ',', '.') }}</span>
                     </div>
+                    
+                    <!-- Discount Section -->
+                    <div class="space-y-2">
+                        <div class="flex gap-2">
+                            <input type="text" id="discount_code" name="discount_code" placeholder="Enter Discount Code" class="w-full text-xs rounded-lg border-gray-200 bg-gray-50 focus:border-brandBlue focus:ring-brandBlue font-mono uppercase">
+                            <button type="button" id="apply-discount" class="bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest px-3 rounded-lg hover:bg-brandBlue transition-colors">Apply</button>
+                        </div>
+                        <p id="discount-message" class="text-[10px] hidden"></p>
+                    </div>
+
+                    <div id="discount-row" class="flex justify-between text-sm text-gray-500 italic hidden">
+                        <span class="font-light">Discount</span>
+                        <span class="font-bold text-red-500">- Rp <span id="discount-amount">0</span></span>
+                    </div>
+
+                    <div id="tax-row" class="flex justify-between text-sm text-gray-500 italic hidden">
+                        <span class="font-light">Tax (PPN)</span>
+                        <span class="font-bold">Rp <span id="tax-amount">0</span></span>
+                    </div>
+
                     <div class="flex justify-between text-sm text-gray-500 italic">
                         <span class="font-light">Biaya Pengiriman</span>
                         <span class="font-bold text-green-600">Rp 15.000</span>
                     </div>
                     <div class="flex justify-between border-t border-gray-100 pt-6 font-serif text-2xl font-bold text-textMain italic">
                         <span>Total</span>
-                        <span class="text-brandBlue">Rp {{ number_format($total + 15000, 0, ',', '.') }}</span>
+                        <span class="text-brandBlue">Rp <span id="final-total">{{ number_format($total + 15000, 0, ',', '.') }}</span></span>
                     </div>
                 </div>
 
-                <button type="submit" form="checkout-form" class="mt-8 w-full rounded-2xl bg-[#111318] py-5 text-center font-sans text-xs font-bold tracking-[0.2em] text-white uppercase transition-all hover:bg-brandBlue active:scale-[0.98] shadow-2xl shadow-black/10 flex items-center justify-center gap-3">
-                    Place Order
-                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <button 
+                    type="button" 
+                    id="place-order-button"
+                    class="mt-8 w-full rounded-2xl bg-[#111318] py-5 text-center font-sans text-xs font-bold tracking-[0.2em] text-white uppercase transition-all hover:bg-brandBlue active:scale-[0.98] shadow-2xl shadow-black/10 flex items-center justify-center gap-3 disabled:bg-gray-400"
+                >
+                    <span id="button-text">Place Order</span>
+                    <span id="button-spinner" class="material-symbols-outlined text-[18px] animate-spin hidden">sync</span>
+                    <span id="button-icon" class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </button>
                 
                 <div class="mt-6 flex items-center justify-center gap-2 text-[10px] text-gray-400 uppercase tracking-widest font-bold font-serif italic">
@@ -200,4 +207,131 @@
         </div>
     </div>
 </main>
+
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script type="text/javascript">
+    document.getElementById('place-order-button').onclick = function(e) {
+        e.preventDefault();
+        
+        const button = this;
+        const text = document.getElementById('button-text');
+        const spinner = document.getElementById('button-spinner');
+        const icon = document.getElementById('button-icon');
+        const form = document.getElementById('checkout-form');
+
+        // Show loading state
+        button.disabled = true;
+        text.innerText = 'Processing...';
+        spinner.classList.remove('hidden');
+        icon.classList.add('hidden');
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.snap_token) {
+                window.snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        window.location.href = data.redirect_url;
+                    },
+                    onPending: function(result) {
+                        window.location.href = data.redirect_url;
+                    },
+                    onError: function(result) {
+                        alert("Pembayaran gagal!");
+                        button.disabled = false;
+                        text.innerText = 'Place Order';
+                        spinner.classList.add('hidden');
+                        icon.classList.remove('hidden');
+                    },
+                    onClose: function() {
+                        // User closed the popup without finishing payment
+                        window.location.href = data.redirect_url;
+                    }
+                });
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat membuat pesanan.');
+                button.disabled = false;
+                text.innerText = 'Place Order';
+                spinner.classList.add('hidden');
+                icon.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan koneksi.');
+            button.disabled = false;
+            text.innerText = 'Place Order';
+            spinner.classList.add('hidden');
+            icon.classList.remove('hidden');
+        });
+    };
+
+    // Discount Logic
+    const discountInput = document.getElementById('discount_code');
+    const applyButton = document.getElementById('apply-discount');
+    const discountMessage = document.getElementById('discount-message');
+    const discountRow = document.getElementById('discount-row');
+    const discountAmountSpan = document.getElementById('discount-amount');
+    const taxRow = document.getElementById('tax-row');
+    const taxAmountSpan = document.getElementById('tax-amount');
+    const finalTotalSpan = document.getElementById('final-total');
+
+    applyButton.onclick = function() {
+        const code = discountInput.value;
+        if (!code) return;
+
+        applyButton.disabled = true;
+        applyButton.innerText = '...';
+
+        fetch('{{ route("checkout.check-discount") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            applyButton.disabled = false;
+            applyButton.innerText = 'APPLY';
+            
+            discountMessage.classList.remove('hidden');
+            if (data.valid) {
+                discountMessage.innerText = data.message;
+                discountMessage.className = 'text-[10px] text-green-600 font-bold';
+                
+                // Update UI
+                discountRow.classList.remove('hidden');
+                discountAmountSpan.innerText = new Intl.NumberFormat('id-ID').format(data.discount_amount);
+                
+                if (data.tax_amount > 0) {
+                    taxRow.classList.remove('hidden');
+                    taxAmountSpan.innerText = new Intl.NumberFormat('id-ID').format(data.tax_amount);
+                }
+
+                // Add shipping (15000) to new total
+                const totalWithShipping = data.new_total + 15000;
+                finalTotalSpan.innerText = new Intl.NumberFormat('id-ID').format(totalWithShipping);
+            } else {
+                discountMessage.innerText = data.message;
+                discountMessage.className = 'text-[10px] text-red-500 font-bold';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            applyButton.disabled = false;
+            applyButton.innerText = 'APPLY';
+        });
+    };
+</script>
 @endsection

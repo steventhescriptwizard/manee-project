@@ -35,6 +35,7 @@
             </button>
             
             <!-- Logo -->
+            <!-- Logo -->
             <a href="{{ route('home') }}" class="flex items-center gap-2 group">
                 <h1 class="font-serif text-3xl font-bold tracking-tight"
                     :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
@@ -125,7 +126,7 @@
                         <div class="h-px bg-gray-100 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="flex w-full items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-widest text-brandRed hover:bg-red-50 transition-colors">
+                            <button type="submit" class="logout-btn flex w-full items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-widest text-brandRed hover:bg-red-50 transition-colors">
                                 <span class="material-symbols-outlined text-[20px]">logout</span>
                                 Logout
                             </button>
@@ -191,7 +192,7 @@
                 <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('customer.dashboard') }}" class="text-sm font-bold uppercase tracking-widest text-brandBlue italic">DASHBOARD: {{ auth()->user()->name }}</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-sm font-bold uppercase tracking-widest text-brandRed italic">LOGOUT</button>
+                    <button type="submit" class="logout-btn text-sm font-bold uppercase tracking-widest text-brandRed italic">LOGOUT</button>
                 </form>
             @else
                 <a href="{{ route('login') }}" class="text-sm font-bold uppercase tracking-widest text-brandBlue italic">LOGIN / REGISTER</a>

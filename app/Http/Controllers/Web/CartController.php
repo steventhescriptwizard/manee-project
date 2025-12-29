@@ -63,7 +63,7 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Item added to cart!',
@@ -91,7 +91,7 @@ class CartController extends Controller
             session()->put('cart', $cart);
         }
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true]);
         }
 
@@ -111,7 +111,7 @@ class CartController extends Controller
             }
         }
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'cart_count' => count(session()->get('cart', []))]);
         }
 

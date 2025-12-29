@@ -34,14 +34,6 @@
         {{-- Add more stats if needed --}}
     </div>
 
-    @if(session('success'))
-    <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-        <div class="size-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-            <span class="material-symbols-outlined text-[20px]">check_circle</span>
-        </div>
-        <p class="text-sm font-bold">{{ session('success') }}</p>
-    </div>
-    @endif
 
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -92,10 +84,10 @@
                                 <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex size-10 items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm" title="Edit">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                 </a>
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun admin ini?')">
+                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="inline-flex size-10 items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-400 hover:text-red-500 hover:border-red-100 transition-all shadow-sm" title="Hapus">
+                                    <button type="submit" class="delete-btn inline-flex size-10 items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-400 hover:text-red-500 hover:border-red-100 transition-all shadow-sm" title="Hapus">
                                         <span class="material-symbols-outlined text-[20px]">delete_outline</span>
                                     </button>
                                 </form>

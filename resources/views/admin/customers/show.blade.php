@@ -83,10 +83,10 @@
                         <span class="material-symbols-outlined text-[20px]">lock_reset</span>
                         <span>Reset Sandi</span>
                     </button>
-                    <form action="{{ route('admin.customers.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus/blokir pelanggan ini?')">
+                    <form action="{{ route('admin.customers.destroy', $user->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="flex items-center justify-center size-11 bg-white dark:bg-gray-800 hover:bg-red-50 hover:border-red-200 hover:text-red-600 dark:hover:bg-red-900/20 text-slate-400 border border-slate-200 dark:border-gray-700 rounded-xl transition-all group" title="Blokir Akun">
+                        <button type="submit" class="delete-btn flex items-center justify-center size-11 bg-white dark:bg-gray-800 hover:bg-red-50 hover:border-red-200 hover:text-red-600 dark:hover:bg-red-900/20 text-slate-400 border border-slate-200 dark:border-gray-700 rounded-xl transition-all group" title="Blokir Akun">
                             <span class="material-symbols-outlined text-[22px]">block</span>
                         </button>
                     </form>

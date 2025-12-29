@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use App\Http\Requests\StoreDiscountRequest;
 use App\Http\Requests\UpdateDiscountRequest;
+use App\Models\Category;
+use App\Models\Product;
 
 class DiscountController extends Controller
 {
@@ -17,12 +19,22 @@ class DiscountController extends Controller
 
     public function create()
     {
-        return view('admin.discounts.create');
+        $categories = Category::all();
+        $products = Product::all();
+        return view('admin.discounts.create', compact('categories', 'products'));
     }
 
     public function store(StoreDiscountRequest $request)
     {
-        Discount::create($request->validated());
+        $discount = Discount::create($request->validated());
+
+        if ($request->has('categories')) {
+            $discount->categories()->sync($request->categories);
+        }
+
+        if ($request->has('products')) {
+            $discount->products()->sync($request->products);
+        }
 
         return redirect()->route('admin.discounts.index')
             ->with('success', 'Discount created successfully.');
@@ -30,12 +42,26 @@ class DiscountController extends Controller
 
     public function edit(Discount $discount)
     {
-        return view('admin.discounts.edit', compact('discount'));
+        $categories = Category::all();
+        $products = Product::all();
+        return view('admin.discounts.edit', compact('discount', 'categories', 'products'));
     }
 
     public function update(UpdateDiscountRequest $request, Discount $discount)
     {
         $discount->update($request->validated());
+
+        if ($request->has('categories')) {
+            $discount->categories()->sync($request->categories);
+        } else {
+            $discount->categories()->detach();
+        }
+
+        if ($request->has('products')) {
+            $discount->products()->sync($request->products);
+        } else {
+            $discount->products()->detach();
+        }
 
         return redirect()->route('admin.discounts.index')
             ->with('success', 'Discount updated successfully.');

@@ -18,10 +18,7 @@
     <!-- Brand -->
     <div class="p-6 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-            <div 
-                class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 shadow-sm"
-                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAQcBMqo23YoDYtJJDBxr9-_w9wgv-CrmlyJA9pRfFlwvSKvNE8ce424fWz2umL7byiYjmLvctF-xa1c1o-aXmu76WMZHdR5gr3FI2-gz1c2F-hJrHT_UXNLIV0LnqDnHg6F74xWFBxuqWkwr8qd-Qi781OlBdx2V1SGMq5AK7xMPZzbXWK6MvEHtzJNUwT-u-m9T-BPwmTiPqIHJ99hKKADiWDhnAtmTOg1dQUgOmya34wVeI1YguGM0sZTtfEUpS3p3A_xW9qHw')"
-            ></div>
+            <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-10 w-10 object-contain">
             <div class="flex flex-col">
                 <h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none tracking-tight">Maneé Admin</h1>
                 <p class="text-slate-500 dark:text-slate-400 text-xs font-normal mt-1">Store Manager</p>
@@ -47,6 +44,7 @@
                 ['icon' => 'category', 'label' => 'Categories', 'route' => route('admin.categories.index'), 'active' => request()->routeIs('admin.categories.*')],
                 ['icon' => 'warehouse', 'label' => 'Warehouses', 'route' => route('admin.warehouses.index'), 'active' => request()->routeIs('admin.warehouses.*')],
                 ['icon' => 'percent', 'label' => 'Discounts', 'route' => route('admin.discounts.index'), 'active' => request()->routeIs('admin.discounts.*')],
+                ['icon' => 'attach_money', 'label' => 'Taxes', 'route' => route('admin.taxes.index'), 'active' => request()->routeIs('admin.taxes.*')],
                 ['icon' => 'rate_review', 'label' => 'Reviews', 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
                 ['icon' => 'group', 'label' => 'Pelanggan', 'route' => route('admin.customers.index'), 'active' => request()->routeIs('admin.customers.*')],
                 ['icon' => 'admin_panel_settings', 'label' => 'Manajemen User', 'route' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
@@ -82,4 +80,15 @@
             </a>
         @endforeach
     </nav>
+
+    <!-- Logout Button -->
+    <div class="p-4 border-t border-slate-200 dark:border-gray-800 mt-auto">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="logout-btn flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-red-600 hover:bg-red-50 font-medium transition-colors group">
+                <span class="material-symbols-outlined text-[22px] group-hover:text-red-700">logout</span>
+                <span class="text-sm">Logout</span>
+            </button>
+        </form>
+    </div>
 </aside>

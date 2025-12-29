@@ -73,15 +73,17 @@
 
     {{-- Filter Bar --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm p-4">
-        <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
             {{-- Search --}}
             <div class="relative w-full lg:w-96">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                     search
                 </span>
                 <input
-                    className="w-full pl-10 pr-4 h-10 bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none"
-                    placeholder="Search by Order ID, Customer, or Product"
+                    name="search"
+                    value="{{ request('search') }}"
+                    class="w-full pl-10 pr-4 h-10 bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder:text-slate-400 transition-all outline-none"
+                    placeholder="Search by Order ID or Customer Name"
                     type="text"
                 />
             </div>
@@ -89,36 +91,40 @@
             {{-- Filters --}}
             <div class="flex flex-wrap gap-3 w-full lg:w-auto">
                 <div class="relative group">
-                    <select class="appearance-none h-10 pl-3 pr-8 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20 cursor-pointer hover:border-slate-300 dark:hover:border-gray-600 transition-colors">
-                        <option>Status: All</option>
-                        <option>Pending</option>
-                        <option>Processing</option>
-                        <option>Shipped</option>
-                        <option>Delivered</option>
-                        <option>Completed</option>
-                        <option>Cancelled</option>
+                    <select name="status" onchange="this.form.submit()" class="appearance-none h-10 pl-3 pr-8 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20 cursor-pointer hover:border-slate-300 dark:hover:border-gray-600 transition-colors">
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Status: All</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                     <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[20px]">
                         expand_more
                     </span>
                 </div>
                 <div class="relative group">
-                    <select class="appearance-none h-10 pl-3 pr-8 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20 cursor-pointer hover:border-slate-300 dark:hover:border-gray-600 transition-colors">
-                        <option>Date: Last 30 Days</option>
-                        <option>Last 7 Days</option>
-                        <option>This Month</option>
-                        <option>Custom Range</option>
+                    <select name="payment_status" onchange="this.form.submit()" class="appearance-none h-10 pl-3 pr-8 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20 cursor-pointer hover:border-slate-300 dark:hover:border-gray-600 transition-colors">
+                        <option value="all" {{ request('payment_status') == 'all' ? 'selected' : '' }}>Payment: All</option>
+                        <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
+                        <option value="unpaid" {{ request('payment_status') == 'unpaid' ? 'selected' : '' }}>Unpaid</option>
                     </select>
                     <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[20px]">
-                        calendar_today
+                        expand_more
                     </span>
                 </div>
-                <button class="h-10 px-4 bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">filter_list</span>
-                    More Filters
+                <button type="submit" class="h-10 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">search</span>
+                    Search
                 </button>
+                @if(request()->hasAny(['search', 'status', 'payment_status', 'date_from', 'date_to', 'payment_method']))
+                    <a href="{{ route('admin.orders.index') }}" class="h-10 px-4 bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                        Clear
+                    </a>
+                @endif
             </div>
-        </div>
+        </form>
     </div>
 
     {{-- Orders Table --}}

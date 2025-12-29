@@ -18,9 +18,9 @@ class StoreProductRequest extends FormRequest
             'sku' => 'required|string|max:100|unique:products,sku',
             'barcode' => 'nullable|string|max:100|unique:products,barcode',
             'price' => 'required|numeric|min:0',
-            'image_main' => 'nullable|image|max:2048', // 2MB Max
+            'image_main' => 'nullable|image|max:3072', // 3MB Max
             'product_gallery' => 'nullable|array',
-            'product_gallery.*' => 'image|max:2048',
+            'product_gallery.*' => 'image|max:3072',
             'description' => 'nullable|string',
             'details_and_care' => 'nullable|string',
             'categories' => 'array',

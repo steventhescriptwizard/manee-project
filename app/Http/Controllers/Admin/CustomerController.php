@@ -19,7 +19,7 @@ class CustomerController extends Controller
             ->withCount('orders')
             ->where('role', 'customer')
             ->latest()
-            ->paginate(15);
+            ->paginate(10);
         return view('admin.customers.index', compact('customers'));
     }
 

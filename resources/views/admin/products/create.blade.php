@@ -11,7 +11,7 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Add New Product</h1>
     </div>
 
-    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="confirm-save grid grid-cols-1 lg:grid-cols-3 gap-6">
         @csrf
         
         <!-- Left Column -->
@@ -58,7 +58,19 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Applicable Taxes</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        @foreach($taxes as $tax)
+                            <label class="inline-flex items-center gap-2 cursor-pointer border border-slate-200 dark:border-gray-800 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors">
+                                <input type="checkbox" name="taxes[]" value="{{ $tax->id }}" class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $tax->name }} ({{ $tax->rate }}%)</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">SKU</label>
                         <input type="text" name="sku" value="{{ old('sku') }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">

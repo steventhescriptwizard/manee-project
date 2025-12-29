@@ -37,16 +37,45 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto relative z-10">
-            <a href="{{ route('home') }}" class="block w-full bg-[#111318] text-white py-5 px-8 text-xs font-bold tracking-[0.2em] uppercase hover:bg-brandBlue transition-all rounded-2xl shadow-2xl shadow-black/10 flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
-                Lanjut Belanja
-            </a>
-            <a href="{{ route('customer.orders') }}" class="block w-full border-2 border-gray-100 text-[#111318] py-5 px-8 text-xs font-bold tracking-[0.2em] uppercase hover:border-brandBlue/30 hover:bg-gray-50 transition-all rounded-2xl flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-                Lacak Pesanan
-            </a>
+        <div class="flex flex-col gap-6 max-w-2xl mx-auto relative z-10">
+            @if(session('snap_token'))
+                <button id="pay-button" class="block w-full bg-brandBlue text-white py-6 px-8 text-sm font-bold tracking-[0.2em] uppercase hover:bg-opacity-90 transition-all rounded-3xl shadow-2xl shadow-brandBlue/30 flex items-center justify-center gap-3 animate-bounce">
+                    <span class="material-symbols-outlined">payments</span>
+                    Bayar Sekarang
+                </button>
+            @endif
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <a href="{{ route('home') }}" class="block w-full bg-[#111318] text-white py-5 px-8 text-xs font-bold tracking-[0.2em] uppercase hover:bg-brandBlue transition-all rounded-2xl shadow-2xl shadow-black/10 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                    Lanjut Belanja
+                </a>
+                <a href="{{ route('customer.orders') }}" class="block w-full border-2 border-gray-100 text-[#111318] py-5 px-8 text-xs font-bold tracking-[0.2em] uppercase hover:border-brandBlue/30 hover:bg-gray-50 transition-all rounded-2xl flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">local_shipping</span>
+                    Lacak Pesanan
+                </a>
+            </div>
         </div>
+
+        @if(session('snap_token'))
+            <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+            <script type="text/javascript">
+                const payButton = document.getElementById('pay-button');
+                payButton.onclick = function () {
+                    window.snap.pay('{{ session('snap_token') }}', {
+                        onSuccess: function (result) {
+                            window.location.href = "{{ route('customer.orders') }}?status=success";
+                        },
+                        onPending: function (result) {
+                            window.location.href = "{{ route('customer.orders') }}?status=pending";
+                        },
+                        onError: function (result) {
+                            window.location.href = "{{ route('customer.orders') }}?status=error";
+                        }
+                    });
+                };
+            </script>
+        @endif
         
         <p class="mt-12 text-[10px] text-gray-400 uppercase tracking-[0.2em] font-bold italic">
             Butuh bantuan? <a href="#" class="text-brandBlue hover:underline">Hubungi Customer Service Kami</a>

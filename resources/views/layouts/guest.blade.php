@@ -13,6 +13,18 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                @if($errors->any())
+                    Swal.fire({
+                        icon: "error",
+                        title: "Login Failed",
+                        text: "{{ $errors->first() }}", // specific user message: "alert salah username/password"
+                    });
+                @endif
+            });
+        </script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">

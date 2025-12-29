@@ -31,11 +31,17 @@ use App\Http\Controllers\Web\CheckoutController;
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/check-discount', [CheckoutController::class, 'checkDiscount'])->name('checkout.check-discount');
+Route::post('/checkout/check-discount', [CheckoutController::class, 'checkDiscount'])->name('checkout.check-discount');
     Route::get('/order/success', function () {
-        if (!session('order_number')) return redirect()->route('home');
+        if (!session('order_number')) {
+            return redirect()->route('cart')->with('info', 'Silakan lakukan pemesanan terlebih dahulu.');
+        }
         return view('web.order-success');
     })->name('order.success');
 });
+
+Route::post('/midtrans-callback', [App\Http\Controllers\Web\MidtransController::class, 'callback'])->name('midtrans.callback');
 
 use App\Http\Controllers\Web\ProductController;
 
@@ -48,7 +54,10 @@ Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index'
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 
 Route::get('/dashboard', function () {
-    return view('admin.dashboard');
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('customer.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -87,6 +96,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('warehouses', App\Http\Controllers\Admin\WarehouseController::class);
     Route::resource('discounts', App\Http\Controllers\Admin\DiscountController::class);
+    Route::resource('taxes', App\Http\Controllers\Admin\TaxController::class);
     Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'update', 'destroy']);
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::resource('customers', App\Http\Controllers\Admin\CustomerController::class);

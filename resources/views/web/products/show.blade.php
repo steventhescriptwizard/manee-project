@@ -20,7 +20,7 @@
             <div class="flex flex-col gap-6">
                 <!-- Main Image -->
                 <div class="relative aspect-[4/5] w-full max-w-xl mx-auto overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
-                    <div class="h-full w-full bg-cover bg-center transition-all duration-700" :style="'background-image: url(' + activeImage + ');'"></div>
+                    <div class="h-full w-full bg-contain bg-no-repeat bg-center transition-all duration-700" :style="'background-image: url(' + activeImage + ');'"></div>
                     <button class="absolute bottom-6 right-6 rounded-full bg-white/90 backdrop-blur-md p-3 text-gray-900 shadow-lg hover:bg-white transition-all transform hover:scale-110">
                         <span class="material-symbols-outlined text-2xl">zoom_in</span>
                     </button>
@@ -35,18 +35,18 @@
                     <!-- Main Image Thumbnail -->
                     @if($product->image_main)
                     <button @click="activeImage = '{{ Storage::url($product->image_main) }}'" 
-                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm"
+                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm bg-gray-50"
                             :class="activeImage === '{{ Storage::url($product->image_main) }}' ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
-                        <img src="{{ Storage::url($product->image_main) }}" class="h-full w-full object-cover">
+                        <img src="{{ Storage::url($product->image_main) }}" class="h-full w-full object-contain">
                     </button>
                     @endif
 
                     <!-- Gallery Images -->
                     @foreach($product->images as $image)
                     <button @click="activeImage = '{{ Storage::url($image->image_path) }}'" 
-                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm"
+                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm bg-gray-50"
                             :class="activeImage === '{{ Storage::url($image->image_path) }}' ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
-                        <img src="{{ Storage::url($image->image_path) }}" class="h-full w-full object-cover">
+                        <img src="{{ Storage::url($image->image_path) }}" class="h-full w-full object-contain">
                     </button>
                     @endforeach
                 </div>
@@ -106,7 +106,8 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest'
                             },
                             body: JSON.stringify({
                                 product_id: '{{ $product->id }}',
@@ -123,6 +124,7 @@
                         }
                     } catch (error) {
                         console.error('Error adding to cart:', error);
+                        showToast('Failed to add item to cart');
                     } finally {
                         this.isAdding = false;
                     }
@@ -278,7 +280,13 @@
                     </button>
                     <div x-show="open" x-collapse x-cloak class="pb-6 text-sm text-gray-500 font-light leading-relaxed">
                         @if($product->details_and_care)
-                            {!! nl2br(e($product->details_and_care)) !!}
+                            <ul class="list-disc pl-4 space-y-2 marker:text-gray-400">
+                                @foreach(explode(PHP_EOL, $product->details_and_care) as $detail)
+                                    @if(trim($detail))
+                                        <li class="pl-1">{{ trim($detail) }}</li>
+                                    @endif
+                                @endforeach
+                            </ul>
                         @else
                             <ul class="list-disc pl-4 space-y-1">
                                 <li>100% Premium Fabric</li>

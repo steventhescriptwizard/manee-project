@@ -15,13 +15,45 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('categories')
-            ->latest()
-            ->paginate(10);
+        $query = Product::with('categories');
 
-        return view('admin.products.index', compact('products'));
+        // Search by Product Name or SKU
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('product_name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by Category
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
+        }
+
+        // Filter by Stock Status
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status === 'low') {
+                $query->whereHas('stocks', function($q) {
+                    $q->whereRaw('current_stock <= 10');
+                });
+            } elseif ($request->stock_status === 'out') {
+                $query->whereHas('stocks', function($q) {
+                    $q->where('current_stock', 0);
+                });
+            }
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+
+        // Get all categories for filter dropdown
+        $categories = \App\Models\Category::all();
+
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     /**
@@ -30,7 +62,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::whereNull('parent_id')->with('children')->get();
-        return view('admin.products.create', compact('categories'));
+        $taxes = \App\Models\Tax::where('is_active', true)->get();
+        return view('admin.products.create', compact('categories', 'taxes'));
     }
 
     /**
@@ -49,6 +82,10 @@ class ProductController extends Controller
 
         if ($request->has('categories')) {
             $product->categories()->attach($request->categories);
+        }
+
+        if ($request->has('taxes')) {
+            $product->taxes()->attach($request->taxes);
         }
 
         if ($request->hasFile('product_gallery')) {
@@ -83,7 +120,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(['categories', 'images', 'variants', 'stocks.warehouse']);
+        $product->load(['categories', 'images', 'variants', 'stocks.warehouse', 'taxes']);
         return view('admin.products.show', compact('product'));
     }
 
@@ -92,9 +129,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('categories');
+        $product->load(['categories', 'taxes']);
         $categories = Category::whereNull('parent_id')->with('children')->get();
-        return view('admin.products.edit', compact('product', 'categories'));
+        $taxes = \App\Models\Tax::all();
+        return view('admin.products.edit', compact('product', 'categories', 'taxes'));
     }
 
     /**
@@ -117,6 +155,12 @@ class ProductController extends Controller
 
         if ($request->has('categories')) {
             $product->categories()->sync($request->categories);
+        }
+
+        if ($request->has('taxes')) {
+            $product->taxes()->sync($request->taxes);
+        } else {
+            $product->taxes()->detach();
         }
 
         if ($request->hasFile('product_gallery')) {
@@ -159,6 +203,7 @@ class ProductController extends Controller
         }
 
         $product->categories()->detach();
+        $product->taxes()->detach();
         $product->delete();
 
         return redirect()->route('admin.products.index')

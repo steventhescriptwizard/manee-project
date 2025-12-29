@@ -56,8 +56,8 @@
                 </a>
             </div>
         </div>
-        <div class="border-t border-gray-200 pt-8 font-serif italic text-lg text-gray-400 text-center lg:text-center z-10">
-            Copyright 2026 Maneé
+        <div class="border-t border-gray-200 pt-8 font-serif italic text-lg text-gray-400 text-center lg:text-center z-10 flex items-center justify-center gap-2">
+            Copyright 2026 <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-6 w-auto opacity-50 grayscale hover:grayscale-0 transition-all">
         </div>
     </div>
 </footer>

@@ -29,13 +29,6 @@
         </button>
     </div>
 
-    {{-- Success Message --}}
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-100 text-green-600 px-6 py-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-fade-in">
-            <span class="material-symbols-outlined text-[20px]">check_circle</span>
-            {{ session('success') }}
-        </div>
-    @endif
 
     {{-- Address Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -92,10 +85,10 @@
                             </form>
                         @endif
 
-                        <form action="{{ route('customer.address.destroy', $address->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus alamat ini?')">
+                        <form action="{{ route('customer.address.destroy', $address->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="px-4 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-brandRed hover:border-brandRed/20 transition-all">
+                            <button type="submit" class="delete-btn px-4 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-brandRed hover:border-brandRed/20 transition-all">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                             </button>
                         </form>

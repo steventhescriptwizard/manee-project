@@ -19,12 +19,8 @@
     <div class="w-full lg:w-1/2 flex flex-col h-screen overflow-y-auto bg-white transition-colors duration-300">
         <!-- Header -->
         <header class="flex items-center justify-between px-8 py-6 sm:px-12 shrink-0">
-            <a href="/" class="flex items-center gap-2 text-[#111318] group cursor-pointer">
-                <div class="size-6 text-current">
-                    <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"></path>
-                    </svg>
-                </div>
+            <a href="/" class="flex items-center gap-3 text-[#111318] group cursor-pointer">
+                <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-8 w-auto object-contain">
                 <h2 class="text-2xl font-bold font-serif tracking-wide">Maneé</h2>
             </a>
             <a href="#" class="text-sm font-medium text-gray-400 hover:text-[#111318] transition-colors">Bantuan</a>
@@ -168,8 +164,8 @@
         </div>
 
         <footer class="py-10 px-8 text-center shrink-0">
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
-                © 2024 Maneé. All rights reserved.
+            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest flex items-center justify-center gap-2">
+                © 2024 <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-4 w-auto opacity-50 grayscale"> All rights reserved.
             </p>
         </footer>
     </div>

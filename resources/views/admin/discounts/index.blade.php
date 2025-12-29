@@ -15,11 +15,6 @@
         </a>
     </div>
 
-    @if(session('success'))
-    <div class="bg-green-50 text-green-600 p-4 rounded-lg text-sm font-medium border border-green-100">
-        {{ session('success') }}
-    </div>
-    @endif
 
     <div class="bg-white dark:bg-gray-900 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -39,14 +34,14 @@
                         <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">
                             {{ $discount->discount_name }}
                             @if($discount->min_purchase > 0)
-                                <div class="text-xs text-slate-500">Min. Purchase: ${{ $discount->min_purchase }}</div>
+                                <div class="text-xs text-slate-500">Min. Purchase: Rp {{ number_format($discount->min_purchase, 0, ',', '.') }}</div>
                             @endif
                         </td>
                         <td class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
-                            @if($discount->discount_type === 'percentage')
+                            @if($discount->discount_type === 'PERCENT')
                                 {{ $discount->discount_value }}%
                             @else
-                                ${{ number_format($discount->discount_value, 2) }}
+                                Rp {{ number_format($discount->discount_value, 0, ',', '.') }}
                             @endif
                         </td>
                          <td class="px-6 py-4 text-slate-600 dark:text-slate-400">
@@ -72,10 +67,10 @@
                                 <a href="{{ route('admin.discounts.edit', $discount) }}" class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                 </a>
-                                <form action="{{ route('admin.discounts.destroy', $discount) }}" method="POST" onsubmit="return confirm('Are you sure?');" class="inline-block">
+                                <form action="{{ route('admin.discounts.destroy', $discount) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                    <button type="submit" class="delete-btn p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                         <span class="material-symbols-outlined text-[20px]">delete</span>
                                     </button>
                                 </form>

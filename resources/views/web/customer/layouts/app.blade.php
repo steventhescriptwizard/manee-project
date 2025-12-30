@@ -28,6 +28,7 @@
                                 ['id' => 'customer.dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard'],
                                 ['id' => 'profile.edit', 'label' => 'Profil Saya', 'icon' => 'person'],
                                 ['id' => 'customer.orders', 'label' => 'Riwayat Pesanan', 'icon' => 'shopping_bag'],
+                                ['id' => 'customer.notifications.index', 'label' => 'Notifikasi', 'icon' => 'notifications'],
                                 ['id' => 'customer.address', 'label' => 'Alamat Saya', 'icon' => 'location_on'],
                                 ['id' => 'customer.payment', 'label' => 'Metode Pembayaran', 'icon' => 'credit_card'],
                                 ['id' => 'wishlist', 'label' => 'Wishlist', 'icon' => 'favorite'],

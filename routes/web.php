@@ -93,6 +93,11 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::patch('/address/{address}/set-primary', [CustomerAddressController::class, 'setPrimary'])->name('address.set-primary');
     
     Route::get('/payment', [CustomerDashboardController::class, 'payments'])->name('payment');
+    
+    // Notifications
+    Route::get('/notifications', [App\Http\Controllers\Web\Customer\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [App\Http\Controllers\Web\Customer\NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::delete('/notifications/{id}', [App\Http\Controllers\Web\Customer\NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {

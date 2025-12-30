@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Node modules (akan di-install ulang di container)
+node_modules
+
+# Vendor (akan di-install ulang di container)
+vendor
+
+# Testing
+tests
+phpunit.xml
+.phpunit.cache
+
+# Development dependencies
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Documentation
+README.md
+CHANGELOG.md
+
+# Build artifacts (akan di-build di container)
+public/build
+public/hot
+
+# Other
+*.md
+docker-compose*.yml
+ngrok.exe
+dashboard-referensi
+maneé-fashion-store
+homepage.html
+homepage.png

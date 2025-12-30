@@ -57,14 +57,14 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 # Set proper permissions
 RUN chmod -R 777 storage bootstrap/cache
 
-# Default port for Railway
-ENV PORT=8080
-
 # Start script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Expose port
+EXPOSE 8080
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Use PHP built-in server
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+# Use shell form to expand $PORT variable
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]

@@ -13,22 +13,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create test user directly without factory (no Faker needed)
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ]
-        );
-
         // Create admin user
         User::firstOrCreate(
             ['email' => 'admin@manee.com'],
             [
-                'name' => 'Admin',
+                'name' => 'Admin Manee',
                 'password' => Hash::make('admin123'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Create customer user for testing
+        User::firstOrCreate(
+            ['email' => 'customer@example.com'],
+            [
+                'name' => 'Test Customer',
+                'password' => Hash::make('password'),
+                'role' => 'customer',
                 'email_verified_at' => now(),
             ]
         );

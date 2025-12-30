@@ -10,48 +10,70 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
+        // Fashion categories for Manee Fashion Store
         $categories = [
             [
-                'name' => 'Electronics',
+                'name' => 'Knitwear',
                 'children' => [
-                    'Smartphones',
-                    'Laptops',
-                    'Tablets',
-                    'Accessories',
+                    'Sweaters',
+                    'Cardigans',
+                    'Pullovers',
                 ]
             ],
             [
-                'name' => 'Fashion',
+                'name' => 'Tops',
                 'children' => [
-                    'Men',
-                    'Women',
-                    'Kids',
+                    'Blouses',
+                    'T-Shirts',
+                    'Shirts',
+                    'Tank Tops',
                 ]
             ],
             [
-                'name' => 'Home & Living',
+                'name' => 'Bottoms',
                 'children' => [
-                    'Furniture',
-                    'Decor',
-                    'Lighting',
+                    'Pants',
+                    'Skirts',
+                    'Shorts',
+                    'Jeans',
                 ]
-            ]
+            ],
+            [
+                'name' => 'Dresses',
+                'children' => [
+                    'Casual Dresses',
+                    'Evening Dresses',
+                    'Maxi Dresses',
+                ]
+            ],
+            [
+                'name' => 'Accessories',
+                'children' => [
+                    'Scarves',
+                    'Bags',
+                    'Jewelry',
+                ]
+            ],
         ];
 
         foreach ($categories as $catData) {
-            $parent = Category::create([
-                'name' => $catData['name'],
-                'slug' => Str::slug($catData['name']),
-                'is_active' => true,
-            ]);
+            $parent = Category::firstOrCreate(
+                ['slug' => Str::slug($catData['name'])],
+                [
+                    'name' => $catData['name'],
+                    'is_active' => true,
+                ]
+            );
 
             foreach ($catData['children'] as $childName) {
-                Category::create([
-                    'name' => $childName,
-                    'slug' => Str::slug($childName),
-                    'parent_id' => $parent->id,
-                    'is_active' => true,
-                ]);
+                Category::firstOrCreate(
+                    ['slug' => Str::slug($childName)],
+                    [
+                        'name' => $childName,
+                        'parent_id' => $parent->id,
+                        'is_active' => true,
+                    ]
+                );
             }
         }
     }

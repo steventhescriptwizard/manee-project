@@ -13,17 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
-        User::firstOrCreate(
-            ['email' => 'admin@manee.com'],
-            [
-                'name' => 'Admin Manee',
-                'password' => Hash::make('admin123'),
-                'role' => 'admin',
-                'email_verified_at' => now(),
-            ]
-        );
-
         // Create customer user for testing
         User::firstOrCreate(
             ['email' => 'customer@example.com'],
@@ -36,6 +25,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call([
+            AdminSeeder::class,
             CategorySeeder::class,
             WarehouseSeeder::class,
             DiscountSeeder::class,

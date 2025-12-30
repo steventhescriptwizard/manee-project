@@ -13,11 +13,13 @@ php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
 
-# Run migrations (ignore errors)
-php artisan migrate --force 2>/dev/null || echo "Migration skipped or failed"
+# Run migrations
+echo "Running migrations..."
+php artisan migrate --force || echo "Migration failed - check logs above"
 
-# Run seeders (ignore errors if already seeded)
-php artisan db:seed --force 2>/dev/null || echo "Seeder skipped or failed"
+# Run seeders
+echo "Running seeders..."
+php artisan db:seed --force || echo "Seeder failed - check logs above"
 
 # Rebuild cache with correct APP_URL from environment
 php artisan config:cache

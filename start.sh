@@ -16,6 +16,9 @@ php artisan view:clear
 # Run migrations (ignore errors)
 php artisan migrate --force 2>/dev/null || echo "Migration skipped or failed"
 
+# Run seeders (ignore errors if already seeded)
+php artisan db:seed --force 2>/dev/null || echo "Seeder skipped or failed"
+
 # Rebuild cache with correct APP_URL from environment
 php artisan config:cache
 php artisan route:cache

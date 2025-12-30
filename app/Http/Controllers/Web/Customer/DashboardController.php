@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Order;
+use App\Models\Product;
 
 class DashboardController extends Controller
 {
@@ -19,7 +20,9 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('web.customer.dashboard', compact('user', 'recentOrders'));
+        $recommendedProducts = Product::inRandomOrder()->take(3)->get();
+
+        return view('web.customer.dashboard', compact('user', 'recentOrders', 'recommendedProducts'));
     }
 
     public function orders()

@@ -1,160 +1,206 @@
 @extends('web.customer.layouts.app')
 
-@section('header_title', 'Dashboard')
-@section('header_subtitle', 'Selamat datang kembali, ' . $user->name)
-
 @section('customer_content')
 <div class="space-y-10 animate-fade-in">
-    <!-- Welcome Card -->
-    <div class="bg-[#111318] text-white p-10 rounded-[2rem] shadow-2xl shadow-black/10 relative overflow-hidden group">
-        <div class="relative z-10">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold mb-3 italic">
-                Halo, {{ $user->name }}
-            </h2>
-            <p class="text-gray-400 text-sm md:text-base font-light tracking-wide uppercase">
-                Member sejak {{ $user->created_at->format('F Y') }}
-            </p>
-            
-            <div class="mt-8 flex flex-wrap gap-4">
-                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/10 text-white border border-white/10 backdrop-blur-md">
-                    <span class="material-symbols-outlined text-[16px] fill-1 text-amber-400">workspace_premium</span>
-                    Gold Member
-                </span>
-                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest bg-brandBlue text-white shadow-lg shadow-brandBlue/20">
-                    <span class="material-symbols-outlined text-[16px]">verified</span>
-                    Akun Terverifikasi
-                </span>
-            </div>
+    
+    <!-- Welcome Banner -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-display font-bold text-[#111318] mb-2">Halo, {{ $user->name }}!</h1>
+            <p class="text-gray-500 font-light">Selamat datang kembali di dashboard akun Anda.</p>
         </div>
-        
-        <!-- Decoration -->
-        <div class="absolute -right-20 -top-20 size-64 bg-brandBlue/20 rounded-full blur-[80px] group-hover:bg-brandBlue/30 transition-all duration-700"></div>
-        <div class="absolute -left-20 -bottom-20 size-64 bg-white/5 rounded-full blur-[60px]"></div>
+        <a href="{{ route('shop') }}" class="hidden md:inline-flex items-center justify-center h-10 px-6 font-medium text-white bg-brandBlue hover:bg-brandBlue/90 rounded-full transition-colors shadow-sm">
+            Mulai Belanja
+        </a>
     </div>
 
-    <!-- Info Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Personal Info -->
-        <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col justify-between hover:border-brandBlue/30 transition-all group relative overflow-hidden">
-            <div class="relative z-10">
-                <div class="flex justify-between items-center mb-10">
-                    <h3 class="font-serif text-2xl font-bold text-[#111318]">
-                        Informasi Pribadi
-                    </h3>
-                    <div class="size-12 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:bg-brandBlue/10 transition-colors">
-                        <span class="material-symbols-outlined text-gray-400 group-hover:text-brandBlue transition-colors">person</span>
-                    </div>
-                </div>
-                <div class="space-y-6">
-                    <div>
-                        <p class="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em] mb-1">Nama Lengkap</p>
-                        <p class="font-bold text-[#111318] text-lg italic">{{ $user->name }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em] mb-1">Email</p>
-                        <p class="font-bold text-[#111318] text-lg italic">{{ $user->email }}</p>
-                    </div>
-                </div>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        <!-- Last Order -->
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-[64px] text-gray-400">local_shipping</span>
             </div>
-            <a href="{{ route('profile.edit') }}" class="mt-12 text-xs font-bold text-brandBlue hover:text-black flex items-center gap-2 transition-all uppercase tracking-widest relative z-10">
-                <span>Edit Profil</span>
-                <span class="material-symbols-outlined text-[18px]">arrow_right_alt</span>
-            </a>
-            
-            <div class="absolute right-0 bottom-0 size-32 bg-gray-50/50 rounded-tl-[4rem] -z-0 group-hover:bg-brandBlue/5 transition-colors"></div>
+            <div>
+                <p class="text-sm text-gray-500 mb-1 font-medium">Pesanan Terakhir</p>
+                @if($lastOrder = $recentOrders->first())
+                    <h3 class="text-2xl font-display font-bold text-[#111318] mb-2">#{{ $lastOrder->order_number }}</h3>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide
+                        {{ $lastOrder->status === 'Dikirim' ? 'bg-blue-100 text-blue-800' : 
+                           ($lastOrder->status === 'Selesai' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">
+                        {{ $lastOrder->status }}
+                    </span>
+                    <div class="mt-6 pt-4 border-t border-dashed border-gray-200 relative z-10">
+                        <a href="{{ route('customer.orders.show', $lastOrder->id) }}" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
+                            Lacak Pesanan 
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover/link:translate-x-1">arrow_forward</span>
+                        </a>
+                    </div>
+                @else
+                    <h3 class="text-xl font-display font-bold text-[#111318] mb-2">Belum ada</h3>
+                    <div class="mt-6 pt-4 border-t border-dashed border-gray-200 relative z-10">
+                        <a href="{{ route('shop') }}" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
+                            Belanja Sekarang
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover/link:translate-x-1">arrow_forward</span>
+                        </a>
+                    </div>
+                @endif
+            </div>
         </div>
 
-        <!-- Address Info -->
-        <div class="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col justify-between hover:border-brandBlue/30 transition-all group relative overflow-hidden">
-            <div class="relative z-10">
-                <div class="flex justify-between items-center mb-10">
-                    <h3 class="font-serif text-2xl font-bold text-[#111318]">
-                        Alamat Utama
-                    </h3>
-                    <div class="size-12 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:bg-brandBlue/10 transition-colors">
-                        <span class="material-symbols-outlined text-gray-400 group-hover:text-brandBlue transition-colors">home_pin</span>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <p class="font-bold text-[#111318] text-lg italic">Rumah Utama</p>
-                    <p class="text-gray-500 leading-relaxed font-light italic">
-                        Belum ada alamat yang ditambahkan.<br>
-                        Tambahkan alamat untuk mempermudah checkout.
-                    </p>
-                </div>
+        <!-- Points -->
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-[64px] text-gray-400">loyalty</span>
             </div>
-            <a href="#" class="mt-12 text-xs font-bold text-brandBlue hover:text-black flex items-center gap-2 transition-all uppercase tracking-widest relative z-10">
-                <span>Kelola Alamat</span>
-                <span class="material-symbols-outlined text-[18px]">arrow_right_alt</span>
-            </a>
-            <div class="absolute right-0 bottom-0 size-32 bg-gray-50/50 rounded-tl-[4rem] -z-0 group-hover:bg-brandBlue/5 transition-colors"></div>
+            <div>
+                <p class="text-sm text-gray-500 mb-1 font-medium">Poin Maneé</p>
+                <h3 class="text-2xl font-display font-bold text-[#111318] mb-2">250 Poin</h3>
+                <p class="text-xs text-gray-500">Senilai Rp 25.000 untuk belanjaan berikutnya.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-dashed border-gray-200 relative z-10">
+                <a href="#" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
+                    Riwayat Poin 
+                    <span class="material-symbols-outlined text-[16px] transition-transform group-hover/link:translate-x-1">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-[64px] text-gray-400">notifications</span>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 mb-1 font-medium">Notifikasi</p>
+                <h3 class="text-2xl font-display font-bold text-[#111318] mb-2">2 Pesan Baru</h3>
+                <p class="text-xs text-gray-500">Info promo eksklusif & update pesanan.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-dashed border-gray-200 relative z-10">
+                <a href="#" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
+                    Lihat Semua 
+                    <span class="material-symbols-outlined text-[16px] transition-transform group-hover/link:translate-x-1">arrow_forward</span>
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Recent Orders -->
-    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-            <h3 class="font-serif text-2xl font-bold text-[#111318]">
-                Pesanan Terakhir
-            </h3>
-            <a href="{{ route('customer.orders') }}" class="text-[10px] font-bold text-gray-400 hover:text-brandBlue uppercase tracking-widest transition-colors flex items-center gap-2">
-                Lihat Semua <span class="material-symbols-outlined text-[14px]">open_in_new</span>
-            </a>
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-display font-bold text-[#111318]">Status Pesanan Terkini</h3>
+            <a href="{{ route('customer.orders') }}" class="text-sm font-medium text-gray-500 hover:text-brandBlue">Lihat Semua</a>
         </div>
-        <div class="overflow-x-auto px-4 pb-4">
-            <table class="w-full text-sm text-left border-separate border-spacing-y-4">
-                <thead>
-                    <tr class="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em]">
-                        <th class="px-6 py-2">No. Pesanan</th>
-                        <th class="px-6 py-2">Tanggal</th>
-                        <th class="px-6 py-2">Status</th>
-                        <th class="px-6 py-2 text-right">Total</th>
-                        <th class="px-6 py-2"></th>
-                    </tr>
-                </thead>
-                <tbody class="space-y-4">
-                    @forelse($recentOrders as $order)
-                        <tr class="bg-white hover:bg-gray-50/50 transition-all shadow-sm ring-1 ring-gray-100 rounded-2xl group">
-                            <td class="px-6 py-5 first:rounded-l-2xl">
-                                <span class="text-sm font-bold text-[#111318]">#{{ $order->id }}</span>
-                            </td>
-                            <td class="px-6 py-5 font-medium text-gray-500 italic text-xs">
-                                {{ $order->date }}
-                            </td>
-                            <td class="px-6 py-5">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest
-                                    {{ $order->status === 'Dikirim' ? 'bg-blue-50 text-blue-600' : 
-                                       ($order->status === 'Selesai' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600') }}">
-                                    <span class="size-1 rounded-full {{ $order->status === 'Dikirim' ? 'bg-blue-600' : ($order->status === 'Selesai' ? 'bg-green-600' : 'bg-gray-600') }}"></span>
-                                    {{ $order->status }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-5 text-right font-bold text-brandBlue">
-                                Rp {{ number_format($order->total, 0, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-5 text-right last:rounded-r-2xl">
-                                <a href="{{ route('customer.orders.show', $order->id) }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-brandBlue group-hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                                    Detail
-                                    <span class="material-symbols-outlined text-[14px]">arrow_right_alt</span>
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
+        <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
                         <tr>
-                            <td colspan="5" class="px-6 py-24 text-center">
-                                <div class="flex flex-col items-center gap-4">
-                                    <div class="size-20 rounded-full bg-gray-50 flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-4xl text-gray-200">shopping_bag</span>
-                                    </div>
-                                    <p class="text-gray-400 font-serif italic text-lg">Belum ada pesanan.</p>
-                                    <a href="{{ route('shop') }}" class="text-xs font-bold text-brandBlue hover:underline uppercase tracking-widest">Mulai Belanja</a>
-                                </div>
-                            </td>
+                            <th scope="col" class="px-6 py-4 font-medium">Produk</th>
+                            <th scope="col" class="px-6 py-4 font-medium">No. Pesanan</th>
+                            <th scope="col" class="px-6 py-4 font-medium">Tanggal</th>
+                            <th scope="col" class="px-6 py-4 font-medium">Status</th>
+                            <th scope="col" class="px-6 py-4 font-medium text-right">Total</th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($recentOrders as $order)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        @php $firstItem = $order->items->first(); @endphp
+                                        <div class="w-12 h-16 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                                            @if($firstItem && $firstItem->product && $firstItem->product->image_main)
+                                                <img 
+                                                    src="{{ asset('storage/' . $firstItem->product->image_main) }}" 
+                                                    alt="{{ $firstItem->product_name }}" 
+                                                    class="w-full h-full object-cover" 
+                                                />
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                                                    <span class="material-symbols-outlined text-[20px]">image</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-[#111318]">
+                                                @if($firstItem)
+                                                    {{ $firstItem->product_name }}
+                                                @else
+                                                    Pesanan #{{ $order->id }}
+                                                @endif
+                                            </p>
+                                            @if($order->items->count() > 1)
+                                                <p class="text-xs text-gray-500 text-nowrap">+ {{ $order->items->count() - 1 }} produk lainnya</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-medium">#{{ $order->order_number }}</td>
+                                <td class="px-6 py-4 text-gray-500">{{ $order->created_at->format('d M Y') }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide
+                                        {{ $order->status === 'Dikirim' ? 'bg-blue-50 text-blue-600' : 
+                                           ($order->status === 'Selesai' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600') }}">
+                                        {{ $order->status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right font-medium text-brandBlue">
+                                    Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                                    Belum ada pesanan terbaru.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <!-- Recommended -->
+    <div>
+        <h3 class="text-xl font-display font-bold text-[#111318] mb-6">Rekomendasi Untuk Anda</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @foreach($recommendedProducts as $product)
+                <div class="group cursor-pointer bg-white rounded-2xl border-2 border-[#5D4037] p-2 transition-all hover:shadow-xl hover:-translate-y-1">
+                    <div class="relative overflow-hidden rounded-xl aspect-[3/4] mb-2 bg-gray-100">
+                        <img 
+                            src="{{ asset('storage/' . $product->image_main) }}" 
+                            alt="{{ $product->product_name }}" 
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                        />
+                        
+                        <button class="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white rounded-full text-[#111318] transition-colors opacity-0 group-hover:opacity-100 shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">favorite</span>
+                        </button>
+                        
+                        <div class="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-white/90 backdrop-blur-sm">
+                            <a href="{{ route('products.show', $product->id) }}" class="flex w-full items-center justify-center py-1.5 bg-[#111318] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-black transition-colors">
+                                Lihat
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="px-1">
+                        <h4 class="font-display font-bold text-sm text-[#111318] group-hover:text-brandBlue transition-colors line-clamp-1">
+                            {{ $product->product_name }}
+                        </h4>
+                        
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <p class="font-serif text-xs font-medium {{ $product->on_sale ? 'text-brandRed' : 'text-gray-600' }}">
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
 </div>
 @endsection

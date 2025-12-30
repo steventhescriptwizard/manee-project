@@ -4,53 +4,60 @@
 <div class="bg-white min-h-screen pt-24 pb-20">
     <div class="max-w-[1280px] mx-auto px-6 lg:px-10">
         
-        <div class="mb-12 text-center md:text-left">
-            <h1 class="text-4xl md:text-5xl font-bold font-serif text-[#111318] mb-3">
-                @yield('header_title', 'Akun Saya')
-            </h1>
-            <p class="text-gray-500 font-sans text-lg italic font-light">
-                @yield('header_subtitle', 'Kelola profil dan preferensi belanja Anda.')
-            </p>
-        </div>
+
 
         <div class="flex flex-col lg:flex-row gap-12 lg:gap-16">
             <!-- Sidebar -->
-            <aside class="w-full lg:w-72 flex-shrink-0">
-                <nav class="flex flex-col gap-2">
-                    @php
-                        $navItems = [
-                            ['id' => 'customer.dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard'],
-                            ['id' => 'profile.edit', 'label' => 'Profil Saya', 'icon' => 'person'],
-                            ['id' => 'customer.orders', 'label' => 'Riwayat Pesanan', 'icon' => 'shopping_bag'],
-                            ['id' => 'customer.address', 'label' => 'Alamat Saya', 'icon' => 'location_on'],
-                            ['id' => 'customer.payment', 'label' => 'Metode Pembayaran', 'icon' => 'credit_card'],
-                            ['id' => 'wishlist', 'label' => 'Wishlist', 'icon' => 'favorite'],
-                        ];
-                    @endphp
+            <aside class="w-full lg:w-64 flex-shrink-0">
+                <div class="bg-white rounded-xl border border-gray-100 p-6 sticky top-24">
+                    <!-- User Profile -->
+                    <div class="flex items-center gap-3 mb-8 pb-6 border-b border-gray-100">
+                        <div class="w-12 h-12 bg-brandBlue/10 rounded-full flex items-center justify-center text-brandBlue font-display font-bold text-xl">
+                            {{ substr(Auth::user()->name, 0, 2) }}
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Akun Saya</p>
+                            <p class="font-display font-semibold text-lg leading-tight truncate text-[#111318]">{{ Auth::user()->name }}</p>
+                        </div>
+                    </div>
 
-                    @foreach($navItems as $item)
-                        @php 
-                            $isActive = request()->routeIs($item['id'] . '*'); 
+                    <!-- Navigation -->
+                    <nav class="flex flex-col gap-1">
+                        @php
+                            $navItems = [
+                                ['id' => 'customer.dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard'],
+                                ['id' => 'profile.edit', 'label' => 'Profil Saya', 'icon' => 'person'],
+                                ['id' => 'customer.orders', 'label' => 'Riwayat Pesanan', 'icon' => 'shopping_bag'],
+                                ['id' => 'customer.address', 'label' => 'Alamat Saya', 'icon' => 'location_on'],
+                                ['id' => 'customer.payment', 'label' => 'Metode Pembayaran', 'icon' => 'credit_card'],
+                                ['id' => 'wishlist', 'label' => 'Wishlist', 'icon' => 'favorite'],
+                            ];
                         @endphp
-                        <a href="{{ Route::has($item['id']) ? route($item['id']) : '#' }}" 
-                           class="flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all border-l-4 {{ $isActive ? 'bg-brandBlue/5 text-brandBlue border-brandBlue shadow-sm' : 'text-gray-500 hover:bg-gray-50 border-transparent hover:text-brandBlue' }} group">
-                            <span class="material-symbols-outlined text-[24px] {{ !$isActive ? 'group-hover:scale-110 transition-transform' : '' }}">
-                                {{ $item['icon'] }}
-                            </span>
-                            <span class="text-sm uppercase tracking-widest">{{ $item['label'] }}</span>
-                        </a>
-                    @endforeach
-                    
-                    <div class="h-px bg-gray-100 my-4 mx-4"></div>
-                    
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-red-500 hover:bg-red-50 transition-all w-full text-left uppercase tracking-widest text-sm border-l-4 border-transparent hover:border-red-200">
-                            <span class="material-symbols-outlined text-[24px]">logout</span>
-                            Keluar
-                        </button>
-                    </form>
-                </nav>
+
+                        @foreach($navItems as $item)
+                            @php 
+                                $isActive = request()->routeIs($item['id'] . '*'); 
+                            @endphp
+                            <a href="{{ Route::has($item['id']) ? route($item['id']) : '#' }}" 
+                               class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive ? 'bg-brandBlue/10 text-[#111318] font-medium border-l-4 border-brandBlue' : 'text-gray-500 hover:bg-gray-50 hover:text-[#111318] border-l-4 border-transparent' }}">
+                                <span class="material-symbols-outlined text-[20px] {{ $isActive ? 'fill-1' : '' }}">
+                                    {{ $item['icon'] }}
+                                </span>
+                                <span class="text-sm">{{ $item['label'] }}</span>
+                            </a>
+                        @endforeach
+                        
+                        <div class="pt-4 mt-2 border-t border-gray-100">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-50 transition-all w-full text-left text-sm">
+                                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                                    Keluar
+                                </button>
+                            </form>
+                        </div>
+                    </nav>
+                </div>
             </aside>
 
             <!-- Main Content Area -->

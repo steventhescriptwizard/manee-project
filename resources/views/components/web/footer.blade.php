@@ -20,8 +20,8 @@
                         <a href="#" class="hover:text-brandRed transition-colors">My Account</a>
                         <a href="#" class="hover:text-brandRed transition-colors">Payment Confirmation</a>
                         <a href="#" class="hover:text-brandRed transition-colors">Shipping Information</a>
-                        <a href="#" class="hover:text-brandRed transition-colors">Track Order</a>
-                        <a href="#" class="hover:text-brandRed transition-colors">FAQ</a>
+                        <a href="{{ route('order.tracking') }}" class="hover:text-brandRed transition-colors">Track Order</a>
+                        <a href="{{ route('faq') }}" class="hover:text-brandRed transition-colors">FAQ</a>
                         <a href="#" class="hover:text-brandRed transition-colors">Return Policy</a>
                         <a href="{{ route('about') }}" class="hover:text-brandRed transition-colors">About Us</a>
                         <a href="#" class="hover:text-brandRed transition-colors">Conditions of Use</a>

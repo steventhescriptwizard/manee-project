@@ -11,6 +11,14 @@ Route::get('/about', function () {
     return view('web.about');
 })->name('about');
 
+Route::get('/faq', function () {
+    return view('web.faq');
+})->name('faq');
+
+Route::get('/order-tracking', function () {
+    return view('web.order-tracking');
+})->name('order.tracking');
+
 use App\Http\Controllers\Web\CartController;
 use App\Http\Controllers\Web\ShopController;
 use App\Http\Controllers\Web\WishlistController;

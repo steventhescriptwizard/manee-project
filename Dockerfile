@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nodejs \
     npm \
+    default-mysql-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -44,7 +45,7 @@ RUN npm ci
 # Copy all application files
 COPY . .
 
-# Create .env file from example if not exists
+# Create .env file from example
 RUN cp .env.example .env || true
 
 # Generate optimized autoloader
@@ -54,14 +55,11 @@ RUN composer dump-autoload --optimize
 RUN npm run build
 
 # Create necessary directories
-RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache database
-
-# Create SQLite database
-RUN touch database/database.sqlite
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache database
+    && chmod -R 775 storage bootstrap/cache
 
 # Configure Apache to use Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public

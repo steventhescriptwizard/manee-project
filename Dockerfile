@@ -1,5 +1,5 @@
-# Use PHP 8.2 with Apache
-FROM php:8.2-apache
+# Use PHP 8.2 CLI (without Apache)
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -23,12 +23,6 @@ RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zi
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Fix Apache MPM - disable event, use prefork
-RUN a2dismod mpm_event && a2enmod mpm_prefork
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
 
 # Set working directory
 WORKDIR /var/www/html
@@ -61,30 +55,16 @@ RUN npm run build
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
 
 # Set proper permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+RUN chmod -R 777 storage bootstrap/cache
 
-# Configure Apache to use Laravel's public directory
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Add Apache configuration for Laravel
-RUN echo '<Directory /var/www/html/public>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' >> /etc/apache2/apache2.conf
-
-# Railway uses dynamic PORT
-RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
-RUN sed -i 's/:80/:${PORT}/' /etc/apache2/sites-available/000-default.conf
-
-ENV PORT=80
+# Default port for Railway
+ENV PORT=8080
 
 # Start script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["apache2-foreground"]
+
+# Use PHP built-in server
+CMD php artisan serve --host=0.0.0.0 --port=$PORT

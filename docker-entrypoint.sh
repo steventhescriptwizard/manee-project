@@ -39,6 +39,9 @@ php artisan view:clear 2>/dev/null || true
 # Run migrations
 php artisan migrate --force 2>/dev/null || true
 
+# Run AdminSeeder (creates admin users if not exist)
+php artisan db:seed --class=AdminSeeder --force 2>/dev/null || true
+
 # Cache for production
 php artisan config:cache 2>/dev/null || true
 php artisan route:cache 2>/dev/null || true

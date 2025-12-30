@@ -9,20 +9,24 @@ class WarehouseSeeder extends Seeder
 {
     public function run(): void
     {
-        Warehouse::create([
-            'name' => 'Main Warehouse',
-            'code' => 'WH-MAIN-001',
-            'address' => '123 Utama Logistics St',
-            'city' => 'Jakarta',
-            'country' => 'Indonesia',
-        ]);
+        Warehouse::firstOrCreate(
+            ['code' => 'WH-MAIN-001'],
+            [
+                'name' => 'Main Warehouse',
+                'address' => '123 Utama Logistics St',
+                'city' => 'Jakarta',
+                'country' => 'Indonesia',
+            ]
+        );
 
-        Warehouse::create([
-            'name' => 'East Branch Hub',
-            'code' => 'WH-EAST-002',
-            'address' => '456 East Side Rd',
-            'city' => 'Surabaya',
-            'country' => 'Indonesia',
-        ]);
+        Warehouse::firstOrCreate(
+            ['code' => 'WH-EAST-002'],
+            [
+                'name' => 'East Branch Hub',
+                'address' => '456 East Side Rd',
+                'city' => 'Surabaya',
+                'country' => 'Indonesia',
+            ]
+        );
     }
 }

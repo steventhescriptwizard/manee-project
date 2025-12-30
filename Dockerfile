@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -43,19 +43,27 @@ RUN npm ci
 # Copy all application files
 COPY . .
 
+# Create .env file from example if not exists
+RUN cp .env.example .env || true
+
 # Generate optimized autoloader
 RUN composer dump-autoload --optimize
 
 # Build frontend assets
 RUN npm run build
 
+# Create necessary directories
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache database
+
+# Create SQLite database
+RUN touch database/database.sqlite
+
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache database
 
 # Configure Apache to use Laravel's public directory
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
@@ -66,11 +74,11 @@ RUN echo '<Directory /var/www/html/public>\n\
     Require all granted\n\
 </Directory>' >> /etc/apache2/apache2.conf
 
-# Create SQLite database directory and file for production
-RUN mkdir -p /var/www/html/database && touch /var/www/html/database/database.sqlite
+# Railway uses dynamic PORT
+RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
+RUN sed -i 's/:80/:${PORT}/' /etc/apache2/sites-available/000-default.conf
 
-# Expose port 80
-EXPOSE 80
+ENV PORT=80
 
 # Start script
 COPY docker-entrypoint.sh /usr/local/bin/

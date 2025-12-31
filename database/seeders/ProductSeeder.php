@@ -13,102 +13,177 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // Get some dependencies
-        $electronics = Category::where('name', 'Electronics')->first();
-        $smartphones = Category::where('name', 'Smartphones')->first();
-        $laptops = Category::where('name', 'Laptops')->first();
+        // Get categories
+        $knitwear = Category::where('name', 'Knitwear')->first();
+        $tops = Category::where('name', 'Tops')->first();
+        $bottoms = Category::where('name', 'Bottoms')->first();
         $mainWarehouse = Warehouse::first();
 
-        // 1. Create a Smartphone Product
-        $iphone = Product::create([
-            'product_name' => 'Super Phone 15',
-            'sku' => 'SP-15-BASE',
-            'price' => 12000000,
-            'description' => 'Latest smartphone with amazing features.',
+        // 1. Knitwear Product - Oversized Sweater with variants
+        $sweater = Product::create([
+            'product_name' => 'Oversized Knit Sweater',
+            'sku' => 'KNT-SWT-001',
+            'price' => 450000,
+            'description' => 'Cozy oversized knit sweater perfect for layering. Made from premium cotton blend.',
             'track_inventory' => true,
         ]);
 
-        // Attach categories
-        if ($smartphones) {
-            $iphone->categories()->attach([$smartphones->id]);
+        if ($knitwear) {
+            $sweater->categories()->attach([$knitwear->id]);
         }
-        
-        // Initial Stock for base product in Main Warehouse
+
+        // Create color/size variants for sweater
+        $sweaterBeige = $sweater->variants()->create([
+            'sku' => 'KNT-SWT-001-BEIGE-M',
+            'price' => 450000,
+            'color' => 'Beige',
+            'size' => 'M',
+            'track_inventory' => true,
+        ]);
+
+        $sweaterBeigeLarge = $sweater->variants()->create([
+            'sku' => 'KNT-SWT-001-BEIGE-L',
+            'price' => 450000,
+            'color' => 'Beige',
+            'size' => 'L',
+            'track_inventory' => true,
+        ]);
+
+        $sweaterGrey = $sweater->variants()->create([
+            'sku' => 'KNT-SWT-001-GREY-M',
+            'price' => 450000,
+            'color' => 'Grey',
+            'size' => 'M',
+            'track_inventory' => true,
+        ]);
+
+        // Stock for sweater variants
         if ($mainWarehouse) {
             Stock::create([
-                'product_id' => $iphone->id,
+                'product_id' => $sweater->id,
+                'variant_id' => $sweaterBeige->id,
                 'warehouse_id' => $mainWarehouse->id,
-                'stock_in' => 100,
-                'current_stock' => 100,
+                'stock_in' => 30,
+                'current_stock' => 30,
+                'minimum_stock' => 5,
+            ]);
+
+            Stock::create([
+                'product_id' => $sweater->id,
+                'variant_id' => $sweaterBeigeLarge->id,
+                'warehouse_id' => $mainWarehouse->id,
+                'stock_in' => 25,
+                'current_stock' => 25,
+                'minimum_stock' => 5,
+            ]);
+
+            Stock::create([
+                'product_id' => $sweater->id,
+                'variant_id' => $sweaterGrey->id,
+                'warehouse_id' => $mainWarehouse->id,
+                'stock_in' => 20,
+                'current_stock' => 20,
+                'minimum_stock' => 5,
+            ]);
+        }
+
+        // 2. Tops Product - Classic White Shirt
+        $shirt = Product::create([
+            'product_name' => 'Classic White Shirt',
+            'sku' => 'TOP-SHT-001',
+            'price' => 299000,
+            'description' => 'Timeless white button-up shirt. Perfect for any occasion.',
+            'track_inventory' => true,
+        ]);
+
+        if ($tops) {
+            $shirt->categories()->attach([$tops->id]);
+        }
+
+        // Variants for shirt
+        $shirtS = $shirt->variants()->create([
+            'sku' => 'TOP-SHT-001-WHITE-S',
+            'price' => 299000,
+            'color' => 'White',
+            'size' => 'S',
+            'track_inventory' => true,
+        ]);
+
+        $shirtM = $shirt->variants()->create([
+            'sku' => 'TOP-SHT-001-WHITE-M',
+            'price' => 299000,
+            'color' => 'White',
+            'size' => 'M',
+            'track_inventory' => true,
+        ]);
+
+        if ($mainWarehouse) {
+            Stock::create([
+                'product_id' => $shirt->id,
+                'variant_id' => $shirtS->id,
+                'warehouse_id' => $mainWarehouse->id,
+                'stock_in' => 40,
+                'current_stock' => 40,
+                'minimum_stock' => 10,
+            ]);
+
+            Stock::create([
+                'product_id' => $shirt->id,
+                'variant_id' => $shirtM->id,
+                'warehouse_id' => $mainWarehouse->id,
+                'stock_in' => 50,
+                'current_stock' => 50,
                 'minimum_stock' => 10,
             ]);
         }
 
-
-        // 2. Create a Laptop Product with Variants
-        $macbook = Product::create([
-            'product_name' => 'Pro Laptop M3',
-            'sku' => 'MB-PRO-M3',
-            'price' => 25000000,
-            'description' => 'Powerful laptop for professionals.',
+        // 3. Bottoms Product - Wide Leg Trousers
+        $trousers = Product::create([
+            'product_name' => 'Wide Leg Trousers',
+            'sku' => 'BTM-TRS-001',
+            'price' => 550000,
+            'description' => 'Elegant wide leg trousers with high waist. Comfortable and stylish.',
             'track_inventory' => true,
         ]);
 
-        if ($laptops) {
-            $macbook->categories()->attach([$laptops->id]);
+        if ($bottoms) {
+            $trousers->categories()->attach([$bottoms->id]);
         }
 
-        // Create Variants
-        $variant1 = $macbook->variants()->create([
-            'sku' => 'MB-PRO-M3-16GB',
-            'price' => 25000000,
-            'attributes' => ['ram' => '16GB', 'storage' => '512GB', 'color' => 'Space Grey'],
+        // Variants for trousers
+        $trousersBlack = $trousers->variants()->create([
+            'sku' => 'BTM-TRS-001-BLACK-M',
+            'price' => 550000,
+            'color' => 'Black',
+            'size' => 'M',
             'track_inventory' => true,
         ]);
 
-        $variant2 = $macbook->variants()->create([
-            'sku' => 'MB-PRO-M3-32GB',
-            'price' => 30000000,
-            'attributes' => ['ram' => '32GB', 'storage' => '1TB', 'color' => 'Silver'],
+        $trousersNavy = $trousers->variants()->create([
+            'sku' => 'BTM-TRS-001-NAVY-M',
+            'price' => 550000,
+            'color' => 'Navy',
+            'size' => 'M',
             'track_inventory' => true,
         ]);
 
-        // Stock for Variants
         if ($mainWarehouse) {
             Stock::create([
-                'product_id' => $macbook->id,
-                'variant_id' => $variant1->id,
+                'product_id' => $trousers->id,
+                'variant_id' => $trousersBlack->id,
                 'warehouse_id' => $mainWarehouse->id,
-                'stock_in' => 20,
-                'current_stock' => 20,
+                'stock_in' => 35,
+                'current_stock' => 35,
+                'minimum_stock' => 8,
             ]);
 
             Stock::create([
-                'product_id' => $macbook->id,
-                'variant_id' => $variant2->id,
+                'product_id' => $trousers->id,
+                'variant_id' => $trousersNavy->id,
                 'warehouse_id' => $mainWarehouse->id,
-                'stock_in' => 15,
-                'current_stock' => 15,
-            ]);
-        }
-
-        // 3. Simple Product
-        $mouse = Product::create([
-            'product_name' => 'Wireless Mouse G1',
-            'sku' => 'MOUSE-G1',
-            'price' => 150000,
-            'description' => 'Ergonomic wireless mouse.',
-            'track_inventory' => true,
-        ]);
-        if($electronics) {
-            $mouse->categories()->attach([$electronics->id]);
-        }
-        if ($mainWarehouse) {
-             Stock::create([
-                'product_id' => $mouse->id,
-                'warehouse_id' => $mainWarehouse->id,
-                'stock_in' => 500,
-                'current_stock' => 500,
+                'stock_in' => 30,
+                'current_stock' => 30,
+                'minimum_stock' => 8,
             ]);
         }
     }

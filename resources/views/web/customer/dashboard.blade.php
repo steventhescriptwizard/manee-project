@@ -15,7 +15,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
         <!-- Last Order -->
         <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -48,24 +48,6 @@
             </div>
         </div>
 
-        <!-- Points -->
-        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span class="material-symbols-outlined text-[64px] text-gray-400">loyalty</span>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 mb-1 font-medium">Poin Maneé</p>
-                <h3 class="text-2xl font-display font-bold text-[#111318] mb-2">250 Poin</h3>
-                <p class="text-xs text-gray-500">Senilai Rp 25.000 untuk belanjaan berikutnya.</p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-dashed border-gray-200 relative z-10">
-                <a href="#" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
-                    Riwayat Poin 
-                    <span class="material-symbols-outlined text-[16px] transition-transform group-hover/link:translate-x-1">arrow_forward</span>
-                </a>
-            </div>
-        </div>
-
         <!-- Notifications -->
         <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -73,11 +55,16 @@
             </div>
             <div>
                 <p class="text-sm text-gray-500 mb-1 font-medium">Notifikasi</p>
-                <h3 class="text-2xl font-display font-bold text-[#111318] mb-2">2 Pesan Baru</h3>
-                <p class="text-xs text-gray-500">Info promo eksklusif & update pesanan.</p>
+                @php $unreadCount = Auth::user()->unreadNotifications->count(); @endphp
+                <h3 class="text-2xl font-display font-bold text-[#111318] mb-2">
+                    {{ $unreadCount }} Pesan Baru
+                </h3>
+                <p class="text-xs text-gray-500">
+                    {{ $unreadCount > 0 ? 'Cek update status pesanan dan promo.' : 'Tidak ada notifikasi baru saat ini.' }}
+                </p>
             </div>
             <div class="mt-6 pt-4 border-t border-dashed border-gray-200 relative z-10">
-                <a href="#" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
+                <a href="{{ route('customer.notifications.index') }}" class="text-sm font-medium text-[#111318] hover:text-brandBlue flex items-center gap-1 group/link">
                     Lihat Semua 
                     <span class="material-symbols-outlined text-[16px] transition-transform group-hover/link:translate-x-1">arrow_forward</span>
                 </a>

@@ -63,6 +63,12 @@
             Pesanan
         </button>
         <button 
+            @click="updateFilter('FINANCE')"
+            class="pb-3 border-b-2 text-sm font-medium whitespace-nowrap px-1 transition-colors {{ $filter === 'FINANCE' ? 'border-[#111318] text-[#111318]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+        >
+            Keuangan
+        </button>
+        <button 
             @click="updateFilter('PROMO')"
             class="pb-3 border-b-2 text-sm font-medium whitespace-nowrap px-1 transition-colors {{ $filter === 'PROMO' ? 'border-[#111318] text-[#111318]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
         >
@@ -78,10 +84,12 @@
                 <div class="flex-shrink-0">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center 
                         {{ Str::contains($notification->type, 'Order') ? 'bg-blue-100 text-blue-600' : 
-                           (Str::contains($notification->type, 'Promo') ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600') }}">
+                           (Str::contains($notification->type, 'Payment') ? 'bg-green-100 text-green-600' : 
+                           (Str::contains($notification->type, 'Promo') ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600')) }}">
                         <span class="material-symbols-outlined text-[20px]">
                             {{ Str::contains($notification->type, 'Order') ? 'local_shipping' : 
-                               (Str::contains($notification->type, 'Promo') ? 'campaign' : 'notifications') }}
+                               (Str::contains($notification->type, 'Payment') ? 'payments' : 
+                               (Str::contains($notification->type, 'Promo') ? 'campaign' : 'notifications')) }}
                         </span>
                     </div>
                 </div>

@@ -30,6 +30,7 @@
                         'pending' => 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
                         'processing' => 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
                         'shipped' => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+                        'out_for_delivery' => 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
                         'completed' => 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400',
                         'cancelled' => 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400',
                     ];
@@ -51,6 +52,7 @@
                         <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Menunggu</option>
                         <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Diproses</option>
                         <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Dikirim</option>
+                        <option value="out_for_delivery" {{ $order->status === 'out_for_delivery' ? 'selected' : '' }}>Di Antar Kurir</option>
                         <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Selesai</option>
                         <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                     </select>

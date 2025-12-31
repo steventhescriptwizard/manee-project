@@ -1,5 +1,14 @@
 @extends('layouts.admin')
 
+@php
+    $breadcrumbs = [
+        ['label' => 'Daftar Produk', 'url' => route('admin.products.index')],
+        ['label' => $product->product_name, 'url' => route('admin.products.edit', $product)],
+        ['label' => 'Manage Variants', 'url' => route('admin.products.variants.index', $product)],
+        ['label' => 'Add Variant', 'url' => null]
+    ];
+@endphp
+
 @section('title', 'Add Variant - Maneé Admin')
 
 @section('content')
@@ -11,11 +20,39 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Add Variant</h1>
     </div>
 
-    <form action="{{ route('admin.products.variants.store', $product) }}" method="POST" class="flex flex-col gap-6">
+    <form action="{{ route('admin.products.variants.store', $product) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-6">
         @csrf
         
         <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4">
-            
+            <!-- Variant Image -->
+            <div x-data="{ photoName: null, photoPreview: null }">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Variant Image</label>
+                <div class="mt-2 flex items-center gap-4">
+                    <div x-show="!photoPreview" class="h-24 w-24 rounded-lg bg-slate-100 dark:bg-gray-800 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-gray-700">
+                        <span class="material-symbols-outlined text-slate-400">image</span>
+                    </div>
+                    <div x-show="photoPreview" class="h-24 w-24 rounded-lg bg-slate-100 dark:bg-gray-800 overflow-hidden border border-slate-200 dark:border-gray-700">
+                        <img :src="photoPreview" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <input type="file" name="variant_image" class="hidden" x-ref="photo"
+                        x-on:change="
+                                photoName = $refs.photo.files[0].name;
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    photoPreview = e.target.result;
+                                };
+                                reader.readAsDataURL($refs.photo.files[0]);
+                        ">
+                        <button type="button" class="px-4 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors" x-on:click.prevent="$refs.photo.click()">
+                            Select Photo
+                        </button>
+                        <p class="text-[10px] text-slate-400 mt-1">PNG, JPG up to 2MB. Recommended 1:1 ratio.</p>
+                        @error('variant_image') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Color</label>

@@ -38,10 +38,10 @@
                         <h3 class="font-serif text-xl font-semibold text-textMain mb-1">{{ $item['name'] }}</h3>
                         @if($item['color']) <p class="text-xs text-gray-500 mb-1">Color: {{ $item['color'] }}</p> @endif
                         @if($item['size']) <p class="text-xs text-gray-500">Size: {{ $item['size'] }}</p> @endif
-                        <div class="md:hidden mt-2 text-sm font-bold text-textMain">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
+                        <div class="md:hidden mt-2 text-sm font-bold text-textMain">Rp {{ number_format($item['final_price'], 0, ',', '.') }}</div>
                     </div>
                 </div>
-                <div class="hidden md:block col-span-2 text-center text-gray-600">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
+                <div class="hidden md:block col-span-2 text-center text-gray-600">Rp {{ number_format($item['final_price'], 0, ',', '.') }}</div>
                 <div class="col-span-12 md:col-span-2 flex justify-start md:justify-center mt-2 md:mt-0">
                     <div class="flex items-center border border-gray-200 rounded-lg h-9 bg-white">
                         <button onclick="updateQuantity('{{ $key }}', -1)" class="w-8 h-full flex items-center justify-center text-gray-400 hover:text-textMain">
@@ -53,7 +53,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="hidden md:block col-span-2 text-right font-bold text-textMain item-total">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
+                <div class="hidden md:block col-span-2 text-right font-bold text-textMain item-total">Rp {{ number_format($item['final_price'] * $item['quantity'], 0, ',', '.') }}</div>
                 <button onclick="removeItem('{{ $key }}')" class="absolute top-6 right-0 text-gray-300 hover:text-red-500 transition-colors">
                     <span class="material-symbols-outlined text-[20px]">delete</span>
                 </button>

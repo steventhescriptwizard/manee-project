@@ -11,6 +11,13 @@
             window.addEventListener('scroll', () => {
                 this.isScrolled = window.scrollY > 50;
             });
+            this.$watch('mobileMenuOpen', value => {
+                if (value) {
+                    document.body.classList.add('overflow-hidden');
+                } else {
+                    document.body.classList.remove('overflow-hidden');
+                }
+            });
         }
     }"
     :class="{
@@ -35,11 +42,23 @@
             </button>
             
             <!-- Logo -->
-            <!-- Logo -->
             <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                <h1 class="font-serif text-3xl font-bold tracking-tight"
-                    :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
-                >Maneé</h1>
+                <!-- White Logo (Secondary) -->
+                <img 
+                    src="{{ asset('images/Manee Logo_Secondary (1).svg') }}" 
+                    alt="Maneé Logo" 
+                    class="h-6 md:h-8 object-contain"
+                    x-show="{{ $isHome ? 'true' : 'false' }} && !isScrolled"
+                />
+                
+                <!-- Black Logo (Main) -->
+                <img 
+                    src="{{ asset('images/Manee Logo_Main.svg') }}" 
+                    alt="Maneé Logo" 
+                    class="h-6 md:h-8 object-contain"
+                    x-show="!({{ $isHome ? 'true' : 'false' }}) || isScrolled"
+                    style="display: none;" 
+                />
             </a>
             
             <!-- Desktop Nav -->
@@ -171,31 +190,78 @@
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div x-show="mobileMenuOpen" 
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 -translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 -translate-y-2"
-         @click.away="mobileMenuOpen = false"
-         class="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-lg py-4 px-6 flex flex-col gap-4 text-textMain z-50">
-            <a href="{{ route('home') }}" class="text-sm font-medium hover:text-blue-600">Home</a>
-            <a href="{{ route('about') }}" class="text-sm font-medium hover:text-blue-600">About Maneé</a>
-            <a href="{{ route('shop') }}" class="text-sm font-medium hover:text-blue-600">Shop</a>
-            <a href="{{ route('shop', ['category' => 'knitwear']) }}" class="text-sm font-medium hover:text-blue-600">Knitwear</a>
-            <a href="{{ route('shop', ['category' => 'tops']) }}" class="text-sm font-medium hover:text-blue-600">Tops</a>
-            <a href="{{ route('shop', ['category' => 'bottoms']) }}" class="text-sm font-medium hover:text-blue-600">Bottoms</a>
-            <hr class="border-gray-100">
-            @auth
-                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('customer.dashboard') }}" class="text-sm font-bold uppercase tracking-widest text-brandBlue italic">DASHBOARD: {{ auth()->user()->name }}</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="logout-btn text-sm font-bold uppercase tracking-widest text-brandRed italic">LOGOUT</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="text-sm font-bold uppercase tracking-widest text-brandBlue italic">LOGIN / REGISTER</a>
-            @endauth
+    <!-- Mobile Menu Drawer -->
+    <div 
+        x-show="mobileMenuOpen" 
+        class="lg:hidden fixed inset-0 z-[60]"
+        x-cloak
+    >
+        <!-- Backdrop -->
+        <div 
+            x-show="mobileMenuOpen"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="mobileMenuOpen = false"
+            class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        ></div>
+
+        <!-- Drawer Content -->
+        <div 
+            x-show="mobileMenuOpen"
+            x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="-translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transition ease-in duration-500"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="-translate-x-full"
+            class="absolute top-0 left-0 w-[85%] max-w-[320px] h-[100dvh] bg-white shadow-2xl flex flex-col"
+        >
+            <!-- Drawer Header -->
+            <div class="p-6 flex justify-between items-center border-b border-gray-50">
+                <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-6 object-contain" />
+                <button @click="mobileMenuOpen = false" class="text-textMain hover:rotate-90 transition-transform duration-300">
+                    <span class="material-symbols-outlined text-[28px]">close</span>
+                </button>
+            </div>
+
+            <!-- Drawer Links -->
+            <nav class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6">
+                <a href="{{ route('home') }}" class="text-2xl font-serif italic text-textMain hover:text-blue-600 transition-colors">Home</a>
+                <a href="{{ route('about') }}" class="text-2xl font-serif italic text-textMain hover:text-blue-600 transition-colors">About Maneé</a>
+                
+                <div class="h-px bg-gray-100 my-2"></div>
+                
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Categories</p>
+                <a href="{{ route('shop') }}" class="text-xl font-sans font-light text-textMain hover:translate-x-2 transition-transform capitalize">All Collections</a>
+                <a href="{{ route('shop', ['category' => 'knitwear']) }}" class="text-xl font-sans font-light text-textMain hover:translate-x-2 transition-transform capitalize">Knitwear</a>
+                <a href="{{ route('shop', ['category' => 'tops']) }}" class="text-xl font-sans font-light text-textMain hover:translate-x-2 transition-transform capitalize">Tops</a>
+                <a href="{{ route('shop', ['category' => 'bottoms']) }}" class="text-xl font-sans font-light text-textMain hover:translate-x-2 transition-transform capitalize">Bottoms</a>
+            </nav>
+
+            <!-- Drawer Footer -->
+            <div class="p-8 bg-gray-50 border-t border-gray-100">
+                @auth
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-gray-400">account_circle</span>
+                            <span class="text-sm font-medium text-textMain">{{ auth()->user()->name }}</span>
+                        </div>
+                        <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('customer.dashboard') }}" class="text-xs font-bold uppercase tracking-[0.2em] text-blue-600 hover:opacity-80 transition-opacity">Dashboard</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="logout-btn text-xs font-bold uppercase tracking-[0.2em] text-brandRed hover:opacity-80 transition-opacity">Logout</button>
+                        </form>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="block w-full text-center py-4 bg-textMain text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-black transition-colors rounded-lg">
+                        Login / Register
+                    </a>
+                @endauth
+            </div>
+        </div>
     </div>
 </header>

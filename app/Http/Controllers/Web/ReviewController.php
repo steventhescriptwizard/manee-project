@@ -56,7 +56,20 @@ class ReviewController extends Controller
             ];
         }
 
-        return view('web.reviews.index', compact('reviews', 'stats', 'totalCount', 'averageRating'));
+        // Handle order_id parameter for review form pre-fill
+        $orderProducts = null;
+        if ($request->has('order_id')) {
+            $order = \App\Models\Order::with('items.product')
+                ->where('id', $request->order_id)
+                ->where('user_id', auth()->id())
+                ->first();
+            
+            if ($order) {
+                $orderProducts = $order->items->pluck('product')->unique('id');
+            }
+        }
+
+        return view('web.reviews.index', compact('reviews', 'stats', 'totalCount', 'averageRating', 'orderProducts'));
     }
 
     public function store(Request $request)

@@ -29,10 +29,19 @@
                 </p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <button class="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-gray-100 bg-white hover:bg-gray-50 text-[#111318] text-xs font-bold uppercase tracking-widest transition-all shadow-sm">
-                    <span class="material-symbols-outlined text-[18px]">print</span>
-                    Faktur
-                </button>
+                @if(in_array($order->status, ['shipped', 'out_for_delivery']))
+                    <form action="{{ route('customer.orders.complete', $order->id) }}" method="POST" id="complete-order-form">
+                        @csrf
+                        <button type="button" onclick="confirmComplete()" class="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-green-600 text-white hover:bg-green-700 text-xs font-bold uppercase tracking-widest transition-all shadow-lg shadow-green-600/20">
+                            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                            Pesanan Diterima
+                        </button>
+                    </form>
+                @endif
+                <a href="{{ route('customer.orders.invoice', $order->id) }}" class="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-gray-100 bg-white hover:bg-gray-50 text-[#111318] text-xs font-bold uppercase tracking-widest transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                    Download Invoice
+                </a>
                 <button class="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-black text-white hover:bg-brandBlue text-xs font-bold uppercase tracking-widest transition-all shadow-lg shadow-black/10">
                     <span class="material-symbols-outlined text-[18px]">support_agent</span>
                     Hubungi CS
@@ -230,4 +239,31 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+function confirmComplete() {
+    Swal.fire({
+        title: 'Konfirmasi Penerimaan',
+        text: 'Apakah Anda yakin pesanan sudah diterima dengan baik?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Sudah Diterima',
+        cancelButtonText: 'Batal',
+        customClass: {
+            popup: 'rounded-2xl font-sans',
+            title: 'font-serif italic font-bold text-lg',
+            confirmButton: 'rounded-xl px-6 py-3 font-bold uppercase tracking-widest text-[10px]',
+            cancelButton: 'rounded-xl px-6 py-3 font-bold uppercase tracking-widest text-[10px]'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('complete-order-form').submit();
+        }
+    });
+}
+</script>
+@endpush
 @endsection

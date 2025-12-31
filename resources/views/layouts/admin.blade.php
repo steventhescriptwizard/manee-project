@@ -33,6 +33,7 @@
             @include('components.admin.header')
 
             <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
+                @include('components.admin.breadcrumbs')
                 @yield('content')
             </div>
         </main>
@@ -174,6 +175,73 @@
                         console.log("I was closed by the timer");
                         form.submit();
                    }
+                });
+            }
+        });
+
+        // --- Unsaved Changes Warning Logic ---
+        let isFormDirty = false;
+
+        // Monitor inputs for changes
+        const markDirty = (e) => {
+            if (e.target.closest('form')) {
+                isFormDirty = true;
+            }
+        };
+        document.addEventListener('input', markDirty);
+        document.addEventListener('change', markDirty);
+
+        // Reset dirty flag on successful form submission
+        document.addEventListener('submit', (e) => {
+            isFormDirty = false;
+        });
+
+        // Native browser alert on tab close / URL bar change
+        window.addEventListener('beforeunload', (e) => {
+            if (isFormDirty) {
+                e.preventDefault();
+                e.returnValue = 'Apakah Anda Yakin Ingin Meninggalkan Halaman ini? Simpan Data Terlebih Dahulu';
+                return e.returnValue;
+            }
+        });
+
+        // Custom SweetAlert on internal link clicks (Sidebar, Back button, etc.)
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            
+            // If it's a link and it's internal (same tab, not a javascript action, etc.)
+            if (isFormDirty && link && 
+                link.href && 
+                !link.href.startsWith('javascript:') && 
+                !link.href.includes('#') &&
+                link.target !== '_blank' &&
+                !link.closest('.delete-btn') &&
+                !link.closest('button')) {
+                
+                e.preventDefault();
+                const targetUrl = link.href;
+
+                Swal.fire({
+                    title: "Apakah Anda Yakin Ingin Meninggalkan Halaman ini?",
+                    text: "Simpan Data Terlebih Dahulu agar perubahan tidak hilang.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, Tinggalkan",
+                    cancelButtonText: "Batal",
+                    width: '320px',
+                    customClass: {
+                        popup: 'rounded-xl text-sm',
+                        title: 'text-base font-bold',
+                        confirmButton: 'bg-blue-600 text-white text-xs px-4 py-2 rounded-lg',
+                        cancelButton: 'bg-slate-200 text-slate-700 text-xs px-4 py-2 rounded-lg'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        isFormDirty = false; // Reset to allow navigation
+                        window.location.href = targetUrl;
+                    }
                 });
             }
         });

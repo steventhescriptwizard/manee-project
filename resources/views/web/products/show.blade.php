@@ -14,41 +14,198 @@
         <span class="font-medium text-textMain">{{ $product->product_name }}</span>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
+@php
+    $allImages = collect();
+    if($product->image_main) $allImages->push(['id' => 'main', 'path' => Storage::url($product->image_main)]);
+    foreach($product->images as $img) {
+        $allImages->push(['id' => 'gallery-' . $img->id, 'path' => Storage::url($img->image_path)]);
+    }
+    foreach($product->variants as $v) {
+        if($v->image_path) {
+            $allImages->push(['id' => 'variant-' . $v->id, 'path' => Storage::url($v->image_path), 'color' => $v->color]);
+        }
+    }
+    // Unique by path to avoid duplicates
+    $allImages = $allImages->unique('path')->values();
+@endphp
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20" 
+         x-data="{ 
+            allImages: {{ $allImages->toJson() }},
+            activeIndex: 0,
+            selectedColor: '{{ $colors->first() }}', 
+            selectedSize: '{{ $sizes->first() }}',
+            variants: {{ $product->variants->map(fn($v) => [
+                'id' => $v->id, 
+                'color' => $v->color, 
+                'size' => $v->size,
+                'image' => $v->image_path ? Storage::url($v->image_path) : null
+            ])->toJson() }},
+            quantity: 1,
+            isAdding: false,
+            autoSlideInterval: null,
+            
+            init() {
+                this.startAutoSlide();
+            },
+            
+            startAutoSlide() {
+                this.stopAutoSlide();
+                this.autoSlideInterval = setInterval(() => {
+                    this.nextImage();
+                }, 5000); // 5 seconds
+            },
+            
+            stopAutoSlide() {
+                if (this.autoSlideInterval) {
+                    clearInterval(this.autoSlideInterval);
+                    this.autoSlideInterval = null;
+                }
+            },
+            
+            nextImage() {
+                this.activeIndex = (this.activeIndex + 1) % this.allImages.length;
+                this.scrollToActive();
+            },
+            
+            scrollToActive() {
+                const mainContainer = this.$refs.sliderContainer;
+                const thumbContainer = this.$refs.thumbContainer;
+                
+                if (mainContainer) {
+                    mainContainer.scrollTo({
+                        left: this.activeIndex * mainContainer.offsetWidth,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                if (thumbContainer) {
+                    const activeThumb = thumbContainer.children[this.activeIndex];
+                    if (activeThumb) {
+                        thumbContainer.scrollTo({
+                            left: activeThumb.offsetLeft - (thumbContainer.offsetWidth / 2) + (activeThumb.offsetWidth / 2),
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            },
+            
+            setActive(index) {
+                this.activeIndex = index;
+                this.scrollToActive();
+                this.startAutoSlide(); // Reset timer
+            },
+
+            get currentVariant() {
+                return this.variants.find(v => v.color === this.selectedColor && v.size === this.selectedSize);
+            },
+            get availableSizes() {
+                return this.variants
+                    .filter(v => v.color === this.selectedColor)
+                    .map(v => v.size);
+            },
+            isSizeAvailable(size) {
+                return this.availableSizes.includes(size);
+            },
+            selectColor(color) {
+                this.selectedColor = color;
+                if (!this.isSizeAvailable(this.selectedSize)) {
+                    this.selectedSize = this.availableSizes[0] || null;
+                }
+                
+                // Find image index for this color
+                const colorImageIndex = this.allImages.findIndex(img => img.color === color);
+                if (colorImageIndex !== -1) {
+                    this.setActive(colorImageIndex);
+                }
+            },
+            async addToCart() {
+                this.isAdding = true;
+                try {
+                    const response = await fetch('{{ route("cart.add") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            product_id: '{{ $product->id }}',
+                            variant_id: this.currentVariant ? this.currentVariant.id : null,
+                            quantity: this.quantity
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast(data.message);
+                        window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: data.cart_count } }));
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    showToast('Failed to add item to cart');
+                } finally {
+                    this.isAdding = false;
+                }
+            }
+         }">
         <!-- Image Gallery -->
-        <div class="lg:col-span-6" x-data="{ activeImage: '{{ $product->image_main ? Storage::url($product->image_main) : 'https://via.placeholder.com/600x800' }}' }">
+        <div class="lg:col-span-6" @mouseenter="stopAutoSlide()" @mouseleave="startAutoSlide()">
             <div class="flex flex-col gap-6">
-                <!-- Main Image -->
-                <div class="relative aspect-[4/5] w-full max-w-xl mx-auto overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
-                    <div class="h-full w-full bg-contain bg-no-repeat bg-center transition-all duration-700" :style="'background-image: url(' + activeImage + ');'"></div>
-                    <button class="absolute bottom-6 right-6 rounded-full bg-white/90 backdrop-blur-md p-3 text-gray-900 shadow-lg hover:bg-white transition-all transform hover:scale-110">
+                <!-- Main Image Slider -->
+                <div class="relative aspect-[4/5] w-full max-w-xl mx-auto overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 shadow-sm group">
+                    <!-- Slider Container -->
+                    <div x-ref="sliderContainer" 
+                         class="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth"
+                         @scroll.debounce.100ms="
+                            const scrollLeft = $el.scrollLeft;
+                            const width = $el.offsetWidth;
+                            if (width > 0) activeIndex = Math.round(scrollLeft / width);
+                         ">
+                        <template x-for="(img, index) in allImages" :key="img.path">
+                            <div class="h-full w-full flex-shrink-0 snap-center bg-contain bg-no-repeat bg-center transition-all duration-700" 
+                                 :style="'background-image: url(' + img.path + ');'">
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <button @click="setActive((activeIndex - 1 + allImages.length) % allImages.length)" 
+                            class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md p-2.5 rounded-full text-gray-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110 active:scale-95 flex items-center justify-center z-10">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                    </button>
+                    <button @click="setActive((activeIndex + 1) % allImages.length)" 
+                            class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md p-2.5 rounded-full text-gray-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110 active:scale-95 flex items-center justify-center z-10">
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </button>
+
+                    <!-- Indicators (Dots) -->
+                    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 z-10">
+                        <template x-for="(img, index) in allImages" :key="img.path + '-dot'">
+                            <button @click="setActive(index)" 
+                                    class="h-1 rounded-full transition-all duration-500"
+                                    :class="activeIndex === index ? 'w-6 bg-brandBlue' : 'w-1 bg-white/60 hover:bg-white'"></button>
+                        </template>
+                    </div>
+
+                    <button class="absolute bottom-6 right-6 rounded-full bg-white/90 backdrop-blur-md p-3 text-gray-900 shadow-lg hover:bg-white transition-all transform hover:scale-110 z-10">
                         <span class="material-symbols-outlined text-2xl">zoom_in</span>
                     </button>
                     <!-- Badges -->
-                    <div class="absolute top-6 left-6 flex flex-col gap-2">
+                    <div class="absolute top-6 left-6 flex flex-col gap-2 z-10">
                         <span class="bg-brandRed text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">Trending</span>
                     </div>
                 </div>
 
                 <!-- Thumbnails at Bottom -->
-                <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x mt-4">
-                    <!-- Main Image Thumbnail -->
-                    @if($product->image_main)
-                    <button @click="activeImage = '{{ Storage::url($product->image_main) }}'" 
-                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm bg-gray-50"
-                            :class="activeImage === '{{ Storage::url($product->image_main) }}' ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
-                        <img src="{{ Storage::url($product->image_main) }}" class="h-full w-full object-contain">
-                    </button>
-                    @endif
-
-                    <!-- Gallery Images -->
-                    @foreach($product->images as $image)
-                    <button @click="activeImage = '{{ Storage::url($image->image_path) }}'" 
-                            class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm bg-gray-50"
-                            :class="activeImage === '{{ Storage::url($image->image_path) }}' ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
-                        <img src="{{ Storage::url($image->image_path) }}" class="h-full w-full object-contain">
-                    </button>
-                    @endforeach
+                <div x-ref="thumbContainer" class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x mt-4 scroll-smooth">
+                    <template x-for="(img, index) in allImages" :key="img.path + '-thumb'">
+                        <button @click="setActive(index)" 
+                                class="relative aspect-[3/4] w-20 min-w-[80px] overflow-hidden rounded-xl border-2 transition-all snap-start shadow-sm bg-gray-50 shrink-0"
+                                :class="activeIndex === index ? 'border-brandBlue ring-2 ring-brandBlue/10' : 'border-transparent hover:border-gray-300 opacity-60 hover:opacity-100'">
+                            <img :src="img.path" class="h-full w-full object-contain">
+                        </button>
+                    </template>
                 </div>
             </div>
         </div>
@@ -59,7 +216,7 @@
                 <h1 class="font-serif text-4xl lg:text-5xl font-bold leading-tight text-textMain uppercase tracking-tighter">{{ $product->product_name }}</h1>
                 <div class="mt-4 flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                        <p class="text-3xl font-serif font-bold text-brandRed">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                        <p class="text-3xl font-serif font-bold text-brandRed">Rp {{ number_format($product->final_price, 0, ',', '.') }}</p>
                         <div class="flex items-center gap-1 text-amber-400">
                             @for($i = 0; $i < 5; $i++)
                             <span class="material-symbols-outlined text-[18px] fill-current">star</span>
@@ -76,60 +233,7 @@
                 </p>
             </div>
 
-            <div x-data="{ 
-                selectedColor: '{{ $colors->first() }}', 
-                selectedSize: '{{ $sizes->first() }}',
-                variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'color' => $v->color, 'size' => $v->size])->toJson() }},
-                quantity: 1,
-                isAdding: false,
-                get currentVariant() {
-                    return this.variants.find(v => v.color === this.selectedColor && v.size === this.selectedSize);
-                },
-                get availableSizes() {
-                    return this.variants
-                        .filter(v => v.color === this.selectedColor)
-                        .map(v => v.size);
-                },
-                isSizeAvailable(size) {
-                    return this.availableSizes.includes(size);
-                },
-                selectColor(color) {
-                    this.selectedColor = color;
-                    if (!this.isSizeAvailable(this.selectedSize)) {
-                        this.selectedSize = this.availableSizes[0] || null;
-                    }
-                },
-                async addToCart() {
-                    this.isAdding = true;
-                    try {
-                        const response = await fetch('{{ route("cart.add") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: JSON.stringify({
-                                product_id: '{{ $product->id }}',
-                                variant_id: this.currentVariant ? this.currentVariant.id : null,
-                                quantity: this.quantity
-                            })
-                        });
-                        
-                        const data = await response.json();
-                        if (data.success) {
-                            showToast(data.message);
-                            // Update navbar count if needed
-                            window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: data.cart_count } }));
-                        }
-                    } catch (error) {
-                        console.error('Error adding to cart:', error);
-                        showToast('Failed to add item to cart');
-                    } finally {
-                        this.isAdding = false;
-                    }
-                }
-            }">
+            <div class="py-8">
                 @if($colors->count() > 0)
                 <div class="mb-8">
                     <span class="mb-4 block text-sm font-bold text-textMain uppercase tracking-widest">Available Colors</span>
@@ -451,7 +555,7 @@
                 </div>
                 <div>
                     <h3 class="text-sm font-bold text-textMain uppercase tracking-wider group-hover:text-brandBlue transition-colors line-clamp-1">{{ $rel->product_name }}</h3>
-                    <p class="text-xs font-serif font-bold text-brandRed mt-1 italic">Rp {{ number_format($rel->price, 0, ',', '.') }}</p>
+                    <p class="text-xs font-serif font-bold text-brandRed mt-1 italic">Rp {{ number_format($rel->final_price, 0, ',', '.') }}</p>
                 </div>
             </a>
             @endforeach

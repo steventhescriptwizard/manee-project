@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    $breadcrumbs = [];
+@endphp
+
 @section('title', 'Dashboard - Maneé Admin')
 
 @section('content')

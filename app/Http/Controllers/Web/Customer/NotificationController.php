@@ -18,9 +18,13 @@ class NotificationController extends Controller
 
         if ($filter === 'ORDER') {
             $query->whereIn('type', [
-                'App\Notifications\OrderCreated', 
-                'App\Notifications\OrderShipped',
-                'App\Notifications\OrderCompleted'
+                'App\Notifications\CustomerOrderCreateNotification', 
+                'App\Notifications\OrderShippedNotification',
+                'App\Notifications\OrderOutForDeliveryNotification'
+            ]);
+        } elseif ($filter === 'FINANCE') {
+            $query->whereIn('type', [
+                'App\Notifications\PaymentSuccessNotification'
             ]);
         } elseif ($filter === 'PROMO') {
             $query->whereIn('type', [

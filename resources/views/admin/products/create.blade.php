@@ -1,5 +1,12 @@
 @extends('layouts.admin')
 
+@php
+    $breadcrumbs = [
+        ['label' => 'Daftar Produk', 'url' => route('admin.products.index')],
+        ['label' => 'Add Product', 'url' => null]
+    ];
+@endphp
+
 @section('title', 'Add Product - Maneé Admin')
 
 @section('content')
@@ -40,15 +47,16 @@
             </div>
 
             <!-- Pricing & Inventory -->
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4"
+                 x-data="productPricing()">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Pricing & Inventory</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div x-data="{ price: {{ old('price', 0) }}, exchangeRate: 15500 }">
+                    <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price (IDR)</label>
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">Rp</span>
-                            <input type="number" name="price" x-model="price" class="w-full pl-8 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600" placeholder="e.g. 150000">
+                            <input type="number" name="price" x-model.number="price" class="w-full pl-8 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600" placeholder="e.g. 150000">
                         </div>
                         <div class="mt-2 p-2 bg-slate-50 dark:bg-gray-800/50 rounded-lg border border-slate-100 dark:border-gray-800 flex items-center justify-between">
                             <span class="text-[10px] uppercase font-bold text-slate-400">USD Equivalent</span>
@@ -62,11 +70,22 @@
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Applicable Taxes</label>
                     <div class="grid grid-cols-2 gap-4">
                         @foreach($taxes as $tax)
-                            <label class="inline-flex items-center gap-2 cursor-pointer border border-slate-200 dark:border-gray-800 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors">
-                                <input type="checkbox" name="taxes[]" value="{{ $tax->id }}" class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                            <label class="inline-flex items-center gap-2 cursor-pointer border border-slate-200 dark:border-gray-800 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors"
+                                   :class="selectedTaxes.includes('{{ $tax->id }}') ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800' : ''">
+                                <input type="checkbox" name="taxes[]" value="{{ $tax->id }}" x-model="selectedTaxes" class="rounded border-slate-300 text-blue-600 focus:ring-blue-600">
                                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $tax->name }} ({{ $tax->rate }}%)</span>
                             </label>
                         @endforeach
+                    </div>
+                </div>
+
+                <!-- Price After Tax Display -->
+                <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg" x-show="selectedTaxes.length > 0" x-transition>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-green-800 dark:text-green-300">Price after Tax (Estimated)</span>
+                        <span class="text-lg font-bold text-green-700 dark:text-green-400">
+                            Rp <span x-text="priceAfterTax.toLocaleString('id-ID', {minimumFractionDigits: 0, maximumFractionDigits: 2})"></span>
+                        </span>
                     </div>
                 </div>
 
@@ -231,7 +250,23 @@
 </div>
 
 <script>
-function previewImage(input, previewId) {
+    function productPricing() {
+        return {
+            price: {{ old('price', 0) }},
+            exchangeRate: 15500,
+            selectedTaxes: [],
+            taxRates: @json($taxes->pluck('rate', 'id')),
+            get priceAfterTax() {
+                let totalRate = 0;
+                this.selectedTaxes.forEach(taxId => {
+                    totalRate += parseFloat(this.taxRates[taxId] || 0);
+                });
+                return this.price * (1 + totalRate / 100);
+            }
+        }
+    }
+
+    function previewImage(input, previewId) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {

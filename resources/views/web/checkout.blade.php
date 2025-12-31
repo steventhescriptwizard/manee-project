@@ -147,7 +147,7 @@
                             </div>
                             <div class="flex justify-between items-center mt-2">
                                 <span class="text-[10px] text-gray-400 italic">Qty: {{ $item['quantity'] }}</span>
-                                <span class="text-sm font-bold text-brandBlue italic">Rp {{ number_format($item['price'], 0, ',', '.') }}</span>
+                                <span class="text-sm font-bold text-brandBlue italic">Rp {{ number_format($item['final_price'], 0, ',', '.') }}</span>
                             </div>
                         </div>
                     </div>
@@ -246,7 +246,17 @@
                         window.location.href = data.redirect_url;
                     },
                     onError: function(result) {
-                        alert("Pembayaran gagal!");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Pembayaran Gagal',
+                            text: 'Silakan coba lagi atau gunakan metode pembayaran lain.',
+                            confirmButtonColor: '#111318',
+                            customClass: {
+                                popup: 'rounded-2xl font-sans',
+                                title: 'font-serif italic font-bold text-lg',
+                                confirmButton: 'rounded-xl px-6 py-3 font-bold uppercase tracking-widest text-[10px]'
+                            }
+                        });
                         button.disabled = false;
                         text.innerText = 'Place Order';
                         spinner.classList.add('hidden');
@@ -258,7 +268,25 @@
                     }
                 });
             } else {
-                alert(data.message || 'Terjadi kesalahan saat membuat pesanan.');
+                let errorMessage = data.message || 'Terjadi kesalahan saat membuat pesanan.';
+                if (data.errors) {
+                    const firstErrorKey = Object.keys(data.errors)[0];
+                    if (firstErrorKey) {
+                        errorMessage = data.errors[firstErrorKey][0];
+                    }
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: errorMessage,
+                    confirmButtonColor: '#111318',
+                    customClass: {
+                        popup: 'rounded-2xl font-sans',
+                        title: 'font-serif italic font-bold text-lg',
+                        confirmButton: 'rounded-xl px-6 py-3 font-bold uppercase tracking-widest text-[10px]'
+                    }
+                });
                 button.disabled = false;
                 text.innerText = 'Place Order';
                 spinner.classList.add('hidden');
@@ -267,7 +295,17 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan koneksi.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Kesalahan Koneksi',
+                text: 'Gagal menghubungi server. Silakan periksa koneksi internet Anda.',
+                confirmButtonColor: '#111318',
+                customClass: {
+                    popup: 'rounded-2xl font-sans',
+                    title: 'font-serif italic font-bold text-lg',
+                    confirmButton: 'rounded-xl px-6 py-3 font-bold uppercase tracking-widest text-[10px]'
+                }
+            });
             button.disabled = false;
             text.innerText = 'Place Order';
             spinner.classList.add('hidden');

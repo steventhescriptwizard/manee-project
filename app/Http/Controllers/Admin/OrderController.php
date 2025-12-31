@@ -69,11 +69,22 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,shipped,completed,cancelled',
+            'status' => 'required|in:pending,processing,shipped,out_for_delivery,completed,cancelled',
             'payment_status' => 'nullable|in:unpaid,paid',
         ]);
 
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+
         $order->update($request->only(['status', 'payment_status']));
+
+        if ($oldStatus !== $newStatus) {
+            if ($newStatus === 'shipped') {
+                $order->user->notify(new \App\Notifications\OrderShippedNotification($order));
+            } elseif ($newStatus === 'out_for_delivery') {
+                $order->user->notify(new \App\Notifications\OrderOutForDeliveryNotification($order));
+            }
+        }
 
         return redirect()->back()->with('success', 'Order status updated successfully.');
     }

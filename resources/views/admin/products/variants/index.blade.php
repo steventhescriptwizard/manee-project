@@ -1,5 +1,13 @@
 @extends('layouts.admin')
 
+@php
+    $breadcrumbs = [
+        ['label' => 'Daftar Produk', 'url' => route('admin.products.index')],
+        ['label' => $product->product_name, 'url' => route('admin.products.edit', $product)],
+        ['label' => 'Manage Variants', 'url' => null]
+    ];
+@endphp
+
 @section('title', 'Manage Variants - Maneé Admin')
 
 @section('content')
@@ -38,8 +46,19 @@
                 <tbody class="divide-y divide-slate-200 dark:divide-gray-800">
                     @forelse($variants as $variant)
                     <tr class="hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors">
-                        <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">
-                            {{ $variant->attributes['name'] ?? 'N/A' }}
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded shadow-sm bg-slate-100 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 overflow-hidden shrink-0">
+                                    @if($variant->image_path)
+                                        <img src="{{ asset('storage/' . $variant->image_path) }}" class="h-full w-full object-cover">
+                                    @else
+                                        <div class="h-full w-full flex items-center justify-center text-slate-400">
+                                            <span class="material-symbols-outlined text-[18px]">image</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <span class="font-medium text-slate-900 dark:text-white">{{ $variant->attributes['name'] ?? 'N/A' }}</span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-slate-500 dark:text-slate-400">
                             @if($variant->color)

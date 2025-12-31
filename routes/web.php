@@ -15,9 +15,7 @@ Route::get('/faq', function () {
     return view('web.faq');
 })->name('faq');
 
-Route::get('/order-tracking', function () {
-    return view('web.order-tracking');
-})->name('order.tracking');
+Route::get('/order-tracking', [App\Http\Controllers\Web\OrderTrackingController::class, 'index'])->name('order.tracking');
 
 use App\Http\Controllers\Web\CartController;
 use App\Http\Controllers\Web\ShopController;
@@ -98,6 +96,12 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::get('/notifications', [App\Http\Controllers\Web\Customer\NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [App\Http\Controllers\Web\Customer\NotificationController::class, 'markRead'])->name('notifications.read');
     Route::delete('/notifications/{id}', [App\Http\Controllers\Web\Customer\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    
+    // Order Completion
+    Route::post('/orders/{id}/complete', [CustomerDashboardController::class, 'completeOrder'])->name('orders.complete');
+    
+    // Invoice Download
+    Route::get('/orders/{id}/invoice', [App\Http\Controllers\Web\InvoiceController::class, 'download'])->name('orders.invoice');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {

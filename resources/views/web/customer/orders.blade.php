@@ -79,9 +79,16 @@
                                 <span class="material-symbols-outlined text-[18px]">local_shipping</span>
                                 Lacak
                             </a>
-                            <a href="{{ route('customer.orders.show', $order->id) }}" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-gray-100 bg-white text-xs font-bold uppercase tracking-widest text-[#111318] hover:bg-gray-50 transition-all">
-                                Detail
-                            </a>
+                            @if($order->status === 'completed')
+                                <a href="{{ route('reviews.index', ['order_id' => $order->id]) }}" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-amber-500 text-white text-xs font-bold uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20">
+                                    <span class="material-symbols-outlined text-[18px]">star</span>
+                                    Beri Penilaian
+                                </a>
+                            @else
+                                <a href="{{ route('customer.orders.show', $order->id) }}" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-gray-100 bg-white text-xs font-bold uppercase tracking-widest text-[#111318] hover:bg-gray-50 transition-all">
+                                    Detail
+                                </a>
+                            @endif
                         </div>
                     </div>
                     

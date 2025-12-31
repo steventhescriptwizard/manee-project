@@ -61,6 +61,9 @@ class MidtransController extends Controller
                         'status' => 'processing',
                         'payment_method' => $paymentMethod
                     ]);
+
+                    // Notify Customer
+                    $order->user->notify(new \App\Notifications\PaymentSuccessNotification($order, $request->gross_amount));
                 }
             }
         } else if ($transactionStatus == 'settlement') {
@@ -69,6 +72,9 @@ class MidtransController extends Controller
                 'status' => 'processing',
                 'payment_method' => $paymentMethod
             ]);
+            
+            // Notify Customer
+            $order->user->notify(new \App\Notifications\PaymentSuccessNotification($order, $request->gross_amount));
         } else if ($transactionStatus == 'pending') {
             $order->update([
                 'payment_status' => 'unpaid', 

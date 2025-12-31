@@ -15,12 +15,38 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
+        $newCart = [];
         $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+
+        $productIds = collect($cart)->pluck('id')->unique();
+        $products = Product::with('taxes')->whereIn('id', $productIds)->get()->keyBy('id');
+
+        foreach ($cart as $key => $item) {
+            $product = $products->get($item['id']);
+            $price = $item['price']; // Base price
+            
+            if ($product) {
+                // Calculate Tax Multiplier
+                $taxMultiplier = 0;
+                foreach ($product->taxes as $tax) {
+                    if ($tax->is_active) {
+                        $taxMultiplier += $tax->rate / 100;
+                    }
+                }
+                
+                // Calculate Final Price (Base + Tax)
+                $finalPrice = $price * (1 + $taxMultiplier);
+                
+                $item['final_price'] = $finalPrice;
+                $total += $finalPrice * $item['quantity'];
+            } else {
+                 $item['final_price'] = $price;
+                 $total += $price * $item['quantity'];
+            }
+            $newCart[$key] = $item;
         }
 
-        return view('web.cart', compact('cart', 'total'));
+        return view('web.cart', ['cart' => $newCart, 'total' => $total]);
     }
 
     /**

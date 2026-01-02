@@ -1,0 +1,15 @@
+# Nixpacks configuration for Railway deployment
+providers = ["php"]
+
+[phases.build]
+cmds = [
+    "composer install --no-dev --optimize-autoloader",
+    "npm ci",
+    "npm run build"
+]
+
+[phases.setup]
+aptPkgs = ["...", "php8.3-gd", "php8.3-zip", "php8.3-mysql", "php8.3-mbstring"]
+
+[start]
+cmd = "php artisan storage:link --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"

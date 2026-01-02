@@ -28,6 +28,7 @@
                                 ['id' => 'customer.dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard'],
                                 ['id' => 'profile.edit', 'label' => 'Profil Saya', 'icon' => 'person'],
                                 ['id' => 'customer.orders', 'label' => 'Riwayat Pesanan', 'icon' => 'shopping_bag'],
+                                ['id' => 'customer.notifications.index', 'label' => 'Notifikasi', 'icon' => 'notifications'],
                                 ['id' => 'customer.address', 'label' => 'Alamat Saya', 'icon' => 'location_on'],
                                 ['id' => 'customer.payment', 'label' => 'Metode Pembayaran', 'icon' => 'credit_card'],
                                 ['id' => 'wishlist', 'label' => 'Wishlist', 'icon' => 'favorite'],
@@ -39,11 +40,16 @@
                                 $isActive = request()->routeIs($item['id'] . '*'); 
                             @endphp
                             <a href="{{ Route::has($item['id']) ? route($item['id']) : '#' }}" 
-                               class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive ? 'bg-brandBlue/10 text-[#111318] font-medium border-l-4 border-brandBlue' : 'text-gray-500 hover:bg-gray-50 hover:text-[#111318] border-l-4 border-transparent' }}">
+                               class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all relative {{ $isActive ? 'bg-brandBlue/10 text-[#111318] font-medium border-l-4 border-brandBlue' : 'text-gray-500 hover:bg-gray-50 hover:text-[#111318] border-l-4 border-transparent' }}">
                                 <span class="material-symbols-outlined text-[20px] {{ $isActive ? 'fill-1' : '' }}">
                                     {{ $item['icon'] }}
                                 </span>
-                                <span class="text-sm">{{ $item['label'] }}</span>
+                                <span class="text-sm flex-1">{{ $item['label'] }}</span>
+                                @if($item['id'] === 'customer.notifications.index' && Auth::user()->unreadNotifications->count() > 0)
+                                    <span class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold animate-pulse">
+                                        {{ Auth::user()->unreadNotifications->count() }}
+                                    </span>
+                                @endif
                             </a>
                         @endforeach
                         

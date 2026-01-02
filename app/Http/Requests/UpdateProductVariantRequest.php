@@ -23,6 +23,7 @@ class UpdateProductVariantRequest extends FormRequest
             'track_inventory' => 'boolean',
             'current_stock' => 'nullable|integer|min:0',
             'weight' => 'nullable|numeric|min:0',
+            'variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
     }
 

@@ -33,6 +33,14 @@ class ShopController extends Controller
             });
         }
 
+        // Filtering by Color
+        if ($request->filled('color')) {
+            $color = $request->color;
+            $query->whereHas('variants', function($q) use ($color) {
+                $q->where('color', $color);
+            });
+        }
+
         // Filtering by Price
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);

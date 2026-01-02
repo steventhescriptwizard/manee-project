@@ -1,5 +1,11 @@
 @extends('layouts.admin')
 
+@php
+    $breadcrumbs = [
+        ['label' => 'Daftar Produk', 'url' => null]
+    ];
+@endphp
+
 @section('title', 'Products - Maneé Admin')
 
 @section('content')

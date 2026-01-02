@@ -9,6 +9,8 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $with = ['taxes'];
+
     protected $fillable = [
         'product_name',
         'sku',
@@ -77,6 +79,11 @@ class Product extends Model
     public function getPriceWithTax()
     {
         return $this->price + $this->getTaxAmount();
+    }
+
+    public function getFinalPriceAttribute()
+    {
+        return $this->getPriceWithTax();
     }
 
     public function getAverageRatingAttribute()

@@ -67,6 +67,11 @@ class ProductVariantController extends Controller
             $data['sku'] = $finalSku;
         }
 
+        if ($request->hasFile('variant_image')) {
+            $imagePath = $request->file('variant_image')->store('products/variants', 'public');
+            $data['image_path'] = $imagePath;
+        }
+
         $variant = $product->variants()->create($data);
 
         // Initialize stock if tracking
@@ -112,6 +117,15 @@ class ProductVariantController extends Controller
             'size' => $data['size'] ?? null,
         ];
         $data['attributes'] = $attributes;
+
+        if ($request->hasFile('variant_image')) {
+            // Delete old image if exists
+            if ($variant->image_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($variant->image_path);
+            }
+            $imagePath = $request->file('variant_image')->store('products/variants', 'public');
+            $data['image_path'] = $imagePath;
+        }
 
         $variant->update($data);
 

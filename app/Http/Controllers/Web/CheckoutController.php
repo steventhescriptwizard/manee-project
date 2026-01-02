@@ -34,12 +34,39 @@ class CheckoutController extends Controller
         $user = Auth::user();
         $addresses = $user->customer ? $user->customer->addresses : collect([]);
         
+        $newCart = [];
         $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+
+        // Eager load products with taxes
+        $productIds = collect($cart)->pluck('id')->unique();
+        $products = \App\Models\Product::with('taxes')->whereIn('id', $productIds)->get()->keyBy('id');
+
+        foreach ($cart as $key => $item) {
+            $product = $products->get($item['id']);
+            $price = $item['price']; // Base price
+            
+            if ($product) {
+                // Calculate Tax Multiplier
+                $taxMultiplier = 0;
+                foreach ($product->taxes as $tax) {
+                    if ($tax->is_active) {
+                        $taxMultiplier += $tax->rate / 100;
+                    }
+                }
+                
+                // Calculate Final Price (Base + Tax)
+                $finalPrice = $price * (1 + $taxMultiplier);
+                
+                $item['final_price'] = $finalPrice;
+                $total += $finalPrice * $item['quantity'];
+            } else {
+                 $item['final_price'] = $price;
+                 $total += $price * $item['quantity'];
+            }
+            $newCart[$key] = $item;
         }
 
-        return view('web.checkout', compact('cart', 'total', 'addresses', 'user'));
+        return view('web.checkout', ['cart' => $newCart, 'total' => $total, 'addresses' => $addresses, 'user' => $user]);
     }
 
     /**
@@ -53,6 +80,8 @@ class CheckoutController extends Controller
             'payment_method' => 'required|string',
             'notes' => 'nullable|string',
             'discount_code' => 'nullable|string|exists:discounts,code',
+        ], [
+            'shipping_address_id.required' => 'Pesanan membutuhkan alamat pengiriman, silahkan tambahkan alamat terlebih dahulu.',
         ]);
 
         $cart = session()->get('cart', []);
@@ -210,6 +239,9 @@ class CheckoutController extends Controller
             // Notify Admins
             $admins = User::where('role', 'admin')->get();
             Notification::send($admins, new NewOrderNotification($order, Auth::user()->name));
+            
+            // Notify Customer
+            Auth::user()->notify(new \App\Notifications\CustomerOrderCreateNotification($order));
 
             // Clear Cart
             session()->forget('cart');

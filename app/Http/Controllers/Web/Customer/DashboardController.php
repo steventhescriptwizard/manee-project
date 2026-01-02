@@ -64,4 +64,21 @@ class DashboardController extends Controller
         // Assuming there's a relationship or we fetch from Wishlist model
         return redirect()->route('wishlist'); // For now redirect to the global wishlist page
     }
+
+    public function completeOrder($id)
+    {
+        $user = Auth::user();
+        $order = Order::where('user_id', $user->id)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        // Only allow completion if order is shipped or out for delivery
+        if (!in_array($order->status, ['shipped', 'out_for_delivery'])) {
+            return redirect()->back()->with('error', 'Pesanan tidak dapat ditandai sebagai diterima pada status saat ini.');
+        }
+
+        $order->update(['status' => 'completed']);
+
+        return redirect()->back()->with('success', 'Pesanan telah ditandai sebagai diterima. Terima kasih!');
+    }
 }

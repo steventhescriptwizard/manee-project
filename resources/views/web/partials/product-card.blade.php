@@ -52,7 +52,7 @@
         <!-- Info Container -->
         <div class="p-3 bg-white flex-grow text-left">
             <h3 class="font-sans font-bold text-textMain text-sm md:text-base line-clamp-1 group-hover/card:text-brandBlue transition-colors">{{ $product->product_name }}</h3>
-            <p class="font-serif text-xs md:text-sm text-gray-600 mt-0.5">Rp. {{ number_format($product->price, 0, ',', '.') }}</p>
+            <p class="font-serif text-xs md:text-sm text-gray-600 mt-0.5">Rp. {{ number_format($product->final_price, 0, ',', '.') }}</p>
         </div>
     </div>
 </a>

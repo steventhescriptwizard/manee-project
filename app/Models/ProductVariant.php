@@ -16,6 +16,7 @@ class ProductVariant extends Model
         'attributes',
         'color',
         'size',
+        'image_path',
         'price',
         'track_inventory',
         'weight',

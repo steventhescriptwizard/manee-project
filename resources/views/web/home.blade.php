@@ -15,7 +15,9 @@
                 ],
                 next() { this.activeSlide = (this.activeSlide + 1) % this.slides.length },
                 prev() { this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length },
-                init() { setInterval(() => this.next(), 5000) }
+                init() { 
+                    setInterval(() => this.next(), 5000);
+                }
              }">
         
         <template x-for="(slide, index) in slides" :key="index">
@@ -36,7 +38,7 @@
         <div class="absolute top-0 right-0 w-[80vh] h-[80vh] rounded-full bg-[#791F1F] mix-blend-multiply opacity-80 blur-3xl transform translate-x-1/4 -translate-y-1/4 pointer-events-none hidden lg:block z-10"></div>
         
         <div class="relative container mx-auto px-6 h-full flex flex-col justify-center text-white z-20">
-            <div class="max-w-xl mt-16 md:mt-0 md:ml-12">
+            <div class="max-w-xl mt-16 md:mt-0 md:ml-12 min-h-[160px]"> <!-- Added min-height to prevent layout shift -->
                 <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif italic font-light leading-tight mb-6">
                     Headline Here and<br/>Can Go Over Two Lines
                 </h1>

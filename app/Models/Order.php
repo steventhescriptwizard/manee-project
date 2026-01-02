@@ -67,20 +67,28 @@ class Order extends Model
 
     public function getTrackingAttribute()
     {
-        $statusOrder = ['pending', 'processing', 'shipped', 'completed'];
+        $statusOrder = ['pending', 'processing', 'shipped', 'out_for_delivery', 'completed'];
         $currentStatusIndex = array_search($this->status, $statusOrder);
         
         $steps = [
             (object)['label' => 'Dipesan', 'date' => $this->created_at->format('d M'), 'time' => $this->created_at->format('H:i'), 'completed' => $currentStatusIndex >= 0],
             (object)['label' => 'Diproses', 'completed' => $currentStatusIndex >= 1],
             (object)['label' => 'Dikirim', 'completed' => $currentStatusIndex >= 2],
-            (object)['label' => 'Selesai', 'completed' => $currentStatusIndex >= 3],
+            (object)['label' => 'Di Antar', 'completed' => $currentStatusIndex >= 3],
+            (object)['label' => 'Selesai', 'completed' => $currentStatusIndex >= 4],
         ];
+
+        $currentLocation = match ($this->status) {
+            'shipped' => 'Dalam Perjalanan',
+            'out_for_delivery' => 'Sedang Diantar Kurir',
+            'completed' => 'Diterima',
+            default => 'Gudang Pusat',
+        };
 
         return (object)[
             'steps' => $steps,
             'estimatedArrival' => $this->created_at->addDays(3)->format('d M Y'),
-            'currentLocation' => $this->status === 'shipped' ? 'Dalam Perjalanan' : ($this->status === 'completed' ? 'Diterima' : 'Gudang Pusat'),
+            'currentLocation' => $currentLocation,
         ];
     }
 

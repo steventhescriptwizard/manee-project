@@ -105,21 +105,61 @@
 
                 <div class="w-full h-px bg-gray-100 my-8"></div>
 
-                <!-- Color (Visual only for now, can be linked to variants later) -->
+                <!-- Color -->
                 <div>
                     <h3 class="font-serif text-xl font-bold mb-4 text-textMain">Color</h3>
+                    @php
+                        $colorMap = [
+                            'Black' => '#000000',
+                            'White' => '#FFFFFF',
+                            'Beige' => '#F5F5DC',
+                            'Brown' => '#8B4513',
+                            'Navy' => '#000080',
+                            'Gray' => '#808080',
+                            'Green' => '#008000',
+                            'Red' => '#FF0000',
+                            'Blue' => '#0000FF',
+                            'Pink' => '#FFC0CB',
+                            'Cream' => '#FFFDD0',
+                            'Tan' => '#D2B48C',
+                            'Olive' => '#808000',
+                        ];
+                    @endphp
                     <div class="flex flex-wrap gap-3">
-                        @foreach(['#FFFFFF', '#000000', '#F5F5DC', '#8B4513', '#708090', '#2F4F4F'] as $hex)
-                        <button
-                            type="button"
-                            class="w-6 h-6 rounded-full ring-2 ring-offset-2 ring-transparent hover:ring-gray-300 transition-all border border-gray-100 shadow-sm"
-                            style="background-color: {{ $hex }}"
-                        ></button>
+                        <input type="hidden" name="color" id="selected-color" value="{{ request('color') }}">
+                        @foreach($colors as $color)
+                            @php 
+                                $hex = $colorMap[ucfirst($color)] ?? '#CBD5E1'; // Default gray if not mapped
+                            @endphp
+                            <button
+                                type="button"
+                                onclick="document.getElementById('selected-color').value = '{{ $color }}'; this.form.submit();"
+                                class="w-8 h-8 rounded-full ring-2 ring-offset-2 transition-all border border-gray-100 shadow-sm relative group"
+                                style="background-color: {{ $hex }}"
+                                title="{{ ucfirst($color) }}"
+                                :class="'{{ request('color') }}' === '{{ $color }}' ? 'ring-brandBlue scale-110 shadow-md' : 'ring-transparent hover:ring-gray-300'"
+                            >
+                                @if(strtolower($color) === 'white')
+                                    <span class="absolute inset-0 rounded-full border border-gray-200"></span>
+                                @endif
+                                <span class="sr-only">{{ $color }}</span>
+                                
+                                <!-- Tooltip -->
+                                <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                    {{ ucfirst($color) }}
+                                </span>
+                            </button>
                         @endforeach
                     </div>
+                    @if(request('color'))
+                        <div class="mt-2 text-[10px] text-gray-500 font-medium">
+                            Filtered by: <span class="text-brandBlue font-bold uppercase tracking-widest">{{ request('color') }}</span>
+                            <button type="button" onclick="document.getElementById('selected-color').value = ''; this.form.submit();" class="ml-2 text-red-500 hover:underline">Remove</button>
+                        </div>
+                    @endif
                 </div>
 
-                @if(request()->anyFilled(['category', 'min_price', 'max_price', 'search']))
+                @if(request()->anyFilled(['category', 'min_price', 'max_price', 'search', 'color']))
                 <div class="mt-8">
                     <a href="{{ route('shop') }}" class="text-xs text-red-500 font-bold uppercase tracking-widest flex items-center gap-1 hover:underline">
                         <span class="material-symbols-outlined text-sm">close</span>

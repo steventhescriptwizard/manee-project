@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Maneé Fashion Store')</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/Manee M Footer.svg') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,6 +105,9 @@
             }
         });
     </script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     @stack('scripts')
 </body>
 </html>

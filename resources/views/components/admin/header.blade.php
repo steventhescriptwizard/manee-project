@@ -190,7 +190,10 @@
                     <div class="p-4 border-b border-slate-50 dark:border-gray-700 flex items-center justify-between bg-slate-50/50 dark:bg-gray-800/50">
                         <h3 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Notifikasi</h3>
                         @if(auth()->user()->unreadNotifications->count() > 0)
-                            <a href="#" class="text-[10px] font-bold text-blue-600 hover:underline">Tandai semua dibaca</a>
+                            <form action="{{ route('admin.notifications.markAllAsRead') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-[10px] font-bold text-blue-600 hover:underline">Tandai semua dibaca</button>
+                            </form>
                         @endif
                     </div>
                     <div class="max-h-96 overflow-y-auto">

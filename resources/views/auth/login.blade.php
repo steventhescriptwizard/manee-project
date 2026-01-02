@@ -40,6 +40,26 @@
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />
 
+                <!-- Error Alert -->
+                @if ($errors->any())
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 to-white border border-red-100 p-5 shadow-sm animate-in fade-in zoom-in-95 duration-500">
+                        <!-- Glassy accent -->
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-red-100/30 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                        
+                        <div class="relative flex items-center gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-red-500 flex items-center justify-center shadow-lg shadow-red-200">
+                                <span class="material-symbols-outlined text-white text-[24px]">priority_high</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[13px] font-bold text-red-900 leading-tight">Opps! Terjadi kesalahan</p>
+                                <p class="text-[12px] text-red-600 font-medium mt-1 leading-snug">
+                                    {{ $errors->first() }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-5">
                     @csrf
 

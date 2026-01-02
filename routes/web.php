@@ -120,5 +120,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
     Route::get('/inventory', [App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
+    
+    // Notifications
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 

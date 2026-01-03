@@ -84,7 +84,7 @@
                         <img src="{{ $cat->image_path ?? ($catImages[$index] ?? asset('images/knitwear.png')) }}" alt="{{ $cat->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                         <div class="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors"></div>
                         <div class="absolute inset-0 flex items-end justify-center pb-8">
-                            <span class="text-white text-xl md:text-2xl font-serif italic font-bold tracking-wider drop-shadow-lg border-b-2 border-white/70 pb-1">{{ $cat->name }}</span>
+                            <span class="text-white text-xl md:text-2xl font-sans font-bold uppercase tracking-widest drop-shadow-lg border-b-2 border-white/70 pb-1">{{ $cat->name }}</span>
                         </div>
                     </div>
                 </a>

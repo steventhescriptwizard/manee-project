@@ -20,7 +20,12 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans text-gray-900 antialiased bg-white">
+<body class="font-sans text-gray-900 antialiased bg-white"
+      x-data="{ isLoading: !sessionStorage.getItem('manee_loading_shown') }"
+      x-init="if(isLoading) { setTimeout(() => { isLoading = false; sessionStorage.setItem('manee_loading_shown', 'true'); }, 3500); }"
+      :class="{ 'overflow-hidden': isLoading }">
+    
+    @include('components.web.loading-screen')
     
     @include('components.web.navbar')
 

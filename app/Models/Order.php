@@ -17,6 +17,11 @@ class Order extends Model
             if (!$order->order_number) {
                 $order->order_number = static::generateOrderNumber();
             }
+            
+            if (!$order->warehouse_id) {
+                $primaryWarehouse = \App\Models\Warehouse::primary()->first();
+                $order->warehouse_id = $primaryWarehouse ? $primaryWarehouse->id : \App\Models\Warehouse::first()?->id;
+            }
         });
     }
 
@@ -39,6 +44,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'warehouse_id',
         'order_number',
         'total_price',
         'status',
@@ -65,6 +71,11 @@ class Order extends Model
         return $this->belongsTo(CustomerAddress::class, 'shipping_address_id');
     }
 
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
     public function getTrackingAttribute()
     {
         $statusOrder = ['pending', 'processing', 'shipped', 'out_for_delivery', 'completed'];
@@ -82,7 +93,7 @@ class Order extends Model
             'shipped' => 'Dalam Perjalanan',
             'out_for_delivery' => 'Sedang Diantar Kurir',
             'completed' => 'Diterima',
-            default => 'Gudang Pusat',
+            default => $this->warehouse?->name ?? \App\Models\Warehouse::first()?->name ?? 'Gudang Pusat',
         };
 
         return (object)[

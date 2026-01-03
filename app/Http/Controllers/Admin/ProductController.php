@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -73,9 +75,20 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
+        // Initialize Image Manager
+        $manager = new ImageManager(new Driver());
+
         if ($request->hasFile('image_main')) {
-            $path = $request->file('image_main')->store('products', 'public');
-            $data['image_main'] = $path;
+            $image = $request->file('image_main');
+            $filename = 'products/' . uniqid() . '.webp';
+            
+            // Read, Resize (max width 1200, aspect ratio preserved), Encode (WebP, 90% quality)
+            $img = $manager->read($image);
+            $img->scale(width: 1200);
+            $encoded = $img->toWebp(quality: 90);
+            
+            Storage::disk('public')->put($filename, (string) $encoded);
+            $data['image_main'] = $filename;
         }
 
         $product = Product::create($data);
@@ -90,9 +103,16 @@ class ProductController extends Controller
 
         if ($request->hasFile('product_gallery')) {
             foreach ($request->file('product_gallery') as $image) {
-                $path = $image->store('products/gallery', 'public');
+                $filename = 'products/gallery/' . uniqid() . '.webp';
+                
+                $img = $manager->read($image);
+                $img->scale(width: 1200);
+                $encoded = $img->toWebp(quality: 90);
+                
+                Storage::disk('public')->put($filename, (string) $encoded);
+                
                 $product->images()->create([
-                    'image_path' => $path,
+                    'image_path' => $filename,
                     'is_primary' => false,
                 ]);
             }
@@ -142,13 +162,24 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
+        // Initialize Image Manager
+        $manager = new ImageManager(new Driver());
+
         if ($request->hasFile('image_main')) {
             // Delete old image
             if ($product->image_main) {
                 Storage::disk('public')->delete($product->image_main);
             }
-            $path = $request->file('image_main')->store('products', 'public');
-            $data['image_main'] = $path;
+            
+            $image = $request->file('image_main');
+            $filename = 'products/' . uniqid() . '.webp';
+            
+            $img = $manager->read($image);
+            $img->scale(width: 1200);
+            $encoded = $img->toWebp(quality: 90);
+            
+            Storage::disk('public')->put($filename, (string) $encoded);
+            $data['image_main'] = $filename;
         }
 
         $product->update($data);
@@ -165,9 +196,16 @@ class ProductController extends Controller
 
         if ($request->hasFile('product_gallery')) {
             foreach ($request->file('product_gallery') as $image) {
-                $path = $image->store('products/gallery', 'public');
+                $filename = 'products/gallery/' . uniqid() . '.webp';
+                
+                $img = $manager->read($image);
+                $img->scale(width: 1200);
+                $encoded = $img->toWebp(quality: 90);
+                
+                Storage::disk('public')->put($filename, (string) $encoded);
+
                 $product->images()->create([
-                    'image_path' => $path,
+                    'image_path' => $filename,
                     'is_primary' => false,
                 ]);
             }

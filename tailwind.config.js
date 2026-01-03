@@ -21,7 +21,13 @@ export default {
                 display: [
                     'Cormorant Infant', 'serif'
                 ],
-                body: ['Rubik', 'sans-serif']
+                body: [
+                    'Rubik', 'sans-serif'
+                ],
+                'serif-brand': [
+                    'Cormorant Infant', 'serif'
+                ],
+                'sans-brand': ['Rubik', 'sans-serif']
             },
             colors: {
                 brandCream: '#FDFBF7',
@@ -31,7 +37,27 @@ export default {
                 brandLight: '#F3F4F6',
                 backgroundLight: '#FCFCFC',
                 backgroundDark: '#111721',
-                textMain: '#1A1A1A'
+                textMain: '#1A1A1A',
+                // Loading Screen Colors
+                primary: "#bed3f9",
+                "manee-text": "#111318",
+                "manee-subtext": "#616f89"
+            },
+            animation: {
+                "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                "fade-in-up": "fadeInUp 1s ease-out forwards"
+            },
+            keyframes: {
+                fadeInUp: {
+                    "0%": {
+                        opacity: "0",
+                        transform: "translateY(10px)"
+                    },
+                    "100%": {
+                        opacity: "1",
+                        transform: "translateY(0)"
+                    }
+                }
             }
         }
     },

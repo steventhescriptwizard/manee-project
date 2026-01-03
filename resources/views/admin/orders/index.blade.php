@@ -208,9 +208,9 @@
                                     <a href="{{ route('admin.orders.show', $order->id) }}" class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="View Details">
                                         <span class="material-symbols-outlined text-[20px]">visibility</span>
                                     </a>
-                                    <button class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Print Invoice">
+                                    <a href="{{ route('admin.orders.invoice', $order->id) }}" class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Print Invoice">
                                         <span class="material-symbols-outlined text-[20px]">print</span>
-                                    </button>
+                                    </a>
                                     <button class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="More Actions">
                                         <span class="material-symbols-outlined text-[20px]">more_vert</span>
                                     </button>

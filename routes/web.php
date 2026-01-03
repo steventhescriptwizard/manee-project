@@ -118,10 +118,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::resource('customers', App\Http\Controllers\Admin\CustomerController::class);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
+    Route::get('orders/{order}/invoice', [App\Http\Controllers\Admin\OrderController::class, 'downloadInvoice'])->name('orders.invoice');
     Route::get('/inventory', [App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
     
     // Notifications
-    Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 

@@ -17,7 +17,7 @@
                 <div>
                     <h4 class="font-sans font-medium text-textMain mb-4 text-lg">Useful Links</h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-3 max-w-2xl text-sm font-sans text-gray-600">
-                        <a href="#" class="hover:text-brandRed transition-colors">My Account</a>
+                        <a href="{{ route('dashboard') }}" class="hover:text-brandRed transition-colors">My Account</a>
                         <a href="#" class="hover:text-brandRed transition-colors">Payment Confirmation</a>
                         <a href="#" class="hover:text-brandRed transition-colors">Shipping Information</a>
                         <a href="{{ route('order.tracking') }}" class="hover:text-brandRed transition-colors">Track Order</a>

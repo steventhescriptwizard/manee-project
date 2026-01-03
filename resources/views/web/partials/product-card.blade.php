@@ -1,4 +1,4 @@
-<a href="{{ route('products.show', $product->id) }}" class="w-[160px] md:w-[220px] flex-shrink-0 group/card block transition-all hover:-translate-y-1">
+<a href="{{ route('products.show', $product->id) }}" class="w-full flex-shrink-0 group/card block transition-all hover:-translate-y-1">
     <div class="bg-white rounded-2xl border-2 border-[#5D4037] flex flex-col h-full shadow-sm hover:shadow-xl transition-all p-[8px]">
         <!-- Image Container -->
         <div class="relative aspect-[3/4] overflow-hidden bg-gray-50 rounded-xl">

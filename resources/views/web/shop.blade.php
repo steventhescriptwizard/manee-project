@@ -203,7 +203,7 @@
 
             <!-- Grid -->
             @if($products->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
                 @foreach($products as $product)
                     @include('web.partials.product-card', ['product' => $product])
                 @endforeach

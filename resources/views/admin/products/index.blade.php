@@ -167,7 +167,7 @@
         
         <!-- Pagination -->
         <div class="p-4 border-t border-slate-200 dark:border-gray-800">
-            {{ $products->links() }}
+            {{ $products->links('vendor.pagination.admin') }}
         </div>
     </div>
 </div>

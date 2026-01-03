@@ -65,10 +65,10 @@
                 </button>
             </form>
             
-            <button class="flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-700 transition-all shadow-sm">
+            <a href="{{ route('admin.orders.invoice', $order->id) }}" class="flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-700 transition-all shadow-sm">
                 <span class="material-symbols-outlined text-[20px]">print</span>
                 <span>Faktur</span>
-            </button>
+            </a>
         </div>
     </div>
 

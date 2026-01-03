@@ -97,21 +97,15 @@
     <section class="py-16 bg-[#FDFBF7]" 
              x-data="{ 
                 activeTab: 'best_sellers',
-                isPaused: false,
-                scroll() {
-                    if (!this.isPaused) {
-                        const slider = document.getElementById('slider-' + this.activeTab);
-                        if (slider) {
-                            slider.scrollLeft += 0.6; // Kecepatan scroll halus
-                            if (slider.scrollLeft >= slider.scrollWidth - slider.offsetWidth - 1) {
-                                slider.scrollLeft = 0;
-                            }
-                        }
+                scroll(direction) {
+                    const slider = document.getElementById('slider-' + this.activeTab);
+                    if (slider) {
+                        const amount = 300;
+                        slider.scrollBy({ 
+                            left: direction === 'right' ? amount : -amount, 
+                            behavior: 'smooth' 
+                        });
                     }
-                    requestAnimationFrame(() => this.scroll());
-                },
-                init() {
-                    this.scroll();
                 }
              }">
         <div class="container mx-auto px-6">
@@ -136,29 +130,43 @@
                 </div>
             </div>
             
-            <div class="relative group" @mouseenter="isPaused = true" @mouseleave="isPaused = false">
+            <div class="relative group px-4">
+                <!-- Navigation Buttons -->
+                <button @click="scroll('left')" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-textMain hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button @click="scroll('right')" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-textMain hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+
                 <!-- Best Sellers -->
-                <div x-show="activeTab === 'best_sellers'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8" id="slider-best_sellers">
+                <div x-show="activeTab === 'best_sellers'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 snap-x" id="slider-best_sellers">
                     @forelse($bestSellers as $product)
-                        @include('web.partials.product-card', ['product' => $product])
+                        <div class="w-[220px] flex-shrink-0 snap-start">
+                            @include('web.partials.product-card', ['product' => $product])
+                        </div>
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No best sellers available yet.</div>
                     @endforelse
                 </div>
 
                 <!-- New Arrivals -->
-                <div x-show="activeTab === 'new_arrivals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8" id="slider-new_arrivals">
+                <div x-show="activeTab === 'new_arrivals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 snap-x" id="slider-new_arrivals">
                     @forelse($newArrivals as $product)
-                        @include('web.partials.product-card', ['product' => $product])
+                        <div class="w-[220px] flex-shrink-0 snap-start">
+                            @include('web.partials.product-card', ['product' => $product])
+                        </div>
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No new arrivals available yet.</div>
                     @endforelse
                 </div>
 
                 <!-- Sale -->
-                <div x-show="activeTab === 'sale'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8" id="slider-sale">
+                <div x-show="activeTab === 'sale'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="flex gap-6 overflow-x-auto hide-scrollbar pb-8 snap-x" id="slider-sale">
                     @forelse($saleProducts as $product)
-                        @include('web.partials.product-card', ['product' => $product])
+                        <div class="w-[220px] flex-shrink-0 snap-start">
+                            @include('web.partials.product-card', ['product' => $product])
+                        </div>
                     @empty
                         <div class="w-full text-center py-10 text-gray-400 font-sans italic">No products on sale available yet.</div>
                     @endforelse

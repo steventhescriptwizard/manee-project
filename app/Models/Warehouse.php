@@ -15,7 +15,22 @@ class Warehouse extends Model
         'address',
         'city',
         'country',
+        'is_primary',
     ];
+
+    protected $casts = [
+        'is_primary' => 'boolean',
+    ];
+
+    public function scopePrimary($query)
+    {
+        return $query->where('is_primary', true);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 
     public function stocks()
     {

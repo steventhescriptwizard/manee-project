@@ -19,6 +19,7 @@ class StoreWarehouseRequest extends FormRequest
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
+            'is_primary' => 'boolean',
         ];
     }
 }

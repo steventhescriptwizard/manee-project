@@ -112,7 +112,7 @@
                     name="search"
                     value="{{ request('search') }}"
                     placeholder="Find products" 
-                    class="bg-transparent border-0 border-b-2 outline-none text-xl w-64 pb-2 focus:ring-0 transition-all font-light"
+                    class="bg-transparent border-0 border-b-2 outline-none text-sm w-64 pb-2 focus:ring-0 transition-all font-medium"
                     :class="{ 
                         'text-white placeholder-white/80 border-white/60 focus:border-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 
                         'text-textMain placeholder-textMain/60 border-textMain/40 focus:border-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled 
@@ -125,7 +125,7 @@
                     <button 
                         @click="userDropdownOpen = !userDropdownOpen"
                         @click.away="userDropdownOpen = false"
-                        class="text-lg font-sans font-light transition-colors hover:opacity-80"
+                        class="text-sm font-sans font-medium transition-colors hover:opacity-80"
                         :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                     >
                         {{ auth()->user()->name }}
@@ -162,12 +162,12 @@
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="hidden md:block text-lg font-sans font-light transition-colors hover:opacity-80"
+                <a href="{{ route('login') }}" class="hidden md:block text-sm font-sans font-medium transition-colors hover:opacity-80"
                    :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
                 >Login</a>
             @endauth
 
-            <a href="{{ route('cart') }}" class="text-lg font-sans font-light transition-colors hover:opacity-80"
+            <a href="{{ route('cart') }}" class="text-sm font-sans font-medium transition-colors hover:opacity-80"
                :class="{ 'text-white': {{ $isHome ? 'true' : 'false' }} && !isScrolled, 'text-textMain': !({{ $isHome ? 'true' : 'false' }}) || isScrolled }"
             >
                 Cart

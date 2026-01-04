@@ -45,6 +45,12 @@
                     <input type="text" name="country" value="{{ old('country') }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-900 dark:text-white focus:ring-blue-600 focus:border-blue-600">
                 </div>
             </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <input type="hidden" name="is_primary" value="0">
+                <input type="checkbox" name="is_primary" id="is_primary" value="1" {{ old('is_primary') ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                <label for="is_primary" class="text-sm font-medium text-slate-700 dark:text-slate-300">Set as Main Warehouse</label>
+            </div>
         </div>
 
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-600/20">

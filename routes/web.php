@@ -107,7 +107,13 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('products/export', [App\Http\Controllers\Admin\ProductController::class, 'export'])->name('products.export');
+    Route::get('products/template', [App\Http\Controllers\Admin\ProductController::class, 'downloadTemplate'])->name('products.template');
+    Route::get('products/import', [App\Http\Controllers\Admin\ProductController::class, 'importView'])->name('products.import.view');
+    Route::post('products/import', [App\Http\Controllers\Admin\ProductController::class, 'import'])->name('products.import');
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+    
+    Route::get('outstanding', [App\Http\Controllers\Admin\OutstandingController::class, 'index'])->name('outstanding.index');
     Route::delete('products/{product}/images/{image}', [App\Http\Controllers\Admin\ProductController::class, 'destroyImage'])->name('products.images.destroy');
     Route::resource('products.variants', App\Http\Controllers\Admin\ProductVariantController::class);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);

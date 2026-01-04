@@ -11,6 +11,11 @@ use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use App\Exports\ProductsExport;
+use App\Imports\ProductsImport;
+use App\Exports\ProductTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ImportHistory;
 
 class ProductController extends Controller
 {
@@ -264,5 +269,54 @@ class ProductController extends Controller
         $image->delete();
 
         return back()->with('success', 'Image removed from gallery.');
+    }
+
+    public function export()
+    {
+        return Excel::download(new ProductsExport, 'products.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        \Log::info('Import method called.');
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls',
+            'import_mode' => 'required|in:new,update',
+        ]);
+
+        \Log::info('Import validation passed. Mode: ' . $request->import_mode);
+
+        try {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+
+            $history = ImportHistory::create([
+                'file_name' => $fileName,
+                'user_id' => auth()->id(),
+                'status' => 'processing',
+            ]);
+
+            Excel::import(new ProductsImport($request->import_mode, $history), $file);
+            \Log::info('Excel::import executed.');
+        } catch (\Exception $e) {
+            \Log::error('Import Error: ' . $e->getMessage());
+            if (isset($history)) {
+                $history->update(['status' => 'failed']);
+            }
+            return back()->with('error', 'Import failed: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Products imported successfully.');
+    }
+
+    public function importView()
+    {
+        $histories = ImportHistory::latest()->take(10)->get();
+        return view('admin.products.import', compact('histories'));
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new ProductTemplateExport, 'product_template.xlsx');
     }
 }

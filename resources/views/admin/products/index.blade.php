@@ -16,10 +16,20 @@
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Products</h1>
             <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your product catalog</p>
         </div>
-        <a href="{{ route('admin.products.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
-            <span class="material-symbols-outlined text-[20px]">add</span>
-            Add Product
-        </a>
+        <div class="flex gap-2">
+            <a href="{{ route('admin.products.export') }}" class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-slate-300 dark:border-gray-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <span class="material-symbols-outlined text-[20px]">download</span>
+                Export
+            </a>
+            <a href="{{ route('admin.products.import.view') }}" class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-slate-300 dark:border-gray-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <span class="material-symbols-outlined text-[20px]">upload</span>
+                Import
+            </a>
+            <a href="{{ route('admin.products.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <span class="material-symbols-outlined text-[20px]">add</span>
+                Add Product
+            </a>
+        </div>
     </div>
 
     {{-- Filter Bar --}}

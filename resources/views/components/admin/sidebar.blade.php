@@ -39,7 +39,16 @@
         @php
             $navItems = [
                 ['icon' => 'dashboard', 'label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
-                ['icon' => 'shopping_bag', 'label' => 'Orders', 'route' => route('admin.orders.index'), 'active' => request()->routeIs('admin.orders.*')],
+                [
+                    'icon' => 'shopping_bag', 
+                    'label' => 'Orders', 
+                    'route' => '#', 
+                    'active' => request()->routeIs('admin.orders.*') || request()->routeIs('admin.outstanding.*'),
+                    'submenu' => [
+                        ['label' => 'Orders', 'route' => route('admin.orders.index'), 'active' => request()->routeIs('admin.orders.index') || request()->routeIs('admin.orders.show')],
+                        ['label' => 'Outstanding Sales', 'route' => route('admin.outstanding.index'), 'active' => request()->routeIs('admin.outstanding.*')],
+                    ]
+                ],
                 ['icon' => 'checkroom', 'label' => 'Products', 'route' => route('admin.products.index'), 'active' => request()->routeIs('admin.products.*')],
                 ['icon' => 'category', 'label' => 'Categories', 'route' => route('admin.categories.index'), 'active' => request()->routeIs('admin.categories.*')],
                 ['icon' => 'warehouse', 'label' => 'Warehouses', 'route' => route('admin.warehouses.index'), 'active' => request()->routeIs('admin.warehouses.*')],
@@ -52,32 +61,66 @@
                 ['icon' => 'campaign', 'label' => 'Marketing', 'route' => '#', 'active' => false],
                 ['icon' => 'settings', 'label' => 'Settings', 'route' => '#', 'active' => false],
             ];
-            // Primary Color: Using text-blue-600/bg-blue-50 as generic primary interpretation or custom configured 'primary'
-            // The React code uses 'text-primary' and 'bg-primary/10', implying a Tailwind configuration for 'primary'.
-            // I will assume for now 'blue-600' is primary equivalent or use 'text-[color]' if I knew the hex.
-            // Let's stick effectively to what the React code has but use a standard tailwind color if 'primary' isn't defined.
-            // Actually, I'll use `text-blue-600` and `bg-blue-50` to approximate `primary`.
         @endphp
 
         @foreach($navItems as $item)
-            <a
-                href="{{ $item['route'] }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group
-                {{ $item['active'] 
-                    ? 'bg-blue-50 text-blue-600 font-semibold' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-slate-900 dark:hover:text-white font-medium' 
-                }}"
-            >
-                <span 
-                    class="material-symbols-outlined text-[22px] {{ !$item['active'] ? 'group-hover:text-blue-600 transition-colors' : '' }}"
-                    style="{{ $item['active'] ? "font-variation-settings: 'FILL' 1" : '' }}"
+            @if(isset($item['submenu']))
+                <div x-data="{ open: {{ $item['active'] ? 'true' : 'false' }} }" class="flex flex-col gap-1">
+                    <button
+                        @click="open = !open"
+                        class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors group w-full text-left
+                        {{ $item['active'] 
+                            ? 'bg-blue-50/50 text-blue-600 font-semibold' 
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-slate-900 dark:hover:text-white font-medium' 
+                        }}"
+                    >
+                        <div class="flex items-center gap-3">
+                            <span 
+                                class="material-symbols-outlined text-[22px] {{ !$item['active'] ? 'group-hover:text-blue-600 transition-colors' : '' }}"
+                                style="{{ $item['active'] ? "font-variation-settings: 'FILL' 1" : '' }}"
+                            >
+                                {{ $item['icon'] }}
+                            </span>
+                            <span class="text-sm">{{ $item['label'] }}</span>
+                        </div>
+                        <span class="material-symbols-outlined text-[20px] transition-transform duration-200" :class="{ 'rotate-180': open }">expand_more</span>
+                    </button>
+                    
+                    <div x-show="open" x-collapse class="flex flex-col gap-1 pl-11 pr-3">
+                        @foreach($item['submenu'] as $subItem)
+                            <a 
+                                href="{{ $subItem['route'] }}" 
+                                class="flex items-center py-2 text-sm rounded-lg transition-colors
+                                {{ $subItem['active']
+                                    ? 'text-blue-600 font-semibold'
+                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                                }}"
+                            >
+                                {{ $subItem['label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <a
+                    href="{{ $item['route'] }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group
+                    {{ $item['active'] 
+                        ? 'bg-blue-50 text-blue-600 font-semibold' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-slate-900 dark:hover:text-white font-medium' 
+                    }}"
                 >
-                    {{ $item['icon'] }}
-                </span>
-                <span class="text-sm">
-                    {{ $item['label'] }}
-                </span>
-            </a>
+                    <span 
+                        class="material-symbols-outlined text-[22px] {{ !$item['active'] ? 'group-hover:text-blue-600 transition-colors' : '' }}"
+                        style="{{ $item['active'] ? "font-variation-settings: 'FILL' 1" : '' }}"
+                    >
+                        {{ $item['icon'] }}
+                    </span>
+                    <span class="text-sm">
+                        {{ $item['label'] }}
+                    </span>
+                </a>
+            @endif
         @endforeach
     </nav>
 

@@ -22,7 +22,13 @@ class WarehouseController extends Controller
 
     public function store(StoreWarehouseRequest $request)
     {
-        Warehouse::create($request->validated());
+        $validated = $request->validated();
+
+        if ($request->boolean('is_primary')) {
+            Warehouse::where('is_primary', true)->update(['is_primary' => false]);
+        }
+
+        Warehouse::create($validated);
 
         return redirect()->route('admin.warehouses.index')
             ->with('success', 'Warehouse created successfully.');
@@ -35,7 +41,13 @@ class WarehouseController extends Controller
 
     public function update(UpdateWarehouseRequest $request, Warehouse $warehouse)
     {
-        $warehouse->update($request->validated());
+        $validated = $request->validated();
+
+        if ($request->boolean('is_primary')) {
+            Warehouse::where('id', '!=', $warehouse->id)->update(['is_primary' => false]);
+        }
+
+        $warehouse->update($validated);
 
         return redirect()->route('admin.warehouses.index')
             ->with('success', 'Warehouse updated successfully.');

@@ -64,7 +64,7 @@ class OutstandingController extends Controller
         $chartData = $this->getSalesChartData($categoryId);
 
         // Donut Data (Outstanding Status Distribution)
-        $donutStats = $outstandingQuery->select('status', DB::raw('count(*) as total'))
+        $donutStats = (clone $outstandingQuery)->select('status', DB::raw('count(*) as total'))
             ->groupBy('status')
             ->pluck('total', 'status');
 

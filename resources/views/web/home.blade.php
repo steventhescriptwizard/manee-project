@@ -9,9 +9,9 @@
              x-data="{ 
                 activeSlide: 0, 
                 slides: [
-                    '{{ asset('images/hero.png') }}',
-                    '{{ asset('images/hero-1.png') }}',
-                    'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop'
+                    '{{ setting('hero_slide_1') ? Storage::url(setting('hero_slide_1')) : asset('images/hero.png') }}',
+                    '{{ setting('hero_slide_2') ? Storage::url(setting('hero_slide_2')) : asset('images/hero-1.png') }}',
+                    '{{ setting('hero_slide_3') ? Storage::url(setting('hero_slide_3')) : 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop' }}'
                 ],
                 next() { this.activeSlide = (this.activeSlide + 1) % this.slides.length },
                 prev() { this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length },
@@ -40,14 +40,16 @@
         <div class="relative container mx-auto px-6 h-full flex flex-col justify-center text-white z-20">
             <div class="max-w-xl mt-16 md:mt-0 md:ml-12 min-h-[160px]"> <!-- Added min-height to prevent layout shift -->
                 <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif italic font-light leading-tight mb-6">
-                    Headline Here and<br/>Can Go Over Two Lines
+                    {!! nl2br(setting('hero_headline', "Headline Here and\nCan Go Over Two Lines")) !!}
                 </h1>
                 <p class="text-lg md:text-xl font-sans font-light mb-10 max-w-md opacity-90">
-                    Subheadline goes here and can<br/>go over two lines
+                    {!! nl2br(setting('hero_subheadline', "Subheadline goes here and can\ngo over two lines")) !!}
                 </p>
-                <a href="#" class="inline-block border border-white px-8 py-3 text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-colors duration-300">
-                    CTA Here
+                @if(setting('hero_cta_text', 'CTA Here'))
+                <a href="{{ setting('hero_cta_link', '#') }}" class="inline-block border border-white px-8 py-3 text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-colors duration-300">
+                    {{ setting('hero_cta_text', 'CTA Here') }}
                 </a>
+                @endif
             </div>
         </div>
 
@@ -185,23 +187,21 @@
     <!-- Promo Section -->
     <section class="relative h-[500px] w-full bg-gray-900 overflow-hidden">
         <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHQpNjp7DhmlQfL0YlVDdpRkuAFvfN2JprEFlYTJydhYdz_jcR3gcw03Wfr4i3l5PabQeZ8fEV0jVUdrbXOTDN48vChJyl5FdArV8O9wQ6oY0UCNDHV-IziY1flPZaYscK4KQEU6bO5CgcvA7S_Wj4FsCq4yQ9wyxYFTkqwRu09gYUdG5W1tF97hm3-asFGKjExVxPTqH2pcfS0IadWFBrkkHHDTfG2SsJ4jswIogKBQAQ_aAnWkZxbLdu2AiJZmO1dmrdYE371nQ" 
-            alt="Leather bag detail" 
+            src="{{ setting('promo_image') ? Storage::url(setting('promo_image')) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuCHQpNjp7DhmlQfL0YlVDdpRkuAFvfN2JprEFlYTJydhYdz_jcR3gcw03Wfr4i3l5PabQeZ8fEV0jVUdrbXOTDN48vChJyl5FdArV8O9wQ6oY0UCNDHV-IziY1flPZaYscK4KQEU6bO5CgcvA7S_Wj4FsCq4yQ9wyxYFTkqwRu09gYUdG5W1tF97hm3-asFGKjExVxPTqH2pcfS0IadWFBrkkHHDTfG2SsJ4jswIogKBQAQ_aAnWkZxbLdu2AiJZmO1dmrdYE371nQ' }}" 
+            alt="Promo Background" 
             class="w-full h-full object-cover"
         />
         <div class="absolute inset-0 bg-black/40"></div>
         <div class="absolute inset-0 flex items-center">
             <div class="container mx-auto px-6">
                 <div class="max-w-lg text-white md:ml-12">
-                    <h2 class="text-5xl font-serif italic font-light mb-4">Receive 10% Off</h2>
+                    <h2 class="text-5xl font-serif italic font-light mb-4">{{ setting('promo_title', 'Receive 10% Off') }}</h2>
                     <p class="text-lg font-sans font-light mb-8 text-white/90">
-                        Enjoy 10% off your first purchase,<br/>
-                        and other promotional offers<br/>
-                        by becoming our members.
+                        {!! nl2br(setting('promo_text', "Enjoy 10% off your first purchase,\nand other promotional offers\nby becoming our members.")) !!}
                     </p>
-                    <button class="inline-block border border-white px-8 py-3 text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-colors duration-300 rounded">
-                        Register Now
-                    </button>
+                    <a href="{{ setting('promo_button_link', '#') }}" class="inline-block border border-white px-8 py-3 text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-colors duration-300 rounded">
+                        {{ setting('promo_button_text', 'Register Now') }}
+                    </a>
                 </div>
             </div>
         </div>

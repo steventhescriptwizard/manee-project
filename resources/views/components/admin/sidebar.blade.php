@@ -13,14 +13,19 @@
 
 <aside 
     :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
-    class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 border-r border-slate-200 dark:border-gray-800 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:flex h-full"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-slate-200 dark:border-gray-800 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:flex h-full"
+    style="background-color: var(--sidebar-bg); color: var(--sidebar-text);"
 >
     <!-- Brand -->
     <div class="p-6 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-10 w-10 object-contain">
+            @if(setting('site_logo'))
+                <img src="{{ Storage::url(setting('site_logo')) }}" alt="{{ setting('site_name') }}" class="h-10 w-10 object-contain">
+            @else
+                <img src="{{ asset('images/Manee Logo_Main.svg') }}" alt="Maneé Logo" class="h-10 w-10 object-contain">
+            @endif
             <div class="flex flex-col">
-                <h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none tracking-tight">Maneé Admin</h1>
+                <h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none tracking-tight">{{ setting('site_name', 'Maneé Admin') }}</h1>
                 <p class="text-slate-500 dark:text-slate-400 text-xs font-normal mt-1">Store Manager</p>
             </div>
         </div>
@@ -58,8 +63,8 @@
                 ['icon' => 'group', 'label' => 'Pelanggan', 'route' => route('admin.customers.index'), 'active' => request()->routeIs('admin.customers.*')],
                 ['icon' => 'admin_panel_settings', 'label' => 'Manajemen User', 'route' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
                 ['icon' => 'inventory_2', 'label' => 'Inventory', 'route' => route('admin.inventory.index'), 'active' => request()->routeIs('admin.inventory.*')],
-                ['icon' => 'campaign', 'label' => 'Marketing', 'route' => '#', 'active' => false],
-                ['icon' => 'settings', 'label' => 'Settings', 'route' => '#', 'active' => false],
+                ['icon' => 'campaign', 'label' => 'Marketing', 'route' => route('admin.marketing.index'), 'active' => request()->routeIs('admin.marketing.*')],
+                ['icon' => 'settings', 'label' => 'Settings', 'route' => route('admin.settings.index'), 'active' => request()->routeIs('admin.settings.*')],
             ];
         @endphp
 
@@ -124,12 +129,51 @@
         @endforeach
     </nav>
 
-    <!-- Logout Button -->
+    <!-- Theme Toggles (Slicing Implementation) -->
     <div class="p-4 border-t border-slate-200 dark:border-gray-800 mt-auto">
+        <div class="mb-4 px-2" x-data="{ 
+            setTheme(bg, text, primary) {
+                 // Update CSS variables immediately for preview
+                 document.documentElement.style.setProperty('--sidebar-bg', bg);
+                 document.documentElement.style.setProperty('--sidebar-text', text);
+                 document.documentElement.style.setProperty('--primary-color', primary);
+
+                 // Send to backend to save
+                 fetch('{{ route('admin.settings.update-appearance') }}', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                     },
+                     body: JSON.stringify({
+                         appearance_sidebar_bg: bg,
+                         appearance_sidebar_text: text,
+                         appearance_primary_color: primary
+                     })
+                 });
+            }
+        }">
+            <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-2 tracking-wider">Sidebar Theme</p>
+            <div class="flex items-center gap-2">
+                <!-- Light -->
+                <button @click="setTheme('#ffffff', '#334155', '#3b82f6')" 
+                    class="w-6 h-6 rounded-full bg-white border-2 border-blue-500 shadow-sm hover:scale-110 transition-transform" title="Light"></button>
+                <!-- Dark -->
+                <button @click="setTheme('#0f172a', '#e2e8f0', '#0ea5e9')" 
+                    class="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 hover:scale-110 transition-transform" title="Dark"></button>
+                <!-- Navy -->
+                <button @click="setTheme('#1e293b', '#e2e8f0', '#3b82f6')" 
+                    class="w-6 h-6 rounded-full bg-slate-800 border border-slate-600 hover:scale-110 transition-transform" title="Navy"></button>
+                <!-- Zinc -->
+                <button @click="setTheme('#3f3f46', '#e4e4e7', '#a1a1aa')" 
+                    class="w-6 h-6 rounded-full bg-zinc-700 border border-zinc-600 hover:scale-110 transition-transform" title="Zinc"></button>
+            </div>
+        </div>
+
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="logout-btn flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-red-600 hover:bg-red-50 font-medium transition-colors group">
-                <span class="material-symbols-outlined text-[22px] group-hover:text-red-700">logout</span>
+            <button type="submit" class="logout-btn flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 font-medium transition-colors group">
+                <span class="material-symbols-outlined text-[20px] group-hover:text-red-700">logout</span>
                 <span class="text-sm">Logout</span>
             </button>
         </form>

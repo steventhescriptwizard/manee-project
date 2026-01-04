@@ -254,13 +254,11 @@
         <div class="header">
             <div class="header-content">
                 <div class="brand-info">
-                    <div class="brand-name">Maneé</div>
+                    <div class="brand-name">{{ setting('site_name', 'Maneé') }}</div>
                     <div class="brand-details">
-                        <div>Maneé Official Store</div>
-                        <div>Jalan Senopati No. 10</div>
-                        <div>Jakarta Selatan, 12190</div>
-                        <div>Indonesia</div>
-                        <div>support@manee.id</div>
+                        <div>{{ setting('site_name', 'Maneé Store') }}</div>
+                        <div>{!! nl2br(setting('site_address', 'Jalan Senopati No. 10\nJakarta Selatan, 12190\nIndonesia')) !!}</div>
+                        <div>{{ setting('site_email', 'support@manee.id') }}</div>
                     </div>
                 </div>
                 <div class="invoice-meta">
@@ -363,8 +361,8 @@
         <div class="footer">
             <div class="footer-title">Thank You for Your Purchase!</div>
             <div class="footer-text">
-                <div>If you have any questions about this invoice, please contact us at support@manee.id</div>
-                <div style="margin-top: 20px;">© 2023 Maneé Official Store. All rights reserved.</div>
+                <div>If you have any questions about this invoice, please contact us at {{ setting('site_email', 'support@manee.id') }}</div>
+                <div style="margin-top: 20px;">© {{ date('Y') }} {{ setting('site_name', 'Maneé Store') }}. All rights reserved.</div>
             </div>
         </div>
     </div>

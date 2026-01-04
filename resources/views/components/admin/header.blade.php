@@ -161,6 +161,38 @@
         </div>
         
         <div class="flex items-center gap-3">
+             <!-- Theme Toggle -->
+             <button 
+                x-data="{ 
+                    isDark: document.documentElement.classList.contains('dark'),
+                    toggle() {
+                        this.isDark = !this.isDark;
+                        if (this.isDark) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                        
+                        // Save preference
+                        fetch('{{ route('admin.settings.update-appearance') }}', {
+                             method: 'POST',
+                             headers: {
+                                 'Content-Type': 'application/json',
+                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                             },
+                             body: JSON.stringify({
+                                 appearance_mode: this.isDark ? 'dark' : 'light'
+                             })
+                        });
+                    }
+                }"
+                @click="toggle()"
+                class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors"
+            >
+                <span class="material-symbols-outlined text-[24px]" x-show="!isDark">light_mode</span>
+                <span class="material-symbols-outlined text-[24px]" x-show="isDark" style="display: none;">dark_mode</span>
+            </button>
+
             <!-- Notifications -->
             <div class="relative" x-data="{ notificationsOpen: false }">
                 <button 

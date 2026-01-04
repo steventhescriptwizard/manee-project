@@ -15,7 +15,24 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; }
+            --sidebar-bg: {{ setting('appearance_sidebar_bg', '#ffffff') }};
+            --sidebar-text: {{ setting('appearance_sidebar_text', '#334155') }};
+            --primary-color: {{ setting('appearance_primary_color', '#3b82f6') }};
+        }
     </style>
+    <script>
+        // Apply Dark Mode immediately to prevent flash
+        (function() {
+            const mode = '{{ setting('appearance_mode', 'light') }}';
+            const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 </head>
 <body class="bg-gray-50 text-slate-900 dark:bg-gray-900 dark:text-white antialiased">
     <div 

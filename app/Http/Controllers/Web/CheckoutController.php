@@ -245,6 +245,9 @@ class CheckoutController extends Controller
 
             // Clear Cart
             session()->forget('cart');
+            if (Auth::check()) {
+                \App\Models\Cart::where('user_id', Auth::id())->delete();
+            }
             
             // Store order number in session for order success page
             session()->put('order_number', $order->order_number);

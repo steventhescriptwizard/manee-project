@@ -12,9 +12,14 @@ class CartController extends Controller
     /**
      * Display the cart page.
      */
+    /**
+     * Display the cart page.
+     */
     public function index()
     {
-        $cart = session()->get('cart', []);
+        $this->syncSessionToDb(); // Ensure DB is up to date
+
+        $cart = $this->getCart();
         $newCart = [];
         $total = 0;
 
@@ -39,7 +44,13 @@ class CartController extends Controller
                 
                 $item['final_price'] = $finalPrice;
                 $total += $finalPrice * $item['quantity'];
+                
+                // Update Image and Name if changed
+                $item['name'] = $product->product_name;
+                $item['image'] = $product->image_main;
+
             } else {
+                 // Product might be deleted, handle gracefully (optional: remove from cart)
                  $item['final_price'] = $price;
                  $total += $price * $item['quantity'];
             }
@@ -67,9 +78,9 @@ class CartController extends Controller
         $product = Product::findOrFail($productId);
         $variant = $variantId ? ProductVariant::findOrFail($variantId) : null;
 
-        // Use a unique key for the cart item (Product ID + Variant ID)
         $cartKey = $variantId ? "v{$variantId}" : "p{$productId}";
         
+        // 1. Update Session Cart
         $cart = session()->get('cart', []);
 
         if (isset($cart[$cartKey])) {
@@ -88,6 +99,11 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
+
+        // 2. Sync to DB if Logged In
+        if (auth()->check()) {
+            $this->syncSessionToDb();
+        }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -115,6 +131,10 @@ class CartController extends Controller
         if (isset($cart[$request->id])) {
             $cart[$request->id]['quantity'] = $request->quantity;
             session()->put('cart', $cart);
+            
+            if (auth()->check()) {
+                $this->syncSessionToDb();
+            }
         }
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -134,6 +154,10 @@ class CartController extends Controller
             if (isset($cart[$request->id])) {
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
+                
+                if (auth()->check()) {
+                    $this->syncSessionToDb();
+                }
             }
         }
 
@@ -150,6 +174,42 @@ class CartController extends Controller
     public function clear()
     {
         session()->forget('cart');
+        if (auth()->check()) {
+            \App\Models\Cart::where('user_id', auth()->id())->delete();
+        }
         return redirect()->back()->with('success', 'Cart cleared.');
+    }
+
+    /**
+     * Helpers
+     */
+    private function getCart() {
+        return session()->get('cart', []);
+    }
+
+    private function syncSessionToDb()
+    {
+        if (!auth()->check()) return;
+
+        $user = auth()->user();
+        $sessionCart = session()->get('cart', []);
+
+        // Get or Create Cart
+        $cart = \App\Models\Cart::firstOrCreate(['user_id' => $user->id]);
+        
+        // Touch timestamp to indicate activity
+        $cart->touch(); 
+
+        // Clear existing items (Simplest sync strategy: Replace all)
+        // ideally we might want to merge, but replacing ensures exact state match
+        $cart->items()->delete();
+
+        foreach ($sessionCart as $key => $item) {
+            $cart->items()->create([
+                'product_id' => $item['id'],
+                'product_variant_id' => $item['variant_id'] ?? null,
+                'quantity' => $item['quantity'],
+            ]);
+        }
     }
 }

@@ -114,6 +114,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
     
     Route::get('outstanding', [App\Http\Controllers\Admin\OutstandingController::class, 'index'])->name('outstanding.index');
+    
+    // Settings Routes
+    Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+    Route::post('settings/appearance', [App\Http\Controllers\Admin\SettingController::class, 'updateAppearance'])->name('settings.update-appearance');
+    
+    // Marketing Routes
+    Route::get('marketing', [App\Http\Controllers\Admin\MarketingController::class, 'index'])->name('marketing.index');
+    Route::post('marketing/email-blast', [App\Http\Controllers\Admin\MarketingController::class, 'sendEmailBlast'])->name('marketing.email-blast');
+    
     Route::delete('products/{product}/images/{image}', [App\Http\Controllers\Admin\ProductController::class, 'destroyImage'])->name('products.images.destroy');
     Route::resource('products.variants', App\Http\Controllers\Admin\ProductVariantController::class);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);

@@ -43,32 +43,48 @@
     <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
         @php
             $navItems = [
-                ['icon' => 'dashboard', 'label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+                // Main
+                ['icon' => 'dashboard', 'label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard'), 'section' => 'Main'],
+                
+                // Sales (with divider before)
                 [
                     'icon' => 'shopping_bag', 
                     'label' => 'Orders', 
                     'route' => '#', 
                     'active' => request()->routeIs('admin.orders.*') || request()->routeIs('admin.outstanding.*'),
+                    'section' => 'Sales',
                     'submenu' => [
                         ['label' => 'Orders', 'route' => route('admin.orders.index'), 'active' => request()->routeIs('admin.orders.index') || request()->routeIs('admin.orders.show')],
                         ['label' => 'Outstanding Sales', 'route' => route('admin.outstanding.index'), 'active' => request()->routeIs('admin.outstanding.*')],
                     ]
                 ],
-                ['icon' => 'checkroom', 'label' => 'Products', 'route' => route('admin.products.index'), 'active' => request()->routeIs('admin.products.*')],
+                
+                // Catalog (with divider before)
+                ['icon' => 'checkroom', 'label' => 'Products', 'route' => route('admin.products.index'), 'active' => request()->routeIs('admin.products.*'), 'section' => 'Catalog'],
                 ['icon' => 'category', 'label' => 'Categories', 'route' => route('admin.categories.index'), 'active' => request()->routeIs('admin.categories.*')],
                 ['icon' => 'warehouse', 'label' => 'Warehouses', 'route' => route('admin.warehouses.index'), 'active' => request()->routeIs('admin.warehouses.*')],
-                ['icon' => 'percent', 'label' => 'Discounts', 'route' => route('admin.discounts.index'), 'active' => request()->routeIs('admin.discounts.*')],
-                ['icon' => 'attach_money', 'label' => 'Taxes', 'route' => route('admin.taxes.index'), 'active' => request()->routeIs('admin.taxes.*')],
+                
+                // Marketing (with divider before)
+                ['icon' => 'percent', 'label' => 'Discounts', 'route' => route('admin.discounts.index'), 'active' => request()->routeIs('admin.discounts.*'), 'section' => 'Marketing'],
+                ['icon' => 'campaign', 'label' => 'Marketing', 'route' => route('admin.marketing.index'), 'active' => request()->routeIs('admin.marketing.*')],
                 ['icon' => 'rate_review', 'label' => 'Reviews', 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
+                
+                // System (with divider before)
+                ['icon' => 'attach_money', 'label' => 'Taxes', 'route' => route('admin.taxes.index'), 'active' => request()->routeIs('admin.taxes.*'), 'section' => 'System'],
                 ['icon' => 'group', 'label' => 'Pelanggan', 'route' => route('admin.customers.index'), 'active' => request()->routeIs('admin.customers.*')],
                 ['icon' => 'admin_panel_settings', 'label' => 'Manajemen User', 'route' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
                 ['icon' => 'inventory_2', 'label' => 'Inventory', 'route' => route('admin.inventory.index'), 'active' => request()->routeIs('admin.inventory.*')],
-                ['icon' => 'campaign', 'label' => 'Marketing', 'route' => route('admin.marketing.index'), 'active' => request()->routeIs('admin.marketing.*')],
                 ['icon' => 'settings', 'label' => 'Settings', 'route' => route('admin.settings.index'), 'active' => request()->routeIs('admin.settings.*')],
             ];
         @endphp
 
         @foreach($navItems as $item)
+            {{-- Section Divider and Label --}}
+            @if(isset($item['section']))
+                <div class="border-t border-slate-200 dark:border-gray-800 my-3"></div>
+                <p class="px-3 mb-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{{ $item['section'] }}</p>
+            @endif
+
             @if(isset($item['submenu']))
                 <div x-data="{ open: {{ $item['active'] ? 'true' : 'false' }} }" class="flex flex-col gap-1">
                     <button
@@ -129,47 +145,8 @@
         @endforeach
     </nav>
 
-    <!-- Theme Toggles (Slicing Implementation) -->
+    <!-- Logout Button -->
     <div class="p-4 border-t border-slate-200 dark:border-gray-800 mt-auto">
-        <div class="mb-4 px-2" x-data="{ 
-            setTheme(bg, text, primary) {
-                 // Update CSS variables immediately for preview
-                 document.documentElement.style.setProperty('--sidebar-bg', bg);
-                 document.documentElement.style.setProperty('--sidebar-text', text);
-                 document.documentElement.style.setProperty('--primary-color', primary);
-
-                 // Send to backend to save
-                 fetch('{{ route('admin.settings.update-appearance') }}', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                     },
-                     body: JSON.stringify({
-                         appearance_sidebar_bg: bg,
-                         appearance_sidebar_text: text,
-                         appearance_primary_color: primary
-                     })
-                 });
-            }
-        }">
-            <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-2 tracking-wider">Sidebar Theme</p>
-            <div class="flex items-center gap-2">
-                <!-- Light -->
-                <button @click="setTheme('#ffffff', '#334155', '#3b82f6')" 
-                    class="w-6 h-6 rounded-full bg-white border-2 border-blue-500 shadow-sm hover:scale-110 transition-transform" title="Light"></button>
-                <!-- Dark -->
-                <button @click="setTheme('#0f172a', '#e2e8f0', '#0ea5e9')" 
-                    class="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 hover:scale-110 transition-transform" title="Dark"></button>
-                <!-- Navy -->
-                <button @click="setTheme('#1e293b', '#e2e8f0', '#3b82f6')" 
-                    class="w-6 h-6 rounded-full bg-slate-800 border border-slate-600 hover:scale-110 transition-transform" title="Navy"></button>
-                <!-- Zinc -->
-                <button @click="setTheme('#3f3f46', '#e4e4e7', '#a1a1aa')" 
-                    class="w-6 h-6 rounded-full bg-zinc-700 border border-zinc-600 hover:scale-110 transition-transform" title="Zinc"></button>
-            </div>
-        </div>
-
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="logout-btn flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 font-medium transition-colors group">

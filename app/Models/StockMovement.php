@@ -17,6 +17,7 @@ class StockMovement extends Model
         'quantity',
         'reference_type', // e.g. 'order', 'adjustment', 'purchase'
         'reference_id',
+        'user_id',
         'notes',
     ];
 
@@ -33,5 +34,10 @@ class StockMovement extends Model
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

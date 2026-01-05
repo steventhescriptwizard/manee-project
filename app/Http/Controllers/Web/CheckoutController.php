@@ -178,6 +178,7 @@ class CheckoutController extends Controller
                         'quantity' => $item['quantity'],
                         'reference_type' => 'order',
                         'reference_id' => $order->id,
+                        'user_id' => Auth::id(),
                         'notes' => 'Order ' . $order->order_number,
                     ]);
                 }

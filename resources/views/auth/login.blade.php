@@ -130,10 +130,10 @@
                     </div>
 
                     <!-- Google Button -->
-                    <button type="button" class="w-full h-14 bg-white border border-gray-200 text-[#111318] rounded-xl font-bold text-sm flex items-center justify-center gap-3 hover:bg-gray-50 transition-all active:scale-[0.98]">
+                    <a href="{{ route('auth.google') }}" class="w-full h-14 bg-white border border-gray-200 text-[#111318] rounded-xl font-bold text-sm flex items-center justify-center gap-3 hover:bg-gray-50 transition-all active:scale-[0.98]">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="size-5" alt="Google">
                         <span>Google</span>
-                    </button>
+                    </a>
                 </form>
 
                 <div class="text-center mt-4">

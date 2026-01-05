@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Web\HomeController;
 
+// Google OAuth Routes
+Route::get('auth/google', [App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback']);
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/about', function () {
@@ -136,6 +140,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
     Route::get('orders/{order}/invoice', [App\Http\Controllers\Admin\OrderController::class, 'downloadInvoice'])->name('orders.invoice');
     Route::get('/inventory', [App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory/{stock}', [App\Http\Controllers\Admin\InventoryController::class, 'update'])->name('inventory.update');
+    Route::get('/inventory/logs/all', [App\Http\Controllers\Admin\InventoryController::class, 'logs'])->name('inventory.logs');
     Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
     
     // Notifications

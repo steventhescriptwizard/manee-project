@@ -62,13 +62,34 @@
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="font-black text-slate-900 dark:text-white text-base group-hover:text-blue-600 transition-colors tracking-tight">{{ $user->name }}</span>
+                                    @if($user->isOnline())
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                                            <span class="text-[10px] font-bold text-green-600 uppercase tracking-wider">Online</span>
+                                        </div>
+                                    @else
+                                        <span class="text-[10px] font-medium text-slate-400 mt-1">{{ $user->lastSeenText() }}</span>
+                                    @endif
                                 </div>
                             </div>
                         </td>
                         <td class="px-8 py-5 whitespace-nowrap">
-                            <div class="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300">
-                                <span class="material-symbols-outlined text-[16px] text-slate-400">mail</span>
-                                <span>{{ $user->email }}</span>
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300">
+                                    <span class="material-symbols-outlined text-[16px] text-slate-400">mail</span>
+                                    <span>{{ $user->email }}</span>
+                                </div>
+                                @if($user->email_verified_at)
+                                    <div class="flex items-center gap-1.5 text-green-600">
+                                        <span class="material-symbols-outlined text-xs">verified</span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider">Email Terverifikasi</span>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-1.5 text-amber-600">
+                                        <span class="material-symbols-outlined text-xs">schedule</span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider">Belum Verifikasi</span>
+                                    </div>
+                                @endif
                             </div>
                         </td>
                         <td class="px-8 py-5 whitespace-nowrap text-center">

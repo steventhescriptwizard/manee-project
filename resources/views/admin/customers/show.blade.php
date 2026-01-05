@@ -32,14 +32,37 @@
         
         <div class="pt-16 px-8 pb-8 md:px-10 md:flex md:justify-between md:items-start gap-6">
             <div class="flex-1">
-                <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                    {{ $user->name }}
-                    <span class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-[10px] font-black uppercase tracking-widest dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800">AKTIF</span>
-                </h1>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">{{ $user->name }}</h1>
+                    @if($user->isOnline())
+                        <span class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-[10px] font-black uppercase tracking-widest dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800 flex items-center gap-1.5">
+                            <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                            ONLINE
+                        </span>
+                    @else
+                        <span class="px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest dark:bg-gray-800 dark:text-slate-400 border border-slate-100 dark:border-gray-700">
+                            OFFLINE
+                        </span>
+                    @endif
+                </div>
+                @if(!$user->isOnline())
+                    <p class="text-xs font-medium text-slate-400 mt-2">{{ $user->lastSeenText() }}</p>
+                @endif
                 <div class="mt-4 flex flex-col gap-2 text-slate-500 dark:text-slate-400 text-sm md:text-base">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[20px] text-blue-600">mail</span>
                         <span class="font-medium">{{ $user->email }}</span>
+                        @if($user->email_verified_at)
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-[9px] font-black rounded-md uppercase tracking-tight border border-green-200">
+                                <span class="material-symbols-outlined text-[10px]">verified</span>
+                                Terverifikasi
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 text-[9px] font-black rounded-md uppercase tracking-tight border border-amber-200">
+                                <span class="material-symbols-outlined text-[10px]">schedule</span>
+                                Belum Verifikasi
+                            </span>
+                        @endif
                     </div>
                     @if($user->customer && $user->customer->phone)
                         <div class="flex items-center gap-3">

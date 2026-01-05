@@ -12,7 +12,7 @@
 
     <!-- Tabs -->
     <div class="flex gap-2 overflow-x-auto border-b border-slate-200 dark:border-gray-800 mb-6 no-scrollbar">
-        @foreach(['general' => 'Umum', 'homepage' => 'Halaman Depan', 'payment' => 'Pembayaran', 'shipping' => 'Pengiriman'] as $key => $label)
+        @foreach(['general' => 'Umum', 'language' => 'Bahasa', 'homepage' => 'Halaman Depan', 'payment' => 'Pembayaran', 'shipping' => 'Pengiriman'] as $key => $label)
         <button 
             @click="activeTab = '{{ $key }}'"
             :class="{ 'border-blue-600 text-blue-600': activeTab === '{{ $key }}', 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300': activeTab !== '{{ $key }}' }"
@@ -56,6 +56,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- Language Settings -->
+        <div x-show="activeTab === 'language'" class="space-y-6" style="display: none;">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Language / Bahasa</h3>
+                
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Application Language</label>
+                        <select name="app_locale" class="w-full md:w-1/2 rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="en" {{ setting('app_locale', 'en') === 'en' ? 'selected' : '' }}>🇬🇧 English</option>
+                            <option value="id" {{ setting('app_locale') === 'id' ? 'selected' : '' }}>🇮🇩 Bahasa Indonesia</option>
+                        </select>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Select the language for the admin dashboard interface.</p>
+                    </div>
+
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[20px] mt-0.5">info</span>
+                            <div class="text-sm text-blue-900 dark:text-blue-300">
+                                <p class="font-semibold mb-1">Note:</p>
+                                <p>Changing the language will update all menu labels and interface text in the admin dashboard. The customer-facing website language can be configured separately.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div x-show="activeTab === 'homepage'" class="space-y-8" style="display: none;">
             
             <!-- Hero Section -->

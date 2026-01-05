@@ -108,7 +108,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::get('/orders/{id}/invoice', [App\Http\Controllers\Web\InvoiceController::class, 'download'])->name('orders.invoice');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('products/export', [App\Http\Controllers\Admin\ProductController::class, 'export'])->name('products.export');

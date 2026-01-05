@@ -62,10 +62,20 @@
                                     @endif
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="font-black text-slate-900 dark:text-white text-base group-hover:text-blue-600 transition-colors tracking-tight">{{ $user->name }}</span>
-                                    <span class="inline-flex w-fit px-2 py-0.5 mt-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[9px] font-black rounded-lg uppercase tracking-tight">
-                                        {{ strtoupper($user->customer?->tier ?? 'Regular') }}
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-black text-slate-900 dark:text-white text-base group-hover:text-blue-600 transition-colors tracking-tight">{{ $user->name }}</span>
+                                        @if($user->isOnline())
+                                            <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-flex w-fit px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[9px] font-black rounded-lg uppercase tracking-tight">
+                                            {{ strtoupper($user->customer?->tier ?? 'Regular') }}
+                                        </span>
+                                        @if(!$user->isOnline())
+                                            <span class="text-[9px] font-medium text-slate-400">{{ $user->lastSeenText() }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -75,6 +85,17 @@
                                     <span class="material-symbols-outlined text-[16px] text-slate-400">mail</span>
                                     <span>{{ $user->email }}</span>
                                 </div>
+                                @if($user->email_verified_at)
+                                    <div class="flex items-center gap-1.5 text-green-600">
+                                        <span class="material-symbols-outlined text-xs">verified</span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider">Email Terverifikasi</span>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-1.5 text-amber-600">
+                                        <span class="material-symbols-outlined text-xs">schedule</span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider">Belum Verifikasi</span>
+                                    </div>
+                                @endif
                                 @if($user->customer && $user->customer->phone)
                                     <div class="flex items-center gap-2 text-[11px] font-medium text-slate-400">
                                         <span class="material-symbols-outlined text-[16px]">call</span>

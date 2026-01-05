@@ -26,10 +26,31 @@
                 @endif
             </div>
             <div>
-                <h2 class="text-2xl font-black text-slate-900 dark:text-white">{{ $user->name }}</h2>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">{{ $user->name }}</h2>
+                    @if($user->isOnline())
+                        <span class="size-3 bg-green-500 rounded-full animate-pulse"></span>
+                    @endif
+                </div>
                 <p class="text-slate-500 font-bold tracking-tight mt-1">{{ $user->email }}</p>
-                <div class="mt-3 inline-flex px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-widest leading-none">
-                    Administrator
+                @if(!$user->isOnline())
+                    <p class="text-xs font-medium text-slate-400 mt-1">{{ $user->lastSeenText() }}</p>
+                @endif
+                <div class="mt-3 flex items-center gap-2 flex-wrap">
+                    <div class="inline-flex px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-widest leading-none">
+                        Administrator
+                    </div>
+                    @if($user->email_verified_at)
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 text-[10px] font-black rounded-lg uppercase tracking-widest leading-none border border-green-200">
+                            <span class="material-symbols-outlined text-xs">verified</span>
+                            <span>Terverifikasi</span>
+                        </div>
+                    @else
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-black rounded-lg uppercase tracking-widest leading-none border border-amber-200">
+                            <span class="material-symbols-outlined text-xs">schedule</span>
+                            <span>Belum Verifikasi</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

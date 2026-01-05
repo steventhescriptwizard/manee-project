@@ -12,27 +12,27 @@
     <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm">
         <form method="GET" class="flex flex-wrap gap-3 items-end" id="periodFilter">
             <div class="flex-1 min-w-[200px]">
-                <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Time Period</label>
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">{{ __('dashboard.time_period') }}</label>
                 <select name="period" @change="if($event.target.value === 'custom') { showCustom = true; } else { window.location.href = '{{ route('admin.dashboard') }}?period=' + $event.target.value; }" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-                    <option value="today" {{ $period === 'today' ? 'selected' : '' }}>Today</option>
-                    <option value="week" {{ $period === 'week' ? 'selected' : '' }}>This Week</option>
-                    <option value="month" {{ $period === 'month' ? 'selected' : '' }}>This Month</option>
-                    <option value="year" {{ $period === 'year' ? 'selected' : '' }}>This Year</option>
-                    <option value="custom" {{ $period === 'custom' ? 'selected' : '' }}>Custom Range</option>
+                    <option value="today" {{ $period === 'today' ? 'selected' : '' }}>{{ __('dashboard.today') }}</option>
+                    <option value="week" {{ $period === 'week' ? 'selected' : '' }}>{{ __('dashboard.this_week') }}</option>
+                    <option value="month" {{ $period === 'month' ? 'selected' : '' }}>{{ __('dashboard.this_month') }}</option>
+                    <option value="year" {{ $period === 'year' ? 'selected' : '' }}>{{ __('dashboard.this_year') }}</option>
+                    <option value="custom" {{ $period === 'custom' ? 'selected' : '' }}>{{ __('dashboard.custom_range') }}</option>
                 </select>
             </div>
             
             <div x-show="showCustom" x-cloak class="flex gap-2 flex-1">
                 <div class="flex-1">
-                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Start Date</label>
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">{{ __('common.start_date') }}</label>
                     <input type="date" name="start_date" value="{{ request('start_date', $startDate->format('Y-m-d')) }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                 </div>
                 <div class="flex-1">
-                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">End Date</label>
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">{{ __('common.end_date') }}</label>
                     <input type="date" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}" class="w-full rounded-lg border-slate-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                 </div>
                 <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors self-end">
-                    Apply
+                    {{ __('common.apply') }}
                 </button>
             </div>
         </form>
@@ -41,24 +41,24 @@
     <!-- Stats Section -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @include('components.admin.stats-card', [
-            'title' => 'Total Revenue',
+            'title' => __('dashboard.total_revenue'),
             'value' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
             'icon' => 'payments',
             'trend' => round($revenueTrend, 1),
-            'trendLabel' => 'vs previous period',
+            'trendLabel' => __('dashboard.vs_previous_period'),
             'iconColorClass' => 'text-blue-600',
             'iconBgClass' => 'bg-blue-50 dark:bg-blue-900/30',
             'trendPositive' => $revenueTrend >= 0
         ])
 
         @include('components.admin.stats-card', [
-            'title' => 'Total Orders',
-            'value' => $totalOrders,
-            'icon' => 'shopping_cart',
+            'title' => __('dashboard.total_orders'),
+            'value' => number_format($totalOrders, 0, ',', '.'),
+            'icon' => 'shopping_bag',
             'trend' => round($ordersTrend, 1),
-            'trendLabel' => 'vs previous period',
-            'iconColorClass' => 'text-purple-600',
-            'iconBgClass' => 'bg-purple-100 dark:bg-purple-900/30',
+            'trendLabel' => __('dashboard.vs_previous_period'),
+            'iconColorClass' => 'text-green-600',
+            'iconBgClass' => 'bg-green-50 dark:bg-green-900/30',
             'trendPositive' => $ordersTrend >= 0
         ])
 

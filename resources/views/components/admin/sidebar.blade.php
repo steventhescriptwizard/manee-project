@@ -44,37 +44,37 @@
         @php
             $navItems = [
                 // Main
-                ['icon' => 'dashboard', 'label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard'), 'section' => 'Main'],
+                ['icon' => 'dashboard', 'label' => __('sidebar.dashboard'), 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard'), 'section' => __('sidebar.section_main')],
                 
                 // Sales (with divider before)
                 [
                     'icon' => 'shopping_bag', 
-                    'label' => 'Orders', 
+                    'label' => __('sidebar.orders'), 
                     'route' => '#', 
                     'active' => request()->routeIs('admin.orders.*') || request()->routeIs('admin.outstanding.*'),
-                    'section' => 'Sales',
+                    'section' => __('sidebar.section_sales'),
                     'submenu' => [
-                        ['label' => 'Orders', 'route' => route('admin.orders.index'), 'active' => request()->routeIs('admin.orders.index') || request()->routeIs('admin.orders.show')],
-                        ['label' => 'Outstanding Sales', 'route' => route('admin.outstanding.index'), 'active' => request()->routeIs('admin.outstanding.*')],
+                        ['label' => __('sidebar.all_orders'), 'route' => route('admin.orders.index'), 'active' => request()->routeIs('admin.orders.index') || request()->routeIs('admin.orders.show')],
+                        ['label' => __('sidebar.outstanding'), 'route' => route('admin.outstanding.index'), 'active' => request()->routeIs('admin.outstanding.*')],
                     ]
                 ],
                 
                 // Catalog (with divider before)
-                ['icon' => 'checkroom', 'label' => 'Products', 'route' => route('admin.products.index'), 'active' => request()->routeIs('admin.products.*'), 'section' => 'Catalog'],
-                ['icon' => 'category', 'label' => 'Categories', 'route' => route('admin.categories.index'), 'active' => request()->routeIs('admin.categories.*')],
-                ['icon' => 'warehouse', 'label' => 'Warehouses', 'route' => route('admin.warehouses.index'), 'active' => request()->routeIs('admin.warehouses.*')],
+                ['icon' => 'checkroom', 'label' => __('sidebar.products'), 'route' => route('admin.products.index'), 'active' => request()->routeIs('admin.products.*'), 'section' => __('sidebar.section_catalog')],
+                ['icon' => 'category', 'label' => __('sidebar.categories'), 'route' => route('admin.categories.index'), 'active' => request()->routeIs('admin.categories.*')],
+                ['icon' => 'warehouse', 'label' => __('sidebar.warehouses'), 'route' => route('admin.warehouses.index'), 'active' => request()->routeIs('admin.warehouses.*')],
                 
                 // Marketing (with divider before)
-                ['icon' => 'percent', 'label' => 'Discounts', 'route' => route('admin.discounts.index'), 'active' => request()->routeIs('admin.discounts.*'), 'section' => 'Marketing'],
-                ['icon' => 'campaign', 'label' => 'Marketing', 'route' => route('admin.marketing.index'), 'active' => request()->routeIs('admin.marketing.*')],
-                ['icon' => 'rate_review', 'label' => 'Reviews', 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
+                ['icon' => 'percent', 'label' => __('sidebar.discounts'), 'route' => route('admin.discounts.index'), 'active' => request()->routeIs('admin.discounts.*'), 'section' => __('sidebar.section_marketing')],
+                ['icon' => 'campaign', 'label' => __('sidebar.marketing'), 'route' => route('admin.marketing.index'), 'active' => request()->routeIs('admin.marketing.*')],
+                ['icon' => 'rate_review', 'label' => __('sidebar.reviews'), 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
                 
                 // System (with divider before)
-                ['icon' => 'attach_money', 'label' => 'Taxes', 'route' => route('admin.taxes.index'), 'active' => request()->routeIs('admin.taxes.*'), 'section' => 'System'],
-                ['icon' => 'group', 'label' => 'Pelanggan', 'route' => route('admin.customers.index'), 'active' => request()->routeIs('admin.customers.*')],
-                ['icon' => 'admin_panel_settings', 'label' => 'Manajemen User', 'route' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
-                ['icon' => 'inventory_2', 'label' => 'Inventory', 'route' => route('admin.inventory.index'), 'active' => request()->routeIs('admin.inventory.*')],
-                ['icon' => 'settings', 'label' => 'Settings', 'route' => route('admin.settings.index'), 'active' => request()->routeIs('admin.settings.*')],
+                ['icon' => 'attach_money', 'label' => __('sidebar.taxes'), 'route' => route('admin.taxes.index'), 'active' => request()->routeIs('admin.taxes.*'), 'section' => __('sidebar.section_system')],
+                ['icon' => 'group', 'label' => __('sidebar.customers'), 'route' => route('admin.customers.index'), 'active' => request()->routeIs('admin.customers.*')],
+                ['icon' => 'admin_panel_settings', 'label' => __('sidebar.user_management'), 'route' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
+                ['icon' => 'inventory_2', 'label' => __('sidebar.inventory'), 'route' => route('admin.inventory.index'), 'active' => request()->routeIs('admin.inventory.*')],
+                ['icon' => 'settings', 'label' => __('sidebar.settings'), 'route' => route('admin.settings.index'), 'active' => request()->routeIs('admin.settings.*')],
             ];
         @endphp
 
